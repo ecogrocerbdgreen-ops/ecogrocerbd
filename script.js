@@ -51,6 +51,43 @@ const PRODUCTS = [
   { id: 'f08', category: 'fish', name: 'কৈ মাছ (চাষের)', en: 'Farmed Koi Fish', price: 210, unit: '১ কেজি', aliases: ['koi', 'koi mach', 'fish', 'mach'] }
 ];
 
+// Free-to-use product photography. Images are representative catalogue visuals.
+// The images are plain <img> elements and are deliberately not wrapped in links.
+const PRODUCT_IMAGES = {
+  "g01": "https://images.pexels.com/photos/31555432/pexels-photo-31555432/free-photo-of-white-bowl-of-uncooked-rice-close-up.jpeg?auto=compress&dpr=1&h=750&w=1260",
+  "g02": "https://images.unsplash.com/photo-1763704189952-660d9055abbb?auto=format&fit=crop&w=900&q=80",
+  "g03": "https://images.unsplash.com/photo-1730591857303-0fa44be3f677?auto=format&fit=crop&w=900&q=80",
+  "g04": "https://images.pexels.com/photos/15206766/pexels-photo-15206766/free-photo-of-spoon-in-glass-of-sugar.jpeg?auto=compress&dpr=1&h=750&w=1260",
+  "g05": "https://images.unsplash.com/photo-1772472023164-61a6f0da9200?auto=format&fit=crop&w=900&q=80",
+  "g06": "https://images.pexels.com/photos/17236203/pexels-photo-17236203/free-photo-of-a-bowl-of-flour.jpeg?auto=compress&dpr=1&h=750&w=1260",
+  "g07": "https://images.unsplash.com/photo-1745192621767-0393e7161f11?auto=format&fit=crop&w=900&q=80",
+  "g08": "https://images.pexels.com/photos/31555433/pexels-photo-31555433/free-photo-of-bowl-of-raw-rice-on-a-white-background.jpeg?auto=compress&dpr=1&h=750&w=1260",
+  "v01": "https://images.unsplash.com/photo-1635847163737-c93e3d73bcc6?auto=format&fit=crop&w=900&q=80",
+  "v02": "https://images.unsplash.com/photo-1769489023736-ae94eb8f3a38?auto=format&fit=crop&w=900&q=80",
+  "v03": "https://images.unsplash.com/photo-1767156969831-0beee76fa958?auto=format&fit=crop&w=900&q=80",
+  "v04": "https://images.unsplash.com/photo-1754891785053-854ef42468cc?auto=format&fit=crop&w=900&q=80",
+  "v05": "https://images.unsplash.com/photo-1756363866183-56d98ad88214?auto=format&fit=crop&w=900&q=80",
+  "v06": "https://images.unsplash.com/photo-1757892797773-dd669db9af90?auto=format&fit=crop&w=900&q=80",
+  "v07": "https://images.unsplash.com/photo-1543077689-082dc39735be?auto=format&fit=crop&w=900&q=80",
+  "v08": "https://images.unsplash.com/photo-1717959159782-98c42b1d4f37?auto=format&fit=crop&w=900&q=80",
+  "m01": "https://images.unsplash.com/photo-1642497394469-188b0f4bcae6?auto=format&fit=crop&w=900&q=80",
+  "m02": "https://images.pexels.com/photos/8251004/pexels-photo-8251004.jpeg?auto=compress&dpr=1&h=750&w=1260",
+  "m03": "https://images.pexels.com/photos/7140316/pexels-photo-7140316.jpeg?auto=compress&dpr=1&h=750&w=1260",
+  "m04": "https://images.unsplash.com/photo-1642102903996-cdad15f5dcdd?auto=format&fit=crop&w=900&q=80",
+  "m05": "https://images.pexels.com/photos/7495481/pexels-photo-7495481.png?auto=compress&dpr=1&h=750&w=1260",
+  "m06": "https://images.pexels.com/photos/6896518/pexels-photo-6896518.jpeg?auto=compress&dpr=1&h=750&w=1260",
+  "m07": "https://images.pexels.com/photos/18606624/pexels-photo-18606624/free-photo-of-close-up-of-meat-and-livers.jpeg?auto=compress&dpr=1&h=750&w=1260",
+  "m08": "https://images.pexels.com/photos/31732110/pexels-photo-31732110/free-photo-of-close-up-of-raw-lamb-chops-with-marbling.jpeg?auto=compress&dpr=1&h=750&w=1260",
+  "f01": "https://images.pexels.com/photos/15553656/pexels-photo-15553656/free-photo-of-stack-of-fresh-fish-at-market.jpeg?auto=compress&dpr=1&h=750&w=1260",
+  "f02": "https://images.pexels.com/photos/10112470/pexels-photo-10112470.jpeg?auto=compress&dpr=1&h=750&w=1260",
+  "f03": "https://images.pexels.com/photos/29307537/pexels-photo-29307537/free-photo-of-fresh-fish-display-on-a-market-stall.jpeg?auto=compress&cs=tinysrgb&dpr=1&h=750&w=1260",
+  "f04": "https://images.pexels.com/photos/36122229/pexels-photo-36122229/free-photo-of-fresh-fish-display-at-local-market-stall.jpeg?auto=compress&dpr=1&h=750&w=1260",
+  "f05": "https://images.pexels.com/photos/7451965/pexels-photo-7451965.jpeg?auto=compress&dpr=1&h=750&w=1260",
+  "f06": "https://images.pexels.com/photos/40700642/pexels-photo-40700642/free-photo-of-fresh-hilsa-fish-on-ice-in-dhaka-market.jpeg?auto=compress&dpr=1&h=750&w=1260",
+  "f07": "https://images.unsplash.com/photo-1756361945963-4b08e8b7ef3e?auto=format&fit=crop&w=900&q=80",
+  "f08": "https://images.unsplash.com/photo-1773158096376-3e0f1af05706?auto=format&fit=crop&w=900&q=80"
+};
+
 const CART_KEY = 'ecogrocerbd-phase1-cart';
 let cart = loadCart();
 let toastTimer = null;
@@ -94,14 +131,16 @@ function normalizeSearch(value) {
 
 function productCard(product) {
   const qty = Number(cart[product.id] || 0);
+  const imageUrl = PRODUCT_IMAGES[product.id];
   const addControl = qty > 0
     ? `<div class="qty-stepper" aria-label="${escapeHTML(product.name)} পরিমাণ"><button type="button" data-cart-action="decrease" data-id="${product.id}" aria-label="একটি কমান">−</button><span>${qty}</span><button type="button" data-cart-action="increase" data-id="${product.id}" aria-label="একটি বাড়ান">+</button></div>`
     : `<button class="add-button" type="button" data-cart-action="increase" data-id="${product.id}" aria-label="${escapeHTML(product.name)} কার্টে যোগ করুন">+</button>`;
 
   return `
     <article class="product-card" data-product-id="${product.id}" data-search="${escapeHTML(`${product.name} ${product.en} ${product.unit} ${(product.aliases || []).join(' ')} ${CATEGORIES.find(c => c.id === product.category)?.bangla || ''}`.toLowerCase())}">
-      <div class="product-media" role="img" aria-label="${escapeHTML(product.name)}-এর ছবির জন্য ফাঁকা জায়গা">
-        <span class="product-placeholder"><span aria-hidden="true">▧</span><small>ছবি যোগ হবে</small></span>
+      <div class="product-media">
+        <img class="product-image" src="${imageUrl}" alt="${escapeHTML(product.name)}" loading="lazy" decoding="async" draggable="false" referrerpolicy="no-referrer" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
+        <span class="product-placeholder" hidden><span aria-hidden="true">▧</span><small>ছবি পাওয়া যায়নি</small></span>
       </div>
       ${product.featured ? '<span class="product-label">জনপ্রিয়</span>' : '<span class="product-label">নমুনা পণ্য</span>'}
       <h3 class="product-name">${escapeHTML(product.name)}<span class="product-unit">${escapeHTML(product.unit)}</span></h3>
@@ -143,7 +182,7 @@ function renderCart() {
   } else {
     container.innerHTML = lines.map(product => `
       <div class="cart-line">
-        <div class="cart-line-art" aria-hidden="true">▧</div>
+        <div class="cart-line-art" aria-hidden="true"><img src="${PRODUCT_IMAGES[product.id]}" alt="" loading="lazy" decoding="async" draggable="false" referrerpolicy="no-referrer" onerror="this.hidden=true"></div>
         <div><strong>${escapeHTML(product.name)}</strong><small>${escapeHTML(product.unit)} · ${formatPrice(product.price)}</small>
           <div class="cart-line-controls"><button type="button" data-cart-action="decrease" data-id="${product.id}" aria-label="একটি কমান">−</button><span>${cart[product.id]}</span><button type="button" data-cart-action="increase" data-id="${product.id}" aria-label="একটি বাড়ান">+</button></div>
         </div>
