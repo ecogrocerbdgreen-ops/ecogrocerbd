@@ -1,0 +1,440 @@
+:root {
+  --white: #fff;
+  --bg: #f8fbf8;
+  --bg-soft: #f0f8f1;
+  --ink: #18261d;
+  --ink-soft: #68776d;
+  --green: #1d8a4c;
+  --green-dark: #146638;
+  --green-deep: #0c4b2b;
+  --bright-green: #3dd16f;
+  --orange: #ff7a1a;
+  --orange-soft: #fff1e4;
+  --line: #e1eee4;
+  --shadow: 0 8px 24px rgba(24, 58, 35, .07);
+  --shadow-hover: 0 14px 34px rgba(24, 58, 35, .13);
+  --radius: 22px;
+  --radius-sm: 14px;
+  --header-height: 70px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+body {
+  margin: 0;
+  background: var(--white);
+  color: var(--ink);
+  font-family: 'Noto Sans Bengali', 'Hind Siliguri', sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  padding-bottom: calc(76px + env(safe-area-inset-bottom));
+}
+button, input { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; }
+img { display: block; max-width: 100%; }
+section[id], div[id] { scroll-margin-top: 90px; }
+:focus-visible { outline: 3px solid rgba(255, 122, 26, .55); outline-offset: 3px; }
+.skip-link, .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.skip-link:focus { width: auto; height: auto; clip: auto; margin: 8px; padding: 10px 14px; background: #fff; z-index: 200; }
+
+/* Header */
+.site-header { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,.94); border-bottom: 1px solid var(--line); backdrop-filter: blur(14px); }
+.header-inner { max-width: 1240px; min-height: var(--header-height); padding: 8px 16px; margin: 0 auto; display: flex; align-items: center; gap: 12px; }
+.brand { display: inline-flex; align-items: center; gap: 9px; min-width: 0; }
+.brand-mark { width: 42px; height: 42px; flex: 0 0 42px; display: grid; place-items: center; border-radius: 14px 14px 14px 5px; background: linear-gradient(145deg, var(--green), var(--green-dark)); color: white; box-shadow: 0 5px 12px rgba(29,138,76,.22); transform: rotate(-4deg); }
+.brand-mark span { font: 800 29px/1 'Baloo Da 2', sans-serif; transform: rotate(4deg); }
+.brand-copy { display: flex; flex-direction: column; line-height: 1.12; white-space: nowrap; }
+.brand-copy strong { color: var(--green-dark); font: 800 19px/1.1 'Baloo Da 2', 'Noto Sans Bengali', sans-serif; letter-spacing: -.35px; }
+.brand-copy em { color: var(--orange); font-style: normal; }
+.brand-copy small { margin-top: 4px; color: var(--ink-soft); font-size: 9px; font-weight: 700; letter-spacing: 1.25px; text-transform: uppercase; }
+.icon-button { width: 40px; height: 40px; border: 1px solid var(--line); border-radius: 13px; background: var(--bg-soft); display: grid; place-items: center; color: var(--green-dark); font-size: 25px; line-height: 1; }
+.menu-trigger { flex: 0 0 40px; }
+.hamburger { width: 18px; display: flex; flex-direction: column; gap: 4px; }
+.hamburger i { height: 2px; width: 100%; border-radius: 4px; background: var(--green-dark); }
+.hamburger i:nth-child(2) { width: 13px; }
+.desktop-nav { display: none; }
+.header-actions { margin-left: auto; display: flex; align-items: center; gap: 7px; }
+.desktop-search-trigger { display: none; font-size: 29px; }
+.cart-button { display: inline-flex; align-items: center; gap: 5px; height: 40px; border: 1px solid var(--line); border-radius: 13px; padding: 0 9px; background: var(--bg-soft); color: var(--green-dark); font-weight: 700; font-size: 12px; }
+.cart-symbol { font-size: 17px; }
+.cart-count { display: inline-grid; place-items: center; min-width: 18px; height: 18px; border-radius: 50%; background: var(--orange); color: white; font-size: 10px; padding: 0 4px; }
+.account-button { display: none; border: 0; background: var(--green-dark); color: white; height: 40px; padding: 0 17px; border-radius: 12px; font-weight: 700; }
+.delivery-strip { border-bottom: 1px solid var(--line); background: #f6fbf6; }
+.delivery-inner { max-width: 1240px; margin: auto; min-height: 34px; padding: 5px 17px; display: flex; align-items: center; justify-content: center; gap: 7px; color: var(--ink-soft); font-size: 10px; text-align: center; }
+.delivery-inner strong { color: var(--green-dark); }
+.delivery-pin { font-size: 15px; color: var(--orange); }
+.delivery-note { display: none; }
+
+/* Common layout */
+.section-wrap { width: min(100% - 32px, 1160px); margin-inline: auto; }
+.section-heading { display: flex; align-items: end; justify-content: space-between; gap: 10px; margin-bottom: 16px; }
+.section-heading h2 { margin: 3px 0 0; color: var(--ink); font: 700 23px/1.24 'Baloo Da 2', 'Noto Sans Bengali', sans-serif; letter-spacing: -.25px; }
+.section-kicker { display: block; color: var(--green); font-size: 9px; line-height: 1.2; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
+.section-caption, .product-count { color: var(--ink-soft); font-size: 10px; white-space: nowrap; }
+.text-link { color: var(--green-dark); font-size: 11px; font-weight: 800; white-space: nowrap; }
+.text-link span { color: var(--orange); margin-left: 3px; }
+
+/* Hero */
+.hero-section { position: relative; isolation: isolate; overflow: hidden; min-height: 350px; padding: 35px 21px 30px; background: linear-gradient(122deg, #104c2c 0%, #167542 54%, #219352 100%); color: white; }
+.hero-section::before, .hero-section::after { content: ''; position: absolute; z-index: -1; border-radius: 50%; pointer-events: none; }
+.hero-section::before { width: 270px; height: 270px; right: -102px; top: -115px; background: rgba(255,255,255,.075); }
+.hero-section::after { width: 210px; height: 210px; right: 35px; bottom: -175px; border: 1px solid rgba(255,255,255,.18); }
+.hero-content { position: relative; z-index: 2; max-width: 590px; }
+.hero-slide[hidden] { display: none !important; }
+.hero-pagination { position: relative; z-index: 4; display: flex; align-items: center; gap: 7px; margin-top: 17px; }
+.hero-pagination button { width: 7px; height: 7px; padding: 0; border: 0; border-radius: 99px; background: rgba(255,255,255,.45); transition: width .2s ease, background .2s ease; }
+.hero-pagination button.is-active { width: 22px; background: #fff; }
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 7px; padding: 5px 10px; border: 1px solid rgba(255,255,255,.25); border-radius: 999px; background: rgba(255,255,255,.1); color: #e5ffe9; font-size: 10px; font-weight: 700; }
+.eyebrow-dot { width: 6px; height: 6px; border-radius: 50%; background: #a6f3b7; box-shadow: 0 0 0 4px rgba(166,243,183,.14); }
+.hero-section h1, .hero-section h2 { margin: 18px 0 9px; color: white; font: 800 clamp(34px, 8vw, 54px)/1.1 'Baloo Da 2', 'Noto Sans Bengali', sans-serif; letter-spacing: -.8px; }
+.hero-section h1 span { color: #ffd2ad; }
+.hero-section p { max-width: 390px; margin: 0; color: rgba(255,255,255,.86); font-size: 12px; line-height: 1.8; }
+.hero-actions { display: flex; align-items: center; gap: 15px; margin-top: 21px; }
+.button { min-height: 43px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; border: 0; border-radius: 13px; padding: 0 18px; font-size: 12px; font-weight: 800; transition: transform .15s ease, box-shadow .15s ease; }
+.button:active { transform: scale(.98); }
+.button-light { background: white; color: var(--green-dark); box-shadow: 0 8px 19px rgba(0,0,0,.13); }
+.hero-text-link { color: rgba(255,255,255,.9); font-size: 10px; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,.45); padding-bottom: 2px; }
+.hero-trust { display: flex; align-items: center; gap: 6px; margin-top: 20px; color: rgba(255,255,255,.76); font-size: 9px; }
+.hero-trust span { color: #9ff0af; font-weight: 800; }
+.hero-art { position: absolute; width: 190px; height: 210px; right: -11px; bottom: 0; opacity: .92; }
+.hero-orbit { position: absolute; border: 1px solid rgba(255,255,255,.2); border-radius: 50%; }
+.orbit-one { width: 185px; height: 185px; right: 0; bottom: -32px; }
+.orbit-two { width: 135px; height: 135px; right: 25px; bottom: -6px; }
+.hero-basket { position: absolute; width: 110px; height: 110px; right: 35px; bottom: 19px; }
+.basket-handle { position: absolute; width: 57px; height: 40px; border: 7px solid #ffb46e; border-bottom: 0; border-radius: 50px 50px 0 0; top: 0; left: 26px; transform: rotate(-5deg); }
+.basket-body { position: absolute; width: 105px; height: 64px; left: 2px; bottom: 0; border-radius: 9px 9px 23px 23px; background: linear-gradient(145deg, #ffd29c, #f3a75c); transform: perspective(80px) rotateX(-8deg); box-shadow: inset 0 -9px 0 rgba(176,91,30,.12); }
+.basket-body::after { content: ''; position: absolute; left: 12px; right: 12px; top: 10px; height: 2px; background: rgba(153,83,36,.22); box-shadow: 0 15px rgba(153,83,36,.18); }
+.basket-leaf { position: absolute; bottom: 63px; width: 30px; height: 56px; border-radius: 100% 0 100% 0; background: linear-gradient(140deg, #bcf08a, #5ec56b); transform-origin: bottom center; }
+.leaf-a { left: 27px; transform: rotate(-35deg); }
+.leaf-b { left: 49px; height: 69px; background: linear-gradient(140deg, #d0f49b, #6bca61); transform: rotate(8deg); }
+.leaf-c { left: 69px; height: 49px; background: linear-gradient(140deg, #b8ed9b, #39ac63); transform: rotate(42deg); }
+.hero-leaf { position: absolute; width: 33px; height: 61px; background: rgba(189,241,167,.72); border-radius: 100% 0 100% 0; }
+.leaf-one { top: 10px; left: 4px; transform: rotate(-50deg); }
+.leaf-two { top: 24px; right: 0; transform: rotate(44deg) scale(.8); }
+.hero-spark { position: absolute; color: #ffd39e; }
+.spark-one { top: 27px; right: 18px; font-size: 20px; }
+.spark-two { left: 12px; bottom: 74px; font-size: 16px; }
+.hero-bottom-shape { position: absolute; left: -5%; right: -5%; bottom: -25px; height: 34px; background: white; border-radius: 50% 50% 0 0 / 55% 55% 0 0; z-index: 3; }
+
+/* Search */
+.search-section { position: relative; z-index: 5; padding-top: 19px; padding-bottom: 28px; }
+.search-box { display: flex; align-items: center; gap: 9px; width: 100%; min-height: 54px; padding: 5px 6px 5px 14px; border: 1px solid #dcece0; border-radius: 16px; background: white; box-shadow: 0 9px 25px rgba(22,83,43,.09); }
+.search-icon { color: var(--green); font-size: 26px; line-height: 1; transform: rotate(-15deg); }
+.search-box input { flex: 1; min-width: 0; border: 0; outline: 0; color: var(--ink); background: transparent; font-size: 11px; }
+.search-box input::placeholder { color: #9aa79d; }
+.search-box button { flex: 0 0 auto; min-height: 41px; padding: 0 17px; border: 0; border-radius: 12px; background: var(--green); color: white; font-size: 11px; font-weight: 800; }
+.search-hint { margin: 8px 4px 0; color: #8a978e; font-size: 9px; }
+.search-hint button { margin-left: 5px; padding: 2px 8px; border: 1px solid var(--line); border-radius: 99px; background: var(--bg-soft); color: var(--green-dark); font-size: 9px; }
+
+/* Categories */
+.category-section { padding: 4px 0 30px; }
+.category-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+.category-card { position: relative; display: flex; align-items: center; gap: 10px; min-width: 0; padding: 10px; border: 1px solid var(--line); border-radius: 17px; background: white; box-shadow: 0 5px 15px rgba(23,38,28,.035); transition: border-color .15s ease, transform .15s ease; }
+.category-card:active { transform: scale(.985); }
+.category-art { flex: 0 0 58px; width: 58px; height: 58px; display: block; border: 1px dashed rgba(29,138,76,.3); border-radius: 13px; background: linear-gradient(145deg, #f5faf5, #edf6ee); }
+.category-info { min-width: 0; display: flex; flex-direction: column; line-height: 1.35; }
+.category-info strong { color: var(--green-dark); font: 700 14px 'Baloo Da 2', 'Noto Sans Bengali', sans-serif; }
+.category-info small { color: var(--ink-soft); font-size: 9px; }
+.category-arrow { position: absolute; right: 9px; top: 7px; color: #9ab7a1; font-size: 12px; }
+.category-grocery .category-art { background: #f3f8ec; }
+.category-vegetables .category-art { background: #edf8ef; }
+.category-meat .category-art { background: #fcf2eb; }
+.category-fish .category-art { background: #edf6fb; }
+
+/* Product sections and cards */
+.featured-section { padding-top: 8px; padding-bottom: 26px; }
+.category-sections { background: linear-gradient(180deg, #fbfdfb 0%, #f7fbf7 100%); padding: 5px 0 10px; }
+.product-section { padding-top: 25px; padding-bottom: 21px; }
+.product-section + .product-section { border-top: 1px solid #e9f1ea; }
+.product-section .section-heading h2 small { display: inline-block; margin-left: 5px; color: var(--ink-soft); font: 500 12px 'Noto Sans Bengali', sans-serif; vertical-align: middle; }
+.product-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.product-card { min-width: 0; display: flex; flex-direction: column; padding: 9px; border: 1px solid #e8f0e9; border-radius: 17px; background: white; box-shadow: 0 5px 16px rgba(20,65,35,.045); transition: transform .16s ease, box-shadow .16s ease; }
+.product-card:active { transform: scale(.99); }
+.product-media { position: relative; width: 100%; aspect-ratio: 1.08 / 1; display: grid; place-items: center; overflow: hidden; border: 1px dashed #d5e5d8; border-radius: 12px; background: linear-gradient(145deg, #f6faf6, #edf5ee); }
+.product-media::before, .product-media::after { content: ''; position: absolute; border-radius: 50%; border: 1px solid rgba(29,138,76,.08); }
+.product-media::before { width: 65%; aspect-ratio: 1; }
+.product-media::after { width: 45%; aspect-ratio: 1; }
+
+.product-label { display: inline-flex; align-self: flex-start; margin: 9px 0 4px; padding: 2px 7px; border-radius: 999px; color: var(--green-dark); background: #edf8ef; font-size: 8px; font-weight: 700; }
+.product-name { min-height: 38px; margin: 0 0 4px; color: var(--ink); font-size: 11px; font-weight: 700; line-height: 1.5; }
+.product-unit { display: block; margin-top: 1px; color: #87958b; font-size: 9px; font-weight: 500; }
+.product-buy-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: auto; padding-top: 7px; }
+.product-price { color: var(--green-dark); font: 800 16px/1 'Baloo Da 2', 'Noto Sans Bengali', sans-serif; white-space: nowrap; }
+.add-button { flex: 0 0 auto; min-width: 33px; height: 32px; display: inline-grid; place-items: center; border: 0; border-radius: 10px; padding: 0 10px; color: white; background: linear-gradient(140deg, var(--green), #2ba45c); font-size: 18px; font-weight: 800; box-shadow: 0 4px 10px rgba(29,138,76,.18); }
+.qty-stepper { display: inline-flex; align-items: center; gap: 0; height: 32px; border: 1px solid #d9ebdd; border-radius: 10px; background: #f3faf4; overflow: hidden; }
+.qty-stepper button { width: 28px; height: 30px; border: 0; background: transparent; color: var(--green-dark); font-size: 17px; font-weight: 800; }
+.qty-stepper span { min-width: 19px; color: var(--green-dark); text-align: center; font-size: 11px; font-weight: 800; }
+.no-results { grid-column: 1/-1; padding: 28px 15px; text-align: center; color: var(--ink-soft); border: 1px dashed var(--line); border-radius: 15px; background: white; font-size: 12px; }
+.price-notice { display: flex; align-items: flex-start; gap: 9px; margin-top: 5px; margin-bottom: 3px; padding: 11px 12px; border: 1px solid #f4e6d6; border-radius: 13px; background: #fffaf5; }
+.notice-icon { color: var(--orange-dark); font-size: 16px; line-height: 1.2; }
+.price-notice p { margin: 0; color: #846a53; font-size: 9px; line-height: 1.65; }
+
+/* CTA / process */
+.market-banner { display: flex; align-items: center; gap: 12px; margin-top: 29px; padding: 17px 15px; border: 1px solid #f6dfcc; border-radius: 19px; background: linear-gradient(120deg, #fff7ef, #fff0e2); }
+.market-banner-icon { width: 42px; height: 42px; flex: 0 0 42px; display: grid; place-items: center; border-radius: 14px; color: white; background: var(--orange); font-size: 27px; font-weight: 400; }
+.market-banner-copy { min-width: 0; flex: 1; }
+.market-banner-copy h2 { margin: 4px 0 2px; color: #743d16; font: 700 15px/1.3 'Baloo Da 2', 'Noto Sans Bengali', sans-serif; }
+.market-banner-copy p { margin: 0; color: #866c58; font-size: 9px; line-height: 1.55; }
+.button-orange { min-height: 36px; padding: 0 11px; border-radius: 11px; color: white; background: linear-gradient(135deg, #ff7a1a, #f49a4e); font-size: 9px; white-space: nowrap; }
+.how-section { padding-top: 38px; padding-bottom: 30px; }
+.centered-heading { justify-content: center; text-align: center; }
+.steps-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.step-card { position: relative; padding: 17px; border: 1px solid var(--line); border-radius: 17px; background: var(--bg-soft); }
+.step-number { position: absolute; right: 14px; top: 10px; color: rgba(29,138,76,.25); font: 800 24px 'Baloo Da 2', sans-serif; }
+.step-icon { width: 35px; height: 35px; display: grid; place-items: center; margin-bottom: 9px; border-radius: 11px; color: white; background: var(--green); font-size: 19px; }
+.step-card h3 { margin: 0 0 4px; font: 700 15px 'Baloo Da 2', 'Noto Sans Bengali', sans-serif; }
+.step-card p { margin: 0; color: var(--ink-soft); font-size: 10px; }
+.about-section { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 34px; padding: 20px; border-radius: 19px; background: #f4faf4; }
+.about-mark { width: 45px; height: 45px; flex: 0 0 45px; display: grid; place-items: center; border-radius: 14px 14px 14px 5px; color: white; background: var(--green-dark); font: 800 32px 'Baloo Da 2', sans-serif; }
+.about-section h2 { margin: 4px 0 5px; color: var(--ink); font: 700 18px 'Baloo Da 2', 'Noto Sans Bengali', sans-serif; }
+.about-section p { margin: 0; color: var(--ink-soft); font-size: 10px; line-height: 1.8; }
+
+/* Footer */
+.site-footer { padding: 29px 0 90px; border-top: 1px solid var(--line); background: #f3f9f4; }
+.footer-inner { width: min(100% - 34px, 1160px); display: grid; grid-template-columns: 1fr 1fr; gap: 24px 15px; margin: auto; }
+.footer-brand .brand-mark { width: 37px; height: 37px; flex-basis: 37px; }
+.footer-brand .brand-copy strong { font-size: 17px; }
+.footer-brand-block p { max-width: 210px; margin: 9px 0 0; color: var(--ink-soft); font-size: 10px; }
+.footer-column { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.footer-column h3 { margin: 0 0 3px; color: var(--green-dark); font: 700 13px 'Baloo Da 2', 'Noto Sans Bengali', sans-serif; }
+.footer-column a, .footer-column p { margin: 0; color: var(--ink-soft); font-size: 10px; }
+.footer-contact { grid-column: 1/-1; }
+.footer-status { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; color: var(--green-dark); font-size: 9px; font-weight: 700; }
+.footer-status i { width: 6px; height: 6px; border-radius: 50%; background: #efa34e; }
+.footer-bottom { width: min(100% - 34px, 1160px); display: flex; flex-direction: column; gap: 4px; margin: 23px auto 0; padding-top: 14px; border-top: 1px solid #e2ede4; color: #87958b; font-size: 9px; }
+.footer-bottom b { color: var(--orange); }
+
+/* Drawer / panels */
+.drawer-scrim, .panel-scrim, .modal-scrim { position: fixed; inset: 0; z-index: 80; background: rgba(8,29,16,.48); backdrop-filter: blur(2px); }
+.drawer-scrim[hidden], .panel-scrim[hidden], .modal-scrim[hidden] { display: none; }
+.site-drawer { position: fixed; z-index: 81; inset: 0 auto 0 0; width: min(330px, 88vw); padding: 17px; display: flex; flex-direction: column; background: white; box-shadow: 16px 0 40px rgba(0,0,0,.14); transform: translateX(-105%); transition: transform .24s ease; }
+.site-drawer.open { transform: translateX(0); }
+.drawer-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-bottom: 17px; border-bottom: 1px solid var(--line); }
+.drawer-head h2 { margin: 3px 0 0; font: 700 20px 'Baloo Da 2', sans-serif; }
+.drawer-welcome { display: flex; flex-direction: column; gap: 5px; padding: 19px 4px 14px; color: var(--green-dark); }
+.drawer-welcome strong { font: 700 16px 'Baloo Da 2', 'Noto Sans Bengali', sans-serif; }
+.drawer-nav { display: flex; flex-direction: column; gap: 5px; }
+.drawer-nav a, .drawer-nav button { display: flex; align-items: center; gap: 13px; min-height: 46px; width: 100%; padding: 0 12px; border: 0; border-radius: 12px; text-align: left; color: var(--ink); background: transparent; font-size: 12px; font-weight: 700; }
+.drawer-nav a:active, .drawer-nav button:active { background: var(--bg-soft); }
+.drawer-nav a span, .drawer-nav button span { width: 22px; color: var(--green); text-align: center; font-size: 19px; }
+.drawer-footer { display: flex; flex-direction: column; gap: 2px; margin-top: auto; padding: 14px 6px 4px; border-top: 1px solid var(--line); color: var(--green-dark); font: 700 13px 'Baloo Da 2', sans-serif; }
+.drawer-footer span { color: var(--ink-soft); font: 600 8px 'Noto Sans Bengali', sans-serif; letter-spacing: 1px; }
+.cart-drawer { position: fixed; z-index: 91; inset: 0 0 0 auto; display: flex; flex-direction: column; width: min(410px, 94vw); padding: 17px; background: white; box-shadow: -16px 0 40px rgba(0,0,0,.14); transform: translateX(105%); transition: transform .24s ease; }
+.cart-drawer.open { transform: translateX(0); }
+.cart-items { flex: 1; overflow-y: auto; padding: 12px 0; }
+.cart-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 240px; color: var(--ink-soft); text-align: center; }
+.cart-empty span { font-size: 39px; margin-bottom: 8px; }
+.cart-empty strong { color: var(--ink); font-size: 13px; }
+.cart-empty p { margin: 4px 0; font-size: 10px; }
+.cart-line { display: grid; grid-template-columns: 54px 1fr auto; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.cart-line-art { height: 54px; display: grid; place-items: center; border: 1px dashed #d5e5d8; border-radius: 11px; background: var(--bg-soft); color: #9db2a2; font-size: 17px; }
+.cart-line strong { display: block; color: var(--ink); font-size: 10px; }
+.cart-line small { color: var(--ink-soft); font-size: 9px; }
+.cart-line-total { color: var(--green-dark); font-size: 11px; font-weight: 800; white-space: nowrap; }
+.cart-line-controls { display: flex; align-items: center; gap: 7px; margin-top: 4px; }
+.cart-line-controls button { width: 23px; height: 23px; border: 1px solid var(--line); border-radius: 7px; color: var(--green-dark); background: var(--bg-soft); }
+.cart-line-controls span { color: var(--ink); font-size: 10px; }
+.cart-footer { padding-top: 13px; border-top: 1px solid var(--line); }
+.cart-total-row { display: flex; justify-content: space-between; color: var(--ink-soft); font-size: 12px; }
+.cart-total-row strong { color: var(--green-dark); font: 800 18px 'Baloo Da 2', sans-serif; }
+.cart-footer p { color: var(--ink-soft); font-size: 9px; }
+.button-primary { color: white; background: linear-gradient(135deg, var(--green), var(--green-dark)); }
+.button-block { width: 100%; }
+.button:disabled { opacity: .55; cursor: not-allowed; }
+
+/* Login modal */
+.modal-scrim { z-index: 100; display: grid; place-items: center; padding: 17px; }
+.login-modal { position: relative; width: min(390px, 100%); padding: 28px 22px 22px; border-radius: 22px; background: white; box-shadow: 0 20px 60px rgba(0,0,0,.18); }
+.modal-close { position: absolute; top: 13px; right: 13px; }
+.login-mark { width: 46px; height: 46px; display: grid; place-items: center; margin-bottom: 14px; border-radius: 15px 15px 15px 5px; color: white; background: var(--green-dark); font: 800 32px 'Baloo Da 2', sans-serif; }
+.login-modal h2 { margin: 4px 0; color: var(--green-dark); font: 700 24px 'Baloo Da 2', 'Noto Sans Bengali', sans-serif; }
+.login-modal p { margin: 0 0 17px; color: var(--ink-soft); font-size: 11px; }
+.login-modal label { display: block; margin: 10px 0 4px; color: var(--ink); font-size: 10px; font-weight: 700; }
+.login-modal input { width: 100%; min-height: 42px; padding: 0 12px; border: 1px solid var(--line); border-radius: 11px; background: #f7faf7; }
+.login-modal .button { margin-top: 15px; }
+.modal-note { display: block; margin-top: 11px; color: #8a978e; font-size: 9px; text-align: center; }
+.toast { position: fixed; left: 50%; bottom: calc(83px + env(safe-area-inset-bottom)); z-index: 120; max-width: calc(100vw - 30px); padding: 10px 15px; border-radius: 999px; color: white; background: #17261c; box-shadow: 0 8px 23px rgba(0,0,0,.17); font-size: 10px; opacity: 0; pointer-events: none; transform: translate(-50%, 15px); transition: opacity .2s ease, transform .2s ease; white-space: nowrap; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* Bottom nav */
+.mobile-bottom-nav { position: fixed; z-index: 70; inset: auto 0 0; display: grid; grid-template-columns: repeat(5, 1fr); min-height: 64px; padding: 6px 5px calc(6px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); background: rgba(255,255,255,.97); backdrop-filter: blur(14px); box-shadow: 0 -5px 20px rgba(19,58,31,.055); }
+.bottom-link { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; min-width: 0; padding: 2px; border: 0; background: transparent; color: #829087; }
+.bottom-icon { position: relative; display: grid; place-items: center; min-height: 25px; font-size: 21px; line-height: 1; }
+.bottom-link small { font-size: 8px; font-weight: 700; }
+.bottom-link.active { color: var(--green-dark); }
+.bottom-link.active::before { content: ''; position: absolute; top: -6px; width: 25px; height: 3px; border-radius: 0 0 4px 4px; background: var(--green); }
+.bottom-icon i { position: absolute; top: -5px; right: -10px; min-width: 14px; height: 14px; display: grid; place-items: center; padding: 0 3px; border-radius: 99px; color: white; background: var(--orange); font-size: 8px; font-style: normal; }
+
+@media (min-width: 560px) {
+  .header-inner { padding-inline: 22px; }
+  .section-wrap { width: min(100% - 44px, 1160px); }
+  .hero-section { min-height: 390px; padding: 45px 6vw 38px; }
+  .hero-art { width: 260px; height: 270px; right: 5%; }
+  .hero-basket { transform: scale(1.2); transform-origin: bottom center; right: 65px; bottom: 27px; }
+  .product-grid { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 13px; }
+  .featured-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+  .category-grid { gap: 13px; }
+  .category-card { padding: 12px; }
+  .category-art { flex-basis: 70px; width: 70px; height: 70px; }
+  .product-card { padding: 11px; }
+  .product-name { font-size: 12px; }
+  .footer-inner { width: min(100% - 44px, 1160px); grid-template-columns: 1.4fr 1fr 1fr; }
+  .footer-contact { grid-column: auto; }
+  .footer-bottom { width: min(100% - 44px, 1160px); flex-direction: row; justify-content: space-between; }
+}
+
+@media (min-width: 761px) {
+  body { padding-bottom: 0; }
+  .header-inner { min-height: 78px; gap: 28px; }
+  .brand-mark { width: 46px; height: 46px; flex-basis: 46px; }
+  .brand-copy strong { font-size: 22px; }
+  .menu-trigger { display: none; }
+  .desktop-nav { display: flex; align-items: center; gap: 25px; margin-left: auto; }
+  .desktop-nav a { padding: 8px 1px; border-bottom: 2px solid transparent; color: var(--ink-soft); font-size: 11px; font-weight: 700; }
+  .desktop-nav a:hover, .desktop-nav a.active { color: var(--green-dark); border-bottom-color: var(--bright-green); }
+  .header-actions { margin-left: 0; gap: 9px; }
+  .desktop-search-trigger { display: grid; }
+  .account-button { display: inline-flex; align-items: center; }
+  .cart-button { height: 42px; padding-inline: 12px; font-size: 11px; }
+  .delivery-inner { justify-content: flex-start; padding-inline: 24px; font-size: 10px; }
+  .delivery-note { display: inline; margin-left: auto; }
+  .hero-section { min-height: 420px; padding: 58px max(6vw, calc((100vw - 1160px)/2)) 50px; }
+  .hero-section h1, .hero-section h2 { font-size: clamp(48px, 5.3vw, 66px); }
+  .hero-section p { font-size: 13px; }
+  .hero-art { right: max(7vw, calc((100vw - 1100px)/2)); width: 340px; height: 330px; }
+  .hero-basket { transform: scale(1.55); right: 106px; bottom: 40px; }
+  .orbit-one { width: 285px; height: 285px; right: 0; bottom: -35px; }
+  .orbit-two { width: 220px; height: 220px; right: 32px; bottom: -2px; }
+  .search-section { padding-top: 24px; padding-bottom: 37px; }
+  .search-box { max-width: 680px; min-height: 60px; margin: auto; }
+  .search-box input { font-size: 13px; }
+  .category-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+  .category-card { min-height: 108px; }
+  .category-art { width: 72px; height: 72px; flex-basis: 72px; }
+  .category-info strong { font-size: 17px; }
+  .category-info small { font-size: 10px; }
+  .section-heading h2 { font-size: 27px; }
+  .product-grid { grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px; }
+  .featured-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+  .product-card { padding: 12px; border-radius: 19px; }
+  .product-media { aspect-ratio: 1.2 / 1; }
+  .product-name { font-size: 13px; min-height: 42px; }
+  .product-price { font-size: 19px; }
+  .steps-grid { grid-template-columns: repeat(3,1fr); gap: 16px; }
+  .step-card { padding: 22px; }
+  .market-banner { padding: 23px 26px; }
+  .market-banner-copy h2 { font-size: 18px; }
+  .market-banner-copy p { font-size: 10px; }
+  .button-orange { min-height: 42px; padding-inline: 18px; font-size: 11px; }
+  .about-section { align-items: center; padding: 27px 32px; }
+  .about-section p { max-width: 75ch; }
+  .site-footer { padding-bottom: 25px; }
+  .mobile-bottom-nav { display: none; }
+  .toast { bottom: 24px; }
+}
+
+@media (min-width: 1024px) {
+  .section-wrap { width: min(100% - 64px, 1160px); }
+  .hero-section { padding-top: 68px; padding-bottom: 58px; min-height: 465px; }
+  .hero-art { right: max(10vw, calc((100vw - 1060px)/2)); transform: scale(1.1); }
+  .category-section { padding-bottom: 42px; }
+  .featured-section { padding-bottom: 36px; }
+  .product-section { padding-top: 33px; padding-bottom: 30px; }
+  .product-grid { gap: 18px; }
+  .product-card { padding: 13px; }
+  .market-banner { margin-top: 40px; }
+  .how-section { padding-top: 52px; padding-bottom: 42px; }
+  .about-section { margin-bottom: 42px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+
+/* Mobile readability pass — tuned for common 360–430px Android screens. */
+@media (max-width: 760px) {
+  .delivery-inner { font-size: 11px; line-height: 1.45; }
+  .section-heading h2 { font-size: 24px; }
+  .section-kicker { font-size: 9px; }
+  .section-caption, .product-count { font-size: 11px; }
+  .text-link { font-size: 12px; }
+
+  .hero-section { min-height: 365px; padding: 36px 18px 34px; }
+  .hero-eyebrow { font-size: 11px; }
+  .hero-section p { max-width: 35ch; font-size: 14px; line-height: 1.7; }
+  .button { min-height: 44px; padding-inline: 16px; font-size: 13px; }
+  .hero-text-link { font-size: 11px; }
+  .hero-trust { gap: 5px; font-size: 10px; }
+
+  .search-box { min-height: 56px; }
+  .search-box input { font-size: 14px; }
+  .search-box button { min-width: 66px; font-size: 13px; }
+  .search-hint { font-size: 11px; }
+  .search-hint button { padding: 4px 9px; font-size: 11px; }
+
+  .category-card { min-height: 82px; padding: 9px; gap: 8px; }
+  .category-art { flex-basis: 58px; width: 58px; height: 58px; }
+  .category-info strong { font-size: 15px; }
+  .category-info small { font-size: 11px; }
+
+  .product-card { padding: 9px; }
+  .product-label { margin-top: 8px; font-size: 9px; }
+  .product-name { min-height: 44px; font-size: 12px; line-height: 1.5; }
+  .product-unit { font-size: 10px; }
+  .product-price { font-size: 18px; }
+  .add-button { min-width: 36px; height: 36px; font-size: 20px; }
+  .qty-stepper { height: 36px; }
+  .qty-stepper button { width: 30px; height: 34px; }
+  .qty-stepper span { min-width: 21px; font-size: 12px; }
+  .price-notice p { font-size: 11px; line-height: 1.6; }
+
+  .market-banner { flex-wrap: wrap; padding: 16px; }
+  .market-banner-copy h2 { font-size: 16px; }
+  .market-banner-copy p { font-size: 11px; }
+  .button-orange { min-height: 40px; padding-inline: 13px; font-size: 11px; }
+  .step-card h3 { font-size: 16px; }
+  .step-card p { font-size: 12px; line-height: 1.65; }
+  .about-section h2 { font-size: 19px; }
+  .about-section p { font-size: 12px; line-height: 1.75; }
+
+  .footer-brand-block p,
+  .footer-column a,
+  .footer-column p { font-size: 12px; line-height: 1.6; }
+  .footer-column h3 { font-size: 14px; }
+  .footer-status { font-size: 10px; }
+  .footer-bottom { font-size: 10px; line-height: 1.6; }
+
+  .drawer-nav a, .drawer-nav button { min-height: 50px; font-size: 14px; }
+  .drawer-welcome strong { font-size: 17px; }
+  .cart-line strong { font-size: 12px; }
+  .cart-line small { font-size: 10px; }
+  .cart-line-total { font-size: 12px; }
+  .cart-line-controls span { font-size: 12px; }
+  .cart-footer p { font-size: 10px; }
+  .login-modal p { font-size: 12px; line-height: 1.65; }
+  .login-modal label { font-size: 12px; }
+  .modal-note { font-size: 10px; line-height: 1.55; }
+  .bottom-link small { font-size: 10px; }
+}
+
+@media (max-width: 360px) {
+  .header-inner { gap: 8px; padding-inline: 10px; }
+  .brand { gap: 7px; }
+  .brand-mark { width: 37px; height: 37px; flex-basis: 37px; }
+  .brand-copy strong { font-size: 17px; }
+  .cart-button { gap: 4px; padding-inline: 7px; }
+  .cart-label { display: none; }
+  .section-wrap { width: min(100% - 24px, 1160px); }
+  .product-grid { gap: 8px; }
+  .product-card { padding: 8px; }
+  .product-name { font-size: 11px; }
+  .product-price { font-size: 17px; }
+  .category-card { gap: 6px; padding: 8px; }
+  .category-art { flex-basis: 52px; width: 52px; height: 52px; }
+}
+
+[hidden] { display: none !important; }
