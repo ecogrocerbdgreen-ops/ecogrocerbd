@@ -8,6 +8,7 @@ A standalone Phase 1 website build based on the HTML/CSS structure shared in the
 - `style.css` — responsive design system, mobile-safe spacing, two-column product cards on phones, desktop breakpoints, fixed mobile bottom navigation, menu/cart panels, and blank image canvases.
 - `script.js` — 32 editable sample products (8 per category), Bangla/English/Banglish search, category filtering via anchors, local browser cart, quantity changes, subtotal, hero slider, and menu/cart interactions.
 - `PRODUCT-PRICE-SOURCES.md` — dated reference notes for starter product prices and pack sizes.
+- `IMAGE-CREDITS.md` — source pages, photographers, and free-stock license notes for product photography.
 - `netlify.toml` — static publish configuration; no build command is required.
 - `.gitignore` — excludes local Netlify state and common editor/OS files.
 
@@ -21,7 +22,7 @@ A standalone Phase 1 website build based on the HTML/CSS structure shared in the
 | Fish | 8 |
 | **Total** | **32** |
 
-All product and category image areas are intentionally blank placeholder canvases. No real product photography has been added.
+Product cards and category tiles now use representative free stock photography from Pexels and Unsplash. Product image URLs are centrally mapped by product ID in `script.js`; photo source pages and creator credits are documented in `IMAGE-CREDITS.md`.
 
 ## Run locally
 
@@ -36,7 +37,7 @@ Open `index.html` directly in a modern browser, or serve this folder with a loca
 - Fixed mobile bottom navigation: Home, Category, Search, Cart, Account.
 - Search across Bangla, English, and common Banglish product terms.
 - 4 category sections with 8 products per category.
-- Product cards with blank image canvases, sample unit/price, and add/quantity controls.
+- Product cards with non-clickable product photos, sample unit/price, and add/quantity controls.
 - Cart drawer with localStorage persistence, line totals, item count, and subtotal.
 - Accessible labels, focus states, Escape key handling, and reduced-motion support.
 
