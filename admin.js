@@ -18,6 +18,9 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
   const statusLabel = (s) => ({pending:"Pending",confirmed:"Confirmed",processing:"Processing",out_for_delivery:"Out for delivery",delivered:"Delivered",cancelled:"Cancelled",refunded:"Refunded"}[s] || s || "—");
   const paymentLabel = (s) => ({cod:"Cash on Delivery",bkash:"bKash",nagad:"Nagad",rocket:"Rocket"}[String(s||"").toLowerCase()] || s || "—");
   const paymentStatusLabel = (s) => ({unpaid:"Unpaid",pending_verification:"Pending verification",paid:"Paid / verified",failed:"Failed",refunded:"Refunded"}[String(s||"").toLowerCase()] || s || "—");
+  const phoneHref = (v) => { const s=String(v||"").trim(); return s ? "tel:"+s.replace(/[^0-9+]/g,"") : ""; };
+  const phoneLink = (v) => { const href=phoneHref(v); return href ? '<a class="call-link" href="'+esc(href)+'">'+esc(v)+'</a>' : esc(v||"—"); };
+
   function feedback(message, error=false) { const el=$("admin-feedback"); if(!el)return; el.textContent=message; el.classList.toggle("error",error); }
   function showView(name) {
     const isAdmin = name === "success";
@@ -86,11 +89,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
   function orderCard(o) {
     const id=esc(o.id), status=esc(o.status);
     return '<article class="order-card"><div class="order-card-top"><div><div class="order-card-name">'+esc(o.customer_name||"নাম নেই")+'</div><span class="cell-sub">'+esc(o.order_number||o.id.slice(0,8))+' · '+esc(dateText(o.created_at))+'</span></div><span class="status-pill '+status+'">'+esc(statusLabel(o.status))+'</span></div>'+
-      '<div class="order-card-line"><span>ফোন</span><strong>'+esc(o.customer_phone||"—")+'</strong></div>'+
+      '<div class="order-card-line"><span>Phone</span><strong>'+phoneLink(o.customer_phone)+'</strong></div>'+
       '<div class="order-card-line"><span>ডেলিভারি এলাকা</span><strong>'+esc(o.delivery_area_name||"—")+'</strong></div>'+
       '<div class="order-card-line"><span>পেমেন্ট</span><strong>'+esc(paymentLabel(o.payment_method))+' · '+esc(o.payment_status||"—")+'</strong></div>'+
       '<div class="order-card-line"><span>অর্ডারের মূল্য</span><strong>'+money(o.grand_total)+'</strong></div>'+
-      '<div class="order-card-actions"><button class="row-action" data-order-details="'+id+'" type="button">বিস্তারিত দেখুন</button></div></article>';
+      '<div class="order-card-actions"><button class="row-action" data-order-details="'+id+'" type="button">View details</button>'+(phoneHref(o.customer_phone)?'<a class="call-action" href="'+esc(phoneHref(o.customer_phone))+'">☎ Call customer</a>':"") + '</div></article>';
   }
   function renderRecentOrders() {
     const el=$("recent-orders"); if(!el)return;
