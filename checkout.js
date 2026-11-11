@@ -441,12 +441,20 @@
   byId('checkout-area').addEventListener('change', updateTotals);
   byId('checkout-coupon-apply').addEventListener('click', applyCoupon);
 
+  function returnHomeWhenCartIsEmpty() {
+    if (!document.body.classList.contains('checkout-page-mode') || getLines().length) return false;
+    // Keep checkout from remaining open after the customer removes the final item.
+    window.location.assign('index.html#home');
+    return true;
+  }
+
   // Keep the editable order list in sync with the shared cart.
   document.addEventListener('click', event => {
     const quantityAction = event.target.closest('#checkout-items-preview [data-cart-action]');
     if (quantityAction) {
       // The shared cart handler runs first and persists the new quantity.
       renderCheckoutItems();
+      returnHomeWhenCartIsEmpty();
       return;
     }
 
@@ -461,6 +469,7 @@
     renderProducts();
     renderCart();
     renderCheckoutItems();
+    if (returnHomeWhenCartIsEmpty()) return;
     showToast(product.name + ' অর্ডার তালিকা থেকে সরানো হয়েছে');
   });
 
