@@ -390,9 +390,9 @@ revoke all on public.categories,public.products,public.delivery_areas,public.del
 grant usage on schema public to service_role;
 grant all on all tables in schema public to service_role;
 grant all on all sequences in schema public to service_role;
-revoke all on function public.place_ecogrocer_order(jsonb) from public, anon, authenticated;
+revoke all on function public.place_ecogrocer_order(jsonb,uuid) from public, anon, authenticated;
 revoke all on function public.set_ecogrocer_order_status(uuid,text) from public, anon, authenticated;
-grant execute on function public.place_ecogrocer_order(jsonb) to service_role;
+grant execute on function public.place_ecogrocer_order(jsonb,uuid) to service_role;
 grant execute on function public.set_ecogrocer_order_status(uuid,text) to service_role;
 
 
