@@ -129,7 +129,8 @@ function productSlug(product) {
 }
 
 function productPageUrl(product) {
-  return 'product.html?slug=' + encodeURIComponent(productSlug(product));
+  // Use the stable catalogue ID for a short URL; product-detail.js also keeps legacy slug support.
+  return 'product.html?product=' + encodeURIComponent(String(product && product.id || ''));
 }
 
 function normalizeSearch(value) {
