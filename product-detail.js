@@ -285,7 +285,9 @@
     var descriptionMeta = document.querySelector('meta[name="description"]');
     if (descriptionMeta) descriptionMeta.setAttribute('content', product.name + ' — ' + product.unit + ', ' + money(product.price) + '. EcoGrocer BD থেকে অর্ডার করুন।');
     var canonical = document.querySelector('link[rel="canonical"]');
-    if (canonical) canonical.href = window.location.href;
+    if (canonical) {
+      canonical.href = window.location.origin + window.location.pathname + '?product=' + encodeURIComponent(product.id);
+    }
   }
 
   if (isProductPage) {
