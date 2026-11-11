@@ -302,6 +302,14 @@
           netlifyForm.appendChild(field);
         });
         document.body.appendChild(netlifyForm);
+
+        // The submitted form now owns a complete copy of the order values.
+        // Clear the browser cart before leaving the storefront to prevent duplicate re-submission.
+        cart = {};
+        saveCart();
+        renderProducts();
+        renderCart();
+
         netlifyForm.submit();
         return;
       }
