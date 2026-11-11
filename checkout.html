@@ -9,10 +9,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20261111-checkout-products-v3">
+  <link rel="stylesheet" href="style.css?v=20261111-payment-logos-v1">
   <script src="order-config.js?v=20261111-checkout-products-v3" defer></script>
   <script src="script.js?v=20261111-checkout-products-v3" defer></script>
-  <script src="checkout.js?v=20261111-checkout-products-v3" defer></script>
+  <script src="checkout.js?v=20261111-payment-logos-v1" defer></script>
   <script src="product-detail.js?v=20261111-checkout-products-v3" defer></script>
 </head>
 <body class="checkout-page-mode">
@@ -322,10 +322,34 @@
             <section class="checkout-section">
               <div class="checkout-section-title"><span class="checkout-step">03</span><div><h3>পেমেন্ট পদ্ধতি</h3><p>আপনার পছন্দের পদ্ধতিটি বেছে নিন</p></div></div>
               <div class="payment-options">
-                <label class="payment-option"><input type="radio" name="paymentMethod" value="cod" required checked><span class="payment-emoji">💵</span><span><strong>Cash on Delivery</strong><small>পণ্য হাতে পেয়ে পেমেন্ট</small></span></label>
-                <label class="payment-option"><input type="radio" name="paymentMethod" value="bkash"><span class="payment-emoji">💚</span><span><strong>bKash</strong><small>ম্যানুয়াল পেমেন্ট যাচাই</small></span></label>
-                <label class="payment-option"><input type="radio" name="paymentMethod" value="nagad"><span class="payment-emoji">🟠</span><span><strong>Nagad</strong><small>ম্যানুয়াল পেমেন্ট যাচাই</small></span></label>
-                <label class="payment-option"><input type="radio" name="paymentMethod" value="rocket"><span class="payment-emoji">🔵</span><span><strong>Rocket</strong><small>ম্যানুয়াল পেমেন্ট যাচাই</small></span></label>
+                <label class="payment-option payment-option-cod">
+                  <input type="radio" name="paymentMethod" value="cod" required checked>
+                  <span class="payment-option-content">
+                    <span class="payment-emoji" aria-hidden="true">💵</span>
+                    <span class="payment-option-copy"><strong>Cash on Delivery</strong><small>পণ্য হাতে পেয়ে পেমেন্ট</small></span>
+                  </span>
+                </label>
+                <label class="payment-option payment-option-mfs">
+                  <input type="radio" name="paymentMethod" value="bkash">
+                  <span class="payment-option-content">
+                    <img class="payment-brand-logo" src="https://images.seeklogo.com/logo-png/45/1/bkash-logo-png_seeklogo-457983.png" alt="bKash logo" loading="eager" decoding="async" referrerpolicy="no-referrer">
+                    <span class="payment-option-copy"><strong>bKash</strong><small>ম্যানুয়াল পেমেন্ট যাচাই</small></span>
+                  </span>
+                </label>
+                <label class="payment-option payment-option-mfs">
+                  <input type="radio" name="paymentMethod" value="nagad">
+                  <span class="payment-option-content">
+                    <img class="payment-brand-logo" src="https://tasks.care/methods/nagad.jpg" alt="Nagad logo" loading="eager" decoding="async" referrerpolicy="no-referrer">
+                    <span class="payment-option-copy"><strong>Nagad</strong><small>ম্যানুয়াল পেমেন্ট যাচাই</small></span>
+                  </span>
+                </label>
+                <label class="payment-option payment-option-mfs">
+                  <input type="radio" name="paymentMethod" value="rocket">
+                  <span class="payment-option-content">
+                    <img class="payment-brand-logo" src="https://reevolt.co/Rocket.png" alt="Rocket mobile banking logo" loading="eager" decoding="async" referrerpolicy="no-referrer">
+                    <span class="payment-option-copy"><strong>Rocket</strong><small>ম্যানুয়াল পেমেন্ট যাচাই</small></span>
+                  </span>
+                </label>
               </div>
               <div class="payment-reference" id="payment-reference-fields" hidden>
                 <p>বর্তমানে bKash, Nagad ও Rocket পেমেন্ট ম্যানুয়ালি যাচাই করা হবে। পেমেন্ট করে থাকলে নম্বর ও Transaction ID দিন; অন্যথায় Cash on Delivery বেছে নিন।</p>
