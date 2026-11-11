@@ -71,7 +71,7 @@
   function renderOrders(orders) {
     const target = $("orders-table");
     if (!orders.length) {
-      target.innerHTML = '<tr><td colspan="6">এখনো কোনো অর্ডার নেই।</td></tr>';
+      target.innerHTML = '<tr><td colspan="7">এখনো কোনো অর্ডার নেই।</td></tr>';
       return;
     }
     target.innerHTML = orders.map((order) => {
@@ -82,8 +82,9 @@
         .map((status) => '<option value="' + status + '"' + (order.status === status ? " selected" : "") + '>' + statusLabel(status) + '</option>').join("");
       const paymentOptions = ["pending_verification","paid","failed","refunded"]
         .map((status) => '<option value="' + status + '"' + (order.payment_status === status ? " selected" : "") + '>' + status.replaceAll("_"," ") + '</option>').join("");
+      const delivery = [order.delivery_area_name, order.block_name, order.road_name, order.house_number, order.full_address].filter(Boolean).join(", ");
       return '<tr><td><strong>' + escapeHtml(order.order_number) + '</strong><br><small>' + new Date(order.created_at).toLocaleString("en-GB") + '</small></td>' +
-        '<td>' + escapeHtml(order.customer_name) + '<br><small>' + escapeHtml(order.customer_phone) + '</small></td>' +
+        '<td>' + escapeHtml(order.customer_name) + '<br><small>' + escapeHtml(order.customer_phone) + '</small><br><small>' + escapeHtml(delivery) + '</small></td>' +
         '<td>' + items + '</td><td>' + money(order.grand_total) + '</td>' +
         '<td><span class="pill ' + escapeHtml(order.status) + '">' + statusLabel(order.status) + '</span></td>' +
         '<td><span class="pill">' + escapeHtml(order.payment_status || "unpaid") + '</span><br><small>' + escapeHtml(order.payment_gateway || order.payment_method) + '</small></td>' +
