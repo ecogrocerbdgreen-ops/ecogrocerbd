@@ -23,8 +23,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
   const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
   const recoveryTokenHash = search.get("token_hash") || "";
   const recoveryTokenType = search.get("type") || "";
-  const hasManualRecoveryLink = Boolean(recoveryTokenHash && recoveryTokenType === "recovery");
-  const legacyRecoveryLink = hash.get("type") === "recovery";
+  let hasManualRecoveryLink = Boolean(recoveryTokenHash && recoveryTokenType === "recovery");
+  let legacyRecoveryLink = hash.get("type") === "recovery";
   let recoverySessionReady = false;
   let verifyInProgress = false;
 
@@ -54,6 +54,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
 
   function clearCallbackUrl() {
     window.history.replaceState({}, document.title, window.location.pathname);
+    hasManualRecoveryLink = false;
+    legacyRecoveryLink = false;
   }
 
   function isAuthorizedUser(user) {
@@ -105,7 +107,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
 
     // PASSWORD_RECOVERY is a temporary permission to change the password,
     // never proof that the user completed a password-based admin login.
-    if (event === "PASSWORD_RECOVERY" || legacyRecoveryLink || verifyInProgress) {
+    if (event === "PASSWORD_RECOVERY" || legacyRecoveryLink || verifyInProgress || recoverySessionReady) {
       recoverySessionReady = true;
       showPasswordForm();
       return;
@@ -130,7 +132,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
       "login-status",
       errorCode === "otp_expired"
         ? "রিসেট লিংকটি মেয়াদোত্তীর্ণ বা আগে ব্যবহার হয়েছে। নতুন লিংক চাইতে হবে।"
-        : (errorDescription ? decodeURIComponent(errorDescription.replace(/\+/g, " ")) : "ইমেইল লিংকটি যাচাই করা যায়নি। নতুন লিংক চাইুন।"),
+        : (errorDescription || "ইমেইল লিংকটি যাচাই করা যায়নি। নতুন লিংক চাইুন।"),
       "error"
     );
   } else if (legacyRecoveryLink) {
@@ -160,6 +162,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
       }
 
       recoverySessionReady = true;
+      verifyInProgress = false;
       showPasswordForm();
     } catch (error) {
       verifyInProgress = false;
