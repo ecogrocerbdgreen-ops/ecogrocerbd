@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
   <script src="order-config.js" defer></script>
-  <script src="checkout.js?v=20261111-form-visible" defer></script>
+  <script src="checkout.js?v=20261111-customer-payments" defer></script>
   <script src="product-detail.js?v=20261111-checkout-fix" defer></script>
 </head>
 <body class="checkout-page-mode">
@@ -288,6 +288,7 @@
               <div class="checkout-fields">
                 <label class="checkout-field"><span>আপনার নাম <b>*</b></span><input name="customerName" id="checkout-name" type="text" autocomplete="name" placeholder="সম্পূর্ণ নাম লিখুন" minlength="2" maxlength="80" required></label>
                 <label class="checkout-field"><span>মোবাইল নম্বর <b>*</b></span><input name="phone" id="checkout-phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="01XXXXXXXXX" pattern="01[3-9][0-9]{8}" maxlength="11" required><small>১১ সংখ্যার বাংলাদেশি মোবাইল নম্বর দিন</small></label>
+                <label class="checkout-field checkout-field-wide"><span>ইমেইল (ঐচ্ছিক)</span><input name="customerEmail" id="checkout-email" type="email" autocomplete="email" placeholder="আপনার ইমেইল"></label>
                 <label class="checkout-field checkout-field-wide"><span>ডেলিভারি এলাকা খুঁজুন</span><input id="checkout-area-search" type="search" placeholder="যেমন: Gulshan 2, Niketon, Banani" autocomplete="off"></label>
                 <label class="checkout-field checkout-field-wide"><span>ডেলিভারি এলাকা <b>*</b></span>
                   <select name="deliveryArea" id="checkout-area" required>
