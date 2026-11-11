@@ -15,29 +15,21 @@
     const digits = String(value || "").replace(/\D/g, "");
     return digits.startsWith("8801") ? "+" + digits : "+880" + digits.replace(/^0/, "");
   }
-  async function loadConfig() {
-    if (config) return config;
-    const response = await fetch(API + "public-config", { headers: { Accept: "application/json" } });
-    config = await response.json();
-    if (!response.ok || !config.phoneOtpEnabled) throw new Error("Customer OTP চালু করতে Supabase project এবং Auth SMS Provider সংযুক্ত করতে হবে।");
-    return config;
-  }
-  async function authFetch(path, body) {
-    const cfg = await loadConfig();
-    const response = await fetch(cfg.supabaseUrl + "/auth/v1/" + path, {
-      method: "POST",
-      headers: { apikey: cfg.supabaseAnonKey, "content-type": "application/json" },
-      body: JSON.stringify(body),
+  async function authFetch(action, body, accessToken) {
+    const headers = { "content-type": "application/json", "accept": "application/json" };
+    if (accessToken) headers.Authorization = "Bearer " + accessToken;
+    const response = await fetch(AUTH_API + encodeURIComponent(action), {
+      method: "POST", headers, body: body === null ? undefined : JSON.stringify(body || {})
     });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.msg || data.message || data.error_description || data.error || "OTP Request সম্পন্ন হয়নি।");
+    if (!response.ok) throw new Error(data.error || "OTP Authentication সম্পন্ন হয়নি।");
     return data;
   }
   async function ensureSession() {
     if (!session || !session.access_token) return null;
     if (Number(session.expires_at || 0) * 1000 > Date.now() + 60000) return session;
     if (!session.refresh_token) { clearSession(); return null; }
-    const refreshed = await authFetch("token?grant_type=refresh_token", { refresh_token: session.refresh_token });
+    const refreshed = await authFetch("refresh", { refresh_token: session.refresh_token });
     refreshed.expires_at = Math.floor(Date.now() / 1000) + Number(refreshed.expires_in || 3600);
     saveSession(refreshed);
     return session;
@@ -73,7 +65,7 @@
     phone = normalizePhone($("phone").value);
     const button = $("send-otp"); button.disabled = true; button.textContent = "OTP পাঠানো হচ্ছে…";
     try {
-      await authFetch("otp", { phone, create_user: true });
+      await authFetch("otp", { phone });
       $("phone-form").classList.add("hidden");
       $("otp-form").classList.remove("hidden");
       show($("auth-status"), "আপনার নম্বরে OTP পাঠানো হয়েছে।", "success");
@@ -85,7 +77,7 @@
     event.preventDefault();
     const button = event.submitter; if (button) button.disabled = true;
     try {
-      const data = await authFetch("verify", { phone, token: $("otp").value.trim(), type: "sms" });
+      const data = await authFetch("verify", { phone, token: $("otp").value.trim() });
       data.expires_at = Math.floor(Date.now() / 1000) + Number(data.expires_in || 3600);
       saveSession(data);
       show($("auth-status"), "Login সফল হয়েছে। আপনার অর্ডার লোড হচ্ছে…", "success");
@@ -99,10 +91,7 @@
   $("logout").addEventListener("click", async () => {
     try {
       const active = await ensureSession();
-      if (active) {
-        const cfg = await loadConfig();
-        await fetch(cfg.supabaseUrl + "/auth/v1/logout", { method: "POST", headers: { apikey: cfg.supabaseAnonKey, authorization: "Bearer " + active.access_token } });
-      }
+      if (active) await authFetch("logout", null, active.access_token);
     } catch (_) {}
     clearSession(); $("account-panel").classList.add("hidden"); $("auth-panel").classList.remove("hidden");
   });
