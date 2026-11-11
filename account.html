@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#146638">
+  <meta name="description" content="EcoGrocer BD Customer Account — মোবাইল OTP দিয়ে Login করে অর্ডার দেখুন।">
+  <title>আমার অ্যাকাউন্ট — EcoGrocer BD</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--green:#176b46;--ink:#183329;--muted:#65766e;--line:#dce8e1;--bg:#f4f8f4;--white:#fff}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans Bengali","Hind Siliguri",system-ui,sans-serif}
+    a{color:var(--green)}button,input{font:inherit}.top{height:74px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 clamp(16px,4vw,42px)}
+    .brand{font-weight:800;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:10px}.mark{width:40px;height:40px;border-radius:13px;background:#e6f4e9;color:var(--green);display:grid;place-items:center;font-size:23px}
+    .wrap{width:min(920px,calc(100% - 28px));margin:36px auto 70px}.panel{background:white;border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,34px);box-shadow:0 14px 42px rgba(24,51,41,.05)}
+    h1{margin:8px 0 6px;font-size:clamp(25px,4vw,34px)}h2{font-size:20px}.muted{color:var(--muted)}.field{display:grid;gap:7px;margin:16px 0}.field input{padding:13px;border:1px solid var(--line);border-radius:10px;width:100%}
+    .btn{border:0;border-radius:10px;padding:12px 18px;background:var(--green);color:#fff;font-weight:700;cursor:pointer}.btn.secondary{background:white;color:var(--ink);border:1px solid var(--line)}
+    .status{margin-top:14px;padding:12px;border-radius:11px;background:#eef5ef;color:var(--muted)}.status.error{background:#fff0ef;color:#a42e2e}.status.success{background:#eaf7ee;color:var(--green)}.hidden{display:none!important}
+    .orders{display:grid;gap:12px;margin-top:20px}.order{border:1px solid var(--line);border-radius:14px;padding:16px}.order-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.pill{background:#edf3ef;border-radius:30px;padding:4px 9px;font-size:12px;font-weight:700}.items{font-size:14px;line-height:1.8;margin-top:8px}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    @media(max-width:560px){.top{height:64px}.wrap{margin-top:20px}}
+  </style>
+  <script src="order-config.js" defer></script><script src="account.js?v=20261111" defer></script>
+</head>
+<body>
+  <header class="top"><a class="brand" href="./"><span class="mark">e</span><span>EcoGrocer BD</span></a><a href="./">← বাজারে ফিরে যান</a></header>
+  <main class="wrap">
+    <section class="panel" id="auth-panel">
+      <span class="pill">CUSTOMER ACCOUNT</span><h1>আপনার অর্ডার, আপনার হাতেই</h1>
+      <p class="muted">মোবাইল নম্বরে OTP দিয়ে Login করুন। Password মনে রাখার প্রয়োজন নেই। Guest Checkout-ও ব্যবহার করতে পারবেন।</p>
+      <form id="phone-form">
+        <label class="field"><strong>বাংলাদেশি মোবাইল নম্বর</strong><input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX" pattern="01[3-9][0-9]{8}" maxlength="11" required></label>
+        <button class="btn" id="send-otp" type="submit">OTP পাঠান</button>
+      </form>
+      <form id="otp-form" class="hidden">
+        <label class="field"><strong>SMS-এ পাওয়া ৬ সংখ্যার OTP</strong><input id="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required></label>
+        <div class="actions"><button class="btn" type="submit">Verify করে Login</button><button class="btn secondary" id="change-phone" type="button">নম্বর পরিবর্তন</button></div>
+      </form>
+      <div class="status hidden" id="auth-status" role="status"></div>
+    </section>
+
+    <section class="panel hidden" id="account-panel" style="margin-top:18px">
+      <div class="order-head"><div><span class="pill">MY ACCOUNT</span><h2 style="margin:10px 0 3px">আমার অর্ডার</h2><p id="account-phone" class="muted"></p></div><button class="btn secondary" id="logout" type="button">Logout</button></div>
+      <div id="orders" class="orders"><p class="muted">আপনার অর্ডার লোড হচ্ছে…</p></div>
+      <div class="actions"><button class="btn secondary" id="refresh-orders" type="button">Refresh Orders</button><a class="btn" href="index.html#products" style="text-decoration:none">আরও পণ্য কিনুন</a></div>
+      <div class="status hidden" id="account-status" role="status"></div>
+    </section>
+  </main>
+</body>
+</html>

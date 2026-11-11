@@ -42,9 +42,9 @@
     return '<article class="metric"><small>' + escapeHtml(label) + '</small><strong>' + escapeHtml(value) + '</strong></article>';
   }
   async function loadDashboard() {
-    const [dashboard, orderResult, productResult, areaResult, couponResult] = await Promise.all([
+    const [dashboard, orderResult, productResult, areaResult, couponResult, slotResult] = await Promise.all([
       api("admin/dashboard"), api("admin/orders"), api("admin/products"),
-      api("admin/delivery-areas"), api("admin/coupons")
+      api("admin/delivery-areas"), api("admin/coupons"), api("admin/delivery-slots")
     ]);
     const m = dashboard.metrics;
     $("metrics").innerHTML = [
@@ -58,6 +58,8 @@
     areas = areaResult.areas || [];
     renderAreas();
     renderCoupons(couponResult.coupons || []);
+    window.__ecoSlots = slotResult.slots || [];
+    renderSlots(window.__ecoSlots);
   }
   function statusLabel(status) {
     return ({
@@ -69,7 +71,7 @@
   function renderOrders(orders) {
     const target = $("orders-table");
     if (!orders.length) {
-      target.innerHTML = '<tr><td colspan="6">এখনো কোনো অর্ডার নেই।</td></tr>';
+      target.innerHTML = '<tr><td colspan="7">এখনো কোনো অর্ডার নেই।</td></tr>';
       return;
     }
     target.innerHTML = orders.map((order) => {
@@ -78,11 +80,16 @@
       ).join(", ");
       const options = ["pending","confirmed","processing","out_for_delivery","delivered","cancelled","refunded"]
         .map((status) => '<option value="' + status + '"' + (order.status === status ? " selected" : "") + '>' + statusLabel(status) + '</option>').join("");
+      const paymentOptions = ["pending_verification","paid","failed","refunded"]
+        .map((status) => '<option value="' + status + '"' + (order.payment_status === status ? " selected" : "") + '>' + status.replaceAll("_"," ") + '</option>').join("");
+      const delivery = [order.delivery_area_name, order.block_name, order.road_name, order.house_number, order.full_address].filter(Boolean).join(", ");
       return '<tr><td><strong>' + escapeHtml(order.order_number) + '</strong><br><small>' + new Date(order.created_at).toLocaleString("en-GB") + '</small></td>' +
-        '<td>' + escapeHtml(order.customer_name) + '<br><small>' + escapeHtml(order.customer_phone) + '</small></td>' +
+        '<td>' + escapeHtml(order.customer_name) + '<br><small>' + escapeHtml(order.customer_phone) + '</small><br><small>' + escapeHtml(delivery) + '</small></td>' +
         '<td>' + items + '</td><td>' + money(order.grand_total) + '</td>' +
         '<td><span class="pill ' + escapeHtml(order.status) + '">' + statusLabel(order.status) + '</span></td>' +
-        '<td><div class="actions"><select data-order-status="' + escapeHtml(order.id) + '">' + options + '</select><button class="btn" type="button" data-save-status="' + escapeHtml(order.id) + '">Save</button></div></td></tr>';
+        '<td><span class="pill">' + escapeHtml(order.payment_status || "unpaid") + '</span><br><small>' + escapeHtml(order.payment_gateway || order.payment_method) + '</small></td>' +
+        '<td><div class="actions"><select data-order-status="' + escapeHtml(order.id) + '">' + options + '</select><button class="btn" type="button" data-save-status="' + escapeHtml(order.id) + '">Save</button></div>' +
+        '<div class="actions" style="margin-top:6px"><select data-payment-status="' + escapeHtml(order.id) + '">' + paymentOptions + '</select><button class="btn" type="button" data-save-payment="' + escapeHtml(order.id) + '">Save payment</button></div></td></tr>';
     }).join("");
   }
   function renderProducts() {
@@ -97,6 +104,12 @@
     $("delivery-table").innerHTML = areas.map((area) =>
       '<tr><td>' + escapeHtml(area.name) + '<br><small>' + escapeHtml(area.id) + '</small></td><td>' + money(area.fee) +
       '</td><td>' + (area.is_active ? "Active" : "Off") + '</td><td><button class="btn" type="button" data-edit-area="' + escapeHtml(area.id) + '">Edit</button></td></tr>'
+    ).join("");
+  }
+  function renderSlots(slots) {
+    $("slots-table").innerHTML = slots.map((slot) =>
+      '<tr><td><strong>' + escapeHtml(slot.label) + '</strong><br><small>' + escapeHtml(slot.id) + '</small></td>' +
+      '<td>' + (slot.is_active ? "Active" : "Off") + '</td><td><button class="btn" type="button" data-edit-slot="' + escapeHtml(slot.id) + '">Edit</button></td></tr>'
     ).join("");
   }
   function renderCoupons(coupons) {
@@ -161,11 +174,22 @@
     });
   });
   $("orders-table").addEventListener("click", async (event) => {
-    const button = event.target.closest("[data-save-status]");
-    if (!button) return;
-    const select = document.querySelector('[data-order-status="' + CSS.escape(button.dataset.saveStatus) + '"]');
-    try { await api("admin/order-status", { method: "POST", body: { orderId: button.dataset.saveStatus, status: select.value } }); await loadDashboard(); }
-    catch (error) { showMessage($("dashboard-status"), error.message, "error"); }
+    const paymentButton = event.target.closest("[data-save-payment]");
+    const statusButton = event.target.closest("[data-save-status]");
+    try {
+      if (paymentButton) {
+        const select = document.querySelector('[data-payment-status="' + CSS.escape(paymentButton.dataset.savePayment) + '"]');
+        await api("admin/payment-status", { method: "POST", body: { orderId: paymentButton.dataset.savePayment, paymentStatus: select.value } });
+        await loadDashboard();
+        showMessage($("dashboard-status"), "পেমেন্ট Status আপডেট হয়েছে।", "success");
+        return;
+      }
+      if (statusButton) {
+        const select = document.querySelector('[data-order-status="' + CSS.escape(statusButton.dataset.saveStatus) + '"]');
+        await api("admin/order-status", { method: "POST", body: { orderId: statusButton.dataset.saveStatus, status: select.value } });
+        await loadDashboard();
+      }
+    } catch (error) { showMessage($("dashboard-status"), error.message, "error"); }
   });
   $("new-product").addEventListener("click", () => editProduct(null));
   $("cancel-product").addEventListener("click", () => $("product-form").classList.add("hidden"));
@@ -201,6 +225,23 @@
     $("delivery-form").elements.name.value = area.name;
     $("delivery-form").elements.fee.value = area.fee;
     $("delivery-form").elements.is_active.checked = area.is_active;
+  });
+  $("slot-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const values = formData(event.currentTarget);
+    values.is_active = event.currentTarget.elements.is_active.checked;
+    try { await api("admin/delivery-slots", { method: "POST", body: values }); await loadDashboard(); event.currentTarget.reset(); }
+    catch (error) { showMessage($("dashboard-status"), error.message, "error"); }
+  });
+  $("slots-table").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-edit-slot]");
+    if (!button) return;
+    const slot = (window.__ecoSlots || []).find((item) => item.id === button.dataset.editSlot);
+    if (slot) {
+      $("slot-form").elements.id.value = slot.id;
+      $("slot-form").elements.label.value = slot.label;
+      $("slot-form").elements.is_active.checked = slot.is_active;
+    }
   });
   $("coupon-form").addEventListener("submit", async (event) => {
     event.preventDefault();
