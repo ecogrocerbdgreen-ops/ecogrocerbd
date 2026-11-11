@@ -78,11 +78,15 @@
       ).join(", ");
       const options = ["pending","confirmed","processing","out_for_delivery","delivered","cancelled","refunded"]
         .map((status) => '<option value="' + status + '"' + (order.status === status ? " selected" : "") + '>' + statusLabel(status) + '</option>').join("");
+      const paymentOptions = ["pending_verification","paid","failed","refunded"]
+        .map((status) => '<option value="' + status + '"' + (order.payment_status === status ? " selected" : "") + '>' + status.replaceAll("_"," ") + '</option>').join("");
       return '<tr><td><strong>' + escapeHtml(order.order_number) + '</strong><br><small>' + new Date(order.created_at).toLocaleString("en-GB") + '</small></td>' +
         '<td>' + escapeHtml(order.customer_name) + '<br><small>' + escapeHtml(order.customer_phone) + '</small></td>' +
         '<td>' + items + '</td><td>' + money(order.grand_total) + '</td>' +
         '<td><span class="pill ' + escapeHtml(order.status) + '">' + statusLabel(order.status) + '</span></td>' +
-        '<td><div class="actions"><select data-order-status="' + escapeHtml(order.id) + '">' + options + '</select><button class="btn" type="button" data-save-status="' + escapeHtml(order.id) + '">Save</button></div></td></tr>';
+        '<td><span class="pill">' + escapeHtml(order.payment_status || "unpaid") + '</span><br><small>' + escapeHtml(order.payment_gateway || order.payment_method) + '</small></td>' +
+        '<td><div class="actions"><select data-order-status="' + escapeHtml(order.id) + '">' + options + '</select><button class="btn" type="button" data-save-status="' + escapeHtml(order.id) + '">Save</button></div>' +
+        '<div class="actions" style="margin-top:6px"><select data-payment-status="' + escapeHtml(order.id) + '">' + paymentOptions + '</select><button class="btn" type="button" data-save-payment="' + escapeHtml(order.id) + '">Save payment</button></div></td></tr>';
     }).join("");
   }
   function renderProducts() {
@@ -161,11 +165,22 @@
     });
   });
   $("orders-table").addEventListener("click", async (event) => {
-    const button = event.target.closest("[data-save-status]");
-    if (!button) return;
-    const select = document.querySelector('[data-order-status="' + CSS.escape(button.dataset.saveStatus) + '"]');
-    try { await api("admin/order-status", { method: "POST", body: { orderId: button.dataset.saveStatus, status: select.value } }); await loadDashboard(); }
-    catch (error) { showMessage($("dashboard-status"), error.message, "error"); }
+    const paymentButton = event.target.closest("[data-save-payment]");
+    const statusButton = event.target.closest("[data-save-status]");
+    try {
+      if (paymentButton) {
+        const select = document.querySelector('[data-payment-status="' + CSS.escape(paymentButton.dataset.savePayment) + '"]');
+        await api("admin/payment-status", { method: "POST", body: { orderId: paymentButton.dataset.savePayment, paymentStatus: select.value } });
+        await loadDashboard();
+        showMessage($("dashboard-status"), "পেমেন্ট Status আপডেট হয়েছে।", "success");
+        return;
+      }
+      if (statusButton) {
+        const select = document.querySelector('[data-order-status="' + CSS.escape(statusButton.dataset.saveStatus) + '"]');
+        await api("admin/order-status", { method: "POST", body: { orderId: statusButton.dataset.saveStatus, status: select.value } });
+        await loadDashboard();
+      }
+    } catch (error) { showMessage($("dashboard-status"), error.message, "error"); }
   });
   $("new-product").addEventListener("click", () => editProduct(null));
   $("cancel-product").addEventListener("click", () => $("product-form").classList.add("hidden"));
