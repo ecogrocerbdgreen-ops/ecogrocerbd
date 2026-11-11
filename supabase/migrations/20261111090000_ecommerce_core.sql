@@ -298,7 +298,7 @@ begin
     if v_coupon.starts_at is not null and now() < v_coupon.starts_at then raise exception 'কুপনটি এখনো চালু হয়নি।'; end if;
     if v_coupon.expires_at is not null and now() > v_coupon.expires_at then raise exception 'কুপনের মেয়াদ শেষ।'; end if;
     if v_coupon.usage_limit is not null and v_coupon.usage_count >= v_coupon.usage_limit then raise exception 'কুপনের ব্যবহার সীমা শেষ।'; end if;
-    if v_subtotal < v_coupon.minimum_order then raise exception 'এই কুপনের জন্য ন্যূনতম অর্ডার ৳' || v_coupon.minimum_order || '।'; end if;
+    if v_subtotal < v_coupon.minimum_order then raise exception '%', 'এই কুপনের জন্য ন্যূনতম অর্ডার ৳' || v_coupon.minimum_order || '।'; end if;
     if v_coupon.discount_type = 'fixed' then
       v_discount := least(v_subtotal,v_coupon.discount_value);
     else
