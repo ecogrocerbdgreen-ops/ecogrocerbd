@@ -131,6 +131,7 @@ function normalizeSearch(value) {
 
 function productCard(product) {
   const qty = Number(cart[product.id] || 0);
+  const outOfStock = Boolean(product.track_inventory) && Number(product.stock_quantity || 0) <= 0;
   const imageUrl = PRODUCT_IMAGES[product.id];
   const addControl = outOfStock
     ? '<button class="add-button" type="button" disabled aria-label="' + escapeHTML(product.name) + ' বর্তমানে স্টকে নেই">Out of Stock</button>'
