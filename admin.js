@@ -11,6 +11,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
   const $ = (id) => document.getElementById(id);
   let orders = [];
   let loaded = false;
+  let loading = false;
   const money = (n) => "৳ " + Number(n || 0).toLocaleString("en-BD", { maximumFractionDigits: 2 });
   const dateText = (v) => v ? new Date(v).toLocaleString("bn-BD", { dateStyle: "medium", timeStyle: "short" }) : "—";
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -73,11 +74,14 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
     renderRecentOrders();
   }
   async function loadDashboard() {
+    if(loading)return;
+    loading=true;
     feedback("অর্ডারের তথ্য লোড হচ্ছে…");
     try {
       orders=await fetchAllOrders(); loaded=true;
       renderOverview(); renderOrders(); feedback("অর্ডার ও আর্থিক হিসাব আপডেট হয়েছে।");
     } catch(error) { loaded=false; feedback(error.message||"ডেটা লোড করা যায়নি।",true); }
+    finally { loading=false; }
   }
   function orderCard(o) {
     const id=esc(o.id), status=esc(o.status);
@@ -105,7 +109,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
   function openOrderDetails(id) {
     const o=orders.find(x=>x.id===id); if(!o)return;
     const transactions=Array.isArray(o.payment_transactions)?o.payment_transactions:[];
-    const latest=transactions[0]||{};
+    const latest=transactions.slice().sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0))[0]||{};
     const payer=o.payer_phone||"—", txn=o.transaction_id||o.payment_gateway_transaction_id||latest.gateway_transaction_id||latest.bank_transaction_id||"—";
     const address=[o.full_address,o.delivery_area_name,o.block_name,o.road_name,o.house_number].filter(Boolean).join(", ")||"—";
     const items=(o.order_items||[]).map(i=>'<tr><td>'+esc(i.product_name)+' × '+esc(i.quantity)+' '+esc(i.unit||"")+'</td><td>'+money(i.line_total)+'</td></tr>').join("")||'<tr><td colspan="2">পণ্যের তথ্য পাওয়া যায়নি</td></tr>';
