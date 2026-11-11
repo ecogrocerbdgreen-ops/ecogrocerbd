@@ -547,3 +547,114 @@ section[id], div[id] { scroll-margin-top: 90px; }
   .payment-reference { grid-template-columns: minmax(0,1fr); }
   .payment-reference p { grid-column: 1; }
 }
+
+
+/* Full e-commerce product detail experience */
+.product-card[data-product-detail] { cursor: pointer; }
+.product-card[data-product-detail]:hover { border-color: #cfe2d2; box-shadow: 0 10px 28px rgba(25,77,38,.09); transform: translateY(-2px); }
+.product-image-trigger { position: relative; display: block; width: 100%; height: 100%; min-height: 100%; padding: 0; overflow: hidden; border: 0; background: transparent; cursor: zoom-in; }
+.product-image-trigger .product-image { pointer-events: none; }
+.product-name[data-product-open] { cursor: pointer; }
+.product-name[data-product-open]:hover { color: var(--green); }
+.product-name[data-product-open]:focus-visible { outline: 2px solid #75b985; outline-offset: 3px; border-radius: 5px; }
+
+.product-detail-scrim { position: fixed; inset: 0; z-index: 112; display: grid; place-items: center; padding: 18px; background: rgba(8,25,14,.64); backdrop-filter: blur(6px); }
+.product-detail-modal { display: flex; flex-direction: column; width: min(1120px, 100%); max-height: min(94vh, 960px); overflow: auto; overscroll-behavior: contain; border-radius: 23px; background: #fff; box-shadow: 0 30px 100px rgba(0,0,0,.3); }
+.product-detail-header { position: sticky; top: 0; z-index: 4; display: flex; align-items: center; justify-content: space-between; padding: 13px 23px; border-bottom: 1px solid #e9f0e9; background: rgba(255,255,255,.96); backdrop-filter: blur(14px); }
+.product-detail-brand { display: flex; align-items: center; gap: 10px; }
+.product-detail-mark { width: 37px; height: 37px; display: grid; place-items: center; border-radius: 12px 12px 12px 4px; color: white; background: var(--green-dark); font: 800 27px 'Baloo Da 2',sans-serif; }
+.product-detail-brand strong { display: block; color: var(--green-dark); font: 800 16px 'Baloo Da 2',sans-serif; }
+.product-detail-brand small { display: block; color: var(--ink-soft); font-size: 9px; }
+.product-detail-content { padding: 0 25px 24px; }
+.product-detail-breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 17px 0; color: #87948a; font-size: 10px; }
+.product-detail-breadcrumb button { padding: 0; border: 0; color: var(--green); background: transparent; font-size: inherit; font-weight: 700; cursor: pointer; }
+.product-detail-breadcrumb strong { color: var(--ink); }
+.product-detail-main { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); align-items: start; gap: 34px; padding: 6px 0 27px; }
+.product-detail-gallery { min-width: 0; }
+.product-detail-image-button { position: relative; display: grid; place-items: center; width: 100%; min-height: 390px; max-height: 510px; overflow: hidden; padding: 0; border: 1px solid #e8eee8; border-radius: 19px; background: #f7faf7; cursor: zoom-in; }
+.product-detail-image-button img { display: block; width: 100%; height: 100%; max-height: 510px; min-height: 390px; object-fit: contain; mix-blend-mode: multiply; }
+.product-detail-image-fallback { color: #97a59a; font-size: 13px; }
+.image-zoom-hint { position: absolute; right: 13px; bottom: 13px; padding: 8px 12px; border: 1px solid rgba(255,255,255,.7); border-radius: 999px; color: #405a47; background: rgba(255,255,255,.91); box-shadow: 0 3px 12px rgba(0,0,0,.08); font-size: 9px; font-weight: 700; }
+.product-detail-photo-caption { display: flex; justify-content: space-between; gap: 10px; padding: 9px 3px; color: #87948a; font-size: 9px; }
+.product-detail-info { min-width: 0; padding: 8px 0; }
+.product-detail-category { display: inline-flex; padding: 6px 10px; border-radius: 999px; color: #26733b; background: #edf7ee; font-size: 9px; font-weight: 800; }
+.product-detail-info h1 { margin: 13px 0 2px; color: #1d3926; font: 800 clamp(27px,3vw,36px) 'Baloo Da 2','Noto Sans Bengali',sans-serif; line-height: 1.35; }
+.product-detail-english { margin: 0; color: #89958c; font-size: 11px; }
+.product-detail-price { margin-top: 18px; color: var(--green-dark); font: 800 30px 'Baloo Da 2',sans-serif; line-height: 1.2; }
+.product-detail-price span { color: #87948a; font: 500 11px 'Noto Sans Bengali',sans-serif; }
+.product-detail-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 18px 0; }
+.product-detail-meta span { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border: 1px solid #e9f0e9; border-radius: 11px; color: var(--ink); background: #fbfdfb; font-size: 11px; font-weight: 700; }
+.product-detail-meta b { color: #849187; font-size: 9px; font-weight: 500; }
+.product-detail-description { margin: 0 0 14px; color: #59675d; font-size: 12px; line-height: 1.9; }
+.product-detail-availability { display: flex; align-items: center; gap: 8px; margin: 0; padding: 10px 12px; border-radius: 10px; color: #496652; background: #f1f8f1; font-size: 10px; }
+.availability-dot { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 50%; background: #60a36a; box-shadow: 0 0 0 4px #e3f1e5; }
+.product-detail-cart-state { margin: 12px 0 8px; color: #3f744d; font-size: 10px; font-weight: 700; }
+.product-detail-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 13px; }
+.product-detail-actions button { min-height: 46px; padding: 9px 12px; border: 1px solid transparent; border-radius: 11px; font: 800 11px 'Noto Sans Bengali',sans-serif; cursor: pointer; transition: transform .15s, box-shadow .15s, background .15s; }
+.product-detail-actions button:active { transform: scale(.98); }
+.detail-action-order { display: flex; align-items: center; justify-content: center; gap: 12px; color: #fff; background: linear-gradient(135deg,#238348,#146638); box-shadow: 0 6px 17px rgba(20,102,56,.2); }
+.detail-action-order span { font-size: 17px; }
+.detail-action-cart { color: #236d3b; border-color: #b8d9bd !important; background: #eef8ef; }
+.detail-action-whatsapp { color: #16834e; border-color: #cce8d7 !important; background: #f3fbf6; }
+.detail-action-call { color: #40566c; border-color: #dce5eb !important; background: #f6f9fb; }
+.product-detail-small-note { margin: 10px 0 0; color: #89958c; font-size: 9px; line-height: 1.6; }
+.product-description-section { padding: 23px 0; border-top: 1px solid #e9f0e9; }
+.detail-section-heading { margin-bottom: 14px; }
+.detail-section-heading > span { color: #7d9b83; font-size: 8px; font-weight: 800; letter-spacing: 1.4px; }
+.detail-section-heading h2 { margin: 3px 0 0; color: #203c29; font: 800 22px 'Baloo Da 2','Noto Sans Bengali',sans-serif; }
+.product-description-section > p { max-width: 85ch; margin: 0; color: #647168; font-size: 11px; line-height: 1.9; }
+.product-information-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; margin-top: 17px; }
+.product-information-grid div { display: flex; flex-direction: column; gap: 5px; padding: 12px; border: 1px solid #e9f0e9; border-radius: 12px; background: #fbfdfb; }
+.product-information-grid span { color: #89958c; font-size: 9px; }
+.product-information-grid strong { color: #304e38; font-size: 11px; }
+.product-description-section .detail-price-note { margin-top: 13px; color: #9a8a69; font-size: 9px; }
+.recommended-section { padding: 22px 0 25px; border-top: 1px solid #e9f0e9; }
+.recommended-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; }
+.recommended-product { position: relative; display: flex; flex-direction: column; min-width: 0; padding: 10px; border: 1px solid #e8eee8; border-radius: 14px; background: #fff; transition: border-color .15s, box-shadow .15s, transform .15s; }
+.recommended-product:hover { border-color: #c4ddc8; box-shadow: 0 6px 18px rgba(30,80,39,.07); transform: translateY(-2px); }
+.recommended-product-open { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 0; border: 0; color: inherit; background: transparent; text-align: left; cursor: pointer; }
+.recommended-product-image { width: 65px; height: 65px; flex: 0 0 65px; overflow: hidden; border-radius: 10px; background: #f1f6f1; }
+.recommended-product-image img { width: 100%; height: 100%; object-fit: cover; }
+.recommended-product-copy { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.recommended-product-copy strong { overflow: hidden; color: #263c2d; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.recommended-product-copy small { color: #89958c; font-size: 9px; }
+.recommended-product-copy b { color: var(--green-dark); font-size: 11px; }
+.recommended-add { align-self: flex-end; margin-top: 8px; padding: 5px 10px; border: 1px solid #d4e7d6; border-radius: 999px; color: #26733b; background: #f3faf4; font-size: 9px; font-weight: 800; cursor: pointer; }
+.product-detail-footer { display: flex; justify-content: space-between; padding: 15px 0 0; border-top: 1px solid #edf2ed; color: #8d9a90; font-size: 9px; }
+
+.product-lightbox { position: fixed; inset: 0; z-index: 130; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 13px; padding: 55px 22px 25px; background: rgba(7,17,10,.94); }
+.product-lightbox img { display: block; max-width: min(92vw,1100px); max-height: 78vh; width: auto; height: auto; object-fit: contain; border-radius: 12px; box-shadow: 0 20px 80px rgba(0,0,0,.5); }
+.product-lightbox p { margin: 0; color: #f0f6f0; font-size: 12px; }
+.product-lightbox-close { position: absolute; top: 16px; right: 20px; width: 43px; height: 43px; border: 1px solid rgba(255,255,255,.25); border-radius: 50%; color: #fff; background: rgba(255,255,255,.1); font-size: 26px; cursor: pointer; }
+
+@media (max-width: 760px) {
+  .product-detail-scrim { display: block; padding: 0; }
+  .product-detail-modal { width: 100%; height: 100%; max-height: 100%; border-radius: 0; }
+  .product-detail-header { padding: 10px 14px; }
+  .product-detail-content { padding: 0 15px 24px; }
+  .product-detail-breadcrumb { padding: 12px 0; font-size: 9px; }
+  .product-detail-main { grid-template-columns: minmax(0,1fr); gap: 17px; padding-bottom: 19px; }
+  .product-detail-image-button { min-height: 260px; max-height: 330px; }
+  .product-detail-image-button img { min-height: 260px; max-height: 330px; }
+  .product-detail-info { padding: 0; }
+  .product-detail-info h1 { margin-top: 8px; font-size: 27px; }
+  .product-detail-price { margin-top: 11px; font-size: 27px; }
+  .product-detail-meta { margin: 12px 0; }
+  .product-detail-actions { position: sticky; bottom: 0; z-index: 3; padding: 9px 0 calc(9px + env(safe-area-inset-bottom)); background: rgba(255,255,255,.96); backdrop-filter: blur(10px); }
+  .product-detail-actions button { min-height: 45px; font-size: 10px; }
+  .product-information-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .recommended-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+  .recommended-product { padding: 8px; }
+  .recommended-product-open { gap: 7px; }
+  .recommended-product-image { width: 54px; height: 54px; flex-basis: 54px; }
+  .product-detail-footer { padding-bottom: 4px; }
+}
+@media (max-width: 390px) {
+  .product-detail-content { padding-inline: 11px; }
+  .product-detail-image-button, .product-detail-image-button img { min-height: 225px; }
+  .product-detail-meta { gap: 7px; }
+  .product-detail-actions { gap: 7px; }
+  .product-detail-actions button { padding-inline: 8px; }
+  .recommended-product-open { align-items: flex-start; }
+  .recommended-product-image { width: 48px; height: 48px; flex-basis: 48px; }
+}
