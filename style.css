@@ -444,3 +444,106 @@ section[id], div[id] { scroll-margin-top: 90px; }
 }
 
 [hidden] { display: none !important; }
+
+/* Checkout / order form */
+.product-media[data-product-open], .product-name[data-product-open] { cursor: pointer; }
+.product-media[data-product-open]:focus-visible, .product-name[data-product-open]:focus-visible { outline: 3px solid rgba(42,145,77,.45); outline-offset: 3px; border-radius: 12px; }
+.product-name[data-product-open] { width: fit-content; max-width: 100%; }
+.product-buy-row .add-button { width: auto; min-width: 105px; height: 36px; padding: 0 13px; border-radius: 999px; font-size: 10px; font-weight: 800; letter-spacing: .1px; white-space: nowrap; }
+.cart-drawer { width: min(440px, 96vw); }
+
+.checkout-scrim { position: fixed; inset: 0; z-index: 110; display: grid; place-items: center; padding: 16px; background: rgba(11, 28, 17, .62); backdrop-filter: blur(5px); }
+.checkout-modal { display: flex; flex-direction: column; width: min(1040px, 100%); max-height: min(94vh, 940px); overflow: hidden; border: 1px solid rgba(255,255,255,.6); border-radius: 24px; background: #f8fbf8; box-shadow: 0 28px 90px rgba(0,0,0,.28); }
+.checkout-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; padding: 22px 25px 17px; border-bottom: 1px solid #e3ece4; background: white; }
+.checkout-header h2 { margin: 3px 0 2px; color: var(--green-dark); font: 800 25px 'Baloo Da 2','Noto Sans Bengali',sans-serif; }
+.checkout-header p { margin: 0; color: var(--ink-soft); font-size: 11px; }
+.checkout-body { min-height: 0; overflow-y: auto; padding: 19px 22px 24px; overscroll-behavior: contain; }
+.checkout-grid { display: grid; grid-template-columns: minmax(0,1.55fr) minmax(265px,.85fr); align-items: start; gap: 19px; }
+.checkout-form { min-width: 0; }
+.checkout-section { margin-bottom: 15px; padding: 17px; border: 1px solid #e5eee6; border-radius: 17px; background: white; box-shadow: 0 3px 12px rgba(24,69,37,.035); }
+.checkout-section-title { display: flex; align-items: center; gap: 11px; margin-bottom: 15px; }
+.checkout-step { flex: 0 0 34px; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 11px; color: var(--green-dark); background: #e9f5eb; font: 800 12px 'Baloo Da 2',sans-serif; }
+.checkout-section-title h3 { margin: 0; color: var(--ink); font: 700 16px 'Baloo Da 2','Noto Sans Bengali',sans-serif; }
+.checkout-section-title p { margin: 0; color: var(--ink-soft); font-size: 10px; }
+.checkout-items-preview { display: grid; gap: 8px; }
+.checkout-product-line { display: grid; grid-template-columns: 48px minmax(0,1fr) auto; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid #edf2ed; }
+.checkout-product-line:last-child { border-bottom: 0; padding-bottom: 0; }
+.checkout-product-line img { width: 48px; height: 48px; border-radius: 11px; object-fit: cover; background: #f0f5f0; }
+.checkout-product-line strong { display: block; color: var(--ink); font-size: 11px; }
+.checkout-product-line small { color: var(--ink-soft); font-size: 9px; }
+.checkout-product-line b { color: var(--green-dark); font-size: 11px; white-space: nowrap; }
+.checkout-fields { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+.checkout-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; color: var(--ink); font-size: 11px; font-weight: 700; }
+.checkout-field > span b, .checkout-consent b { color: #cf5b37; }
+.checkout-field > span small { color: var(--ink-soft); font-size: 9px; font-weight: 500; }
+.checkout-field input, .checkout-field select, .checkout-field textarea, .coupon-row input { width: 100%; min-width: 0; min-height: 43px; padding: 10px 12px; border: 1px solid #dce8de; border-radius: 10px; outline: none; color: var(--ink); background: #fbfdfb; font: 500 11px 'Noto Sans Bengali',sans-serif; transition: border-color .18s, box-shadow .18s; }
+.checkout-field textarea { min-height: 74px; resize: vertical; line-height: 1.6; }
+.checkout-field input:focus, .checkout-field select:focus, .checkout-field textarea:focus, .coupon-row input:focus { border-color: #5eaa72; box-shadow: 0 0 0 3px rgba(69,150,89,.12); }
+.checkout-field input::placeholder, .checkout-field textarea::placeholder, .coupon-row input::placeholder { color: #a0aba2; }
+.checkout-field small { color: var(--ink-soft); font-size: 9px; font-weight: 500; }
+.checkout-field-wide { grid-column: 1 / -1; }
+.checkout-fields > .checkout-field:nth-child(1), .checkout-fields > .checkout-field:nth-child(2) { grid-column: span 1; }
+.checkout-form > .checkout-section > .checkout-field { margin-top: 12px; }
+.payment-options { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+.payment-option { display: flex; align-items: center; gap: 9px; min-width: 0; padding: 11px; border: 1px solid #e3ece4; border-radius: 12px; background: #fbfdfb; cursor: pointer; }
+.payment-option:has(input:checked) { border-color: #6aaa7b; background: #f0f8f1; box-shadow: 0 0 0 2px rgba(69,150,89,.08); }
+.payment-option input { accent-color: var(--green); }
+.payment-emoji { font-size: 20px; }
+.payment-option strong { display: block; color: var(--ink); font-size: 10px; }
+.payment-option small { display: block; margin-top: 2px; color: var(--ink-soft); font-size: 8px; }
+.payment-reference { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; margin-top: 13px; padding: 12px; border-radius: 12px; background: #f5f8f5; }
+.payment-reference p { grid-column: 1 / -1; margin: 0; color: var(--ink-soft); font-size: 9px; line-height: 1.6; }
+.coupon-row { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 8px; }
+.coupon-row button { min-width: 82px; padding: 0 16px; border: 0; border-radius: 10px; color: white; background: var(--green); font-size: 11px; font-weight: 800; }
+.coupon-feedback { margin: 8px 0 0; color: var(--ink-soft); font-size: 9px; }
+.coupon-feedback.success { color: #287b43; font-weight: 700; }
+.coupon-feedback.error { color: #b64336; font-weight: 700; }
+.checkout-consent { display: flex; flex-direction: row; align-items: flex-start; gap: 9px; margin: 14px 3px; color: var(--ink-soft); font-size: 10px; line-height: 1.6; }
+.checkout-consent input { flex: 0 0 auto; width: 16px; height: 16px; margin-top: 1px; accent-color: var(--green); }
+.checkout-summary { position: sticky; top: 0; }
+.summary-card { padding: 19px; border: 1px solid #e2ece3; border-radius: 18px; background: white; box-shadow: 0 5px 18px rgba(24,69,37,.055); }
+.summary-card h3 { margin: 2px 0 13px; color: var(--green-dark); font: 800 19px 'Baloo Da 2','Noto Sans Bengali',sans-serif; }
+.summary-items { display: grid; gap: 9px; max-height: 205px; overflow: auto; }
+.summary-item { display: flex; align-items: flex-start; justify-content: space-between; gap: 9px; color: var(--ink-soft); font-size: 9px; line-height: 1.5; }
+.summary-item strong { color: var(--ink); font-size: 10px; white-space: nowrap; }
+.summary-divider { height: 1px; margin: 13px 0; background: #e9f0e9; }
+.summary-row { display: flex; justify-content: space-between; gap: 10px; margin: 8px 0; color: var(--ink-soft); font-size: 10px; }
+.summary-row strong { color: var(--ink); font-size: 10px; }
+.summary-discount strong { color: #268447; }
+.summary-total { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--ink); font-size: 12px; font-weight: 800; }
+.summary-total strong { color: var(--green-dark); font: 800 24px 'Baloo Da 2',sans-serif; }
+.summary-disclaimer { margin: 10px 0 13px; color: #829087; font-size: 9px; line-height: 1.55; }
+.checkout-submit { min-height: 49px; font-size: 12px; }
+.checkout-security-note { margin: 9px 0 0; color: #829087; font-size: 9px; text-align: center; }
+.checkout-status { margin: 12px 0 0; padding: 12px 14px; border: 1px solid #ead8b8; border-radius: 11px; color: #72551e; background: #fff9ec; font-size: 10px; line-height: 1.65; overflow-wrap: anywhere; }
+.checkout-status.error { border-color: #f0c9c3; color: #9a342a; background: #fff3f1; }
+.checkout-status.success { border-color: #cbe7d0; color: #216e37; background: #eff9f0; }
+.checkout-whatsapp-link { display: inline-block; margin-top: 5px; color: #168044; font-weight: 800; text-decoration: underline; }
+.checkout-empty { margin: 6px 0; color: var(--ink-soft); font-size: 10px; }
+.checkout-field select option:disabled { color: #aab4ab; }
+
+@media (max-width: 760px) {
+  .checkout-scrim { display: block; padding: 0; }
+  .checkout-modal { width: 100%; height: 100%; max-height: 100%; border: 0; border-radius: 0; }
+  .checkout-header { padding: 15px 16px 12px; }
+  .checkout-header h2 { font-size: 21px; }
+  .checkout-header p { font-size: 10px; }
+  .checkout-body { padding: 12px 12px calc(26px + env(safe-area-inset-bottom)); }
+  .checkout-grid { grid-template-columns: minmax(0,1fr); gap: 12px; }
+  .checkout-section { padding: 14px; margin-bottom: 11px; border-radius: 14px; }
+  .checkout-section-title h3 { font-size: 15px; }
+  .checkout-fields { gap: 10px; }
+  .checkout-field { font-size: 11px; }
+  .checkout-field input, .checkout-field select, .checkout-field textarea, .coupon-row input { min-height: 46px; font-size: 12px; }
+  .payment-option { padding: 9px; }
+  .summary-card { padding: 16px; }
+  .checkout-summary { position: static; }
+  .summary-items { max-height: 150px; }
+}
+@media (max-width: 390px) {
+  .checkout-fields { grid-template-columns: minmax(0,1fr); }
+  .checkout-fields > .checkout-field:nth-child(1), .checkout-fields > .checkout-field:nth-child(2) { grid-column: 1; }
+  .payment-options { grid-template-columns: minmax(0,1fr); }
+  .payment-reference { grid-template-columns: minmax(0,1fr); }
+  .payment-reference p { grid-column: 1; }
+}

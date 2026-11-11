@@ -11,6 +11,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
+  <script src="order-config.js" defer></script>
+  <script src="checkout.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main-content">মূল কনটেন্টে যান</a>
@@ -51,8 +53,8 @@
   <div class="delivery-strip">
     <div class="delivery-inner">
       <span class="delivery-pin" aria-hidden="true">⌖</span>
-      <span><strong>আপনার এলাকার বাজার</strong> · ডেলিভারি এলাকা শিগগিরই জানানো হবে</span>
-      <span class="delivery-note">সার্ভিস এরিয়া শিগগিরই আপডেট হবে</span>
+      <span><strong>গুলশান ডেলিভারি</strong> · গুলশান ১, গুলশান ২, নিকেতন ও আশপাশের এলাকা</span>
+      <span class="delivery-note">চেকআউটে এলাকা বেছে নিন</span>
     </div>
   </div>
 
@@ -182,7 +184,7 @@
       <div class="steps-grid">
         <article class="step-card"><span class="step-number">01</span><span class="step-icon" aria-hidden="true">⌕</span><h3>পণ্য খুঁজে নিন</h3><p>ক্যাটাগরি বা সার্চ ব্যবহার করে পছন্দের পণ্য বেছে নিন।</p></article>
         <article class="step-card"><span class="step-number">02</span><span class="step-icon" aria-hidden="true">🛒</span><h3>কার্টে যোগ করুন</h3><p>প্রয়োজনীয় পণ্য ও পরিমাণ কার্টে যোগ করে তালিকা দেখুন।</p></article>
-        <article class="step-card"><span class="step-number">03</span><span class="step-icon" aria-hidden="true">✓</span><h3>অর্ডার নিশ্চিত করুন</h3><p>চেকআউট, ঠিকানা ও পেমেন্ট সুবিধা পরবর্তী ধাপে যুক্ত হবে।</p></article>
+        <article class="step-card"><span class="step-number">03</span><span class="step-icon" aria-hidden="true">✓</span><h3>অর্ডার নিশ্চিত করুন</h3><p>অর্ডার ফর্মে ঠিকানা, ডেলিভারির সময় ও পেমেন্ট পদ্ধতি বেছে অর্ডার জমা দিন।</p></article>
       </div>
     </section>
 
@@ -223,8 +225,124 @@
   <aside class="cart-drawer" id="cart-drawer" aria-label="আপনার শপিং কার্ট" aria-hidden="true">
     <div class="drawer-head"><div><span class="section-kicker">YOUR BASKET</span><h2>আপনার কার্ট</h2></div><button class="icon-button" id="cart-close" type="button" aria-label="কার্ট বন্ধ করুন">×</button></div>
     <div class="cart-items" id="cart-items"><div class="cart-empty"><span>🧺</span><strong>আপনার কার্ট এখনো খালি</strong><p>পছন্দের পণ্য কার্টে যোগ করুন।</p></div></div>
-    <div class="cart-footer"><div class="cart-total-row"><span>সাবটোটাল</span><strong id="cart-subtotal">৳ ০</strong></div><p>ডেলিভারি চার্জ ও চেকআউট পরবর্তী ধাপে যুক্ত হবে।</p><button class="button button-primary button-block" id="checkout-placeholder" type="button">চেকআউট (শিগগিরই)</button></div>
+    <div class="cart-footer"><div class="cart-total-row"><span>সাবটোটাল</span><strong id="cart-subtotal">৳ ০</strong></div><p>ডেলিভারি চার্জ ও কুপন অর্ডার ফর্মে হিসাব হবে।</p><button class="button button-primary button-block" id="checkout-placeholder" type="button">ডেলিভারি ঠিকানা ও অর্ডার ফর্ম</button></div>
   </aside>
+
+
+  <!-- Checkout / order form -->
+  <div class="checkout-scrim" id="checkout-scrim" hidden>
+    <section class="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
+      <header class="checkout-header">
+        <div>
+          <span class="section-kicker">ECOGROCER BD · SECURE CHECKOUT</span>
+          <h2 id="checkout-title">আপনার অর্ডার সম্পন্ন করুন</h2>
+          <p>ডেলিভারি তথ্য, সময় ও পেমেন্ট পদ্ধতি বেছে নিন</p>
+        </div>
+        <button class="icon-button" id="checkout-close" type="button" aria-label="অর্ডার ফর্ম বন্ধ করুন">×</button>
+      </header>
+      <div class="checkout-body">
+        <div class="checkout-grid">
+          <form class="checkout-form" id="eco-checkout-form" novalidate>
+            <section class="checkout-section">
+              <div class="checkout-section-title"><span class="checkout-step">01</span><div><h3>আপনার কার্ট</h3><p>অর্ডারে থাকা পণ্যগুলো যাচাই করুন</p></div></div>
+              <div class="checkout-items-preview" id="checkout-items-preview"></div>
+            </section>
+
+            <section class="checkout-section">
+              <div class="checkout-section-title"><span class="checkout-step">02</span><div><h3>ডেলিভারি ঠিকানা</h3><p>সঠিক ঠিকানা দিলে দ্রুত পণ্য পৌঁছে দেওয়া যাবে</p></div></div>
+              <div class="checkout-fields">
+                <label class="checkout-field"><span>আপনার নাম <b>*</b></span><input name="customerName" id="checkout-name" type="text" autocomplete="name" placeholder="সম্পূর্ণ নাম লিখুন" minlength="2" maxlength="80" required></label>
+                <label class="checkout-field"><span>মোবাইল নম্বর <b>*</b></span><input name="phone" id="checkout-phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="01XXXXXXXXX" pattern="01[3-9][0-9]{8}" maxlength="11" required><small>১১ সংখ্যার বাংলাদেশি মোবাইল নম্বর দিন</small></label>
+                <label class="checkout-field checkout-field-wide"><span>ডেলিভারি এলাকা খুঁজুন</span><input id="checkout-area-search" type="search" placeholder="যেমন: Gulshan 2, Niketon, Banani" autocomplete="off"></label>
+                <label class="checkout-field checkout-field-wide"><span>ডেলিভারি এলাকা <b>*</b></span>
+                  <select name="deliveryArea" id="checkout-area" required>
+                    <option value="">-- এলাকা বেছে নিন --</option>
+                    <optgroup label="গুলশান ও মূল সার্ভিস এলাকা">
+                      <option value="gulshan-1">গুলশান ১ — ৳৬০</option>
+                      <option value="gulshan-2">গুলশান ২ — ৳৬০</option>
+                      <option value="niketon">নিকেতন — ৳৬০</option>
+                      <option value="baridhara">বারিধারা ডিপ্লোম্যাটিক জোন — ৳৭০</option>
+                    </optgroup>
+                    <optgroup label="নিকটবর্তী এলাকা">
+                      <option value="banani">বনানী — ৳৭০</option>
+                      <option value="mohakhali">মহাখালী — ৳৮০</option>
+                      <option value="baridhara-dohs">বারিধারা DOHS — ৳৯০</option>
+                      <option value="banani-dohs">বনানী DOHS — ৳৯০</option>
+                      <option value="mohakhali-dohs">মহাখালী DOHS — ৳৯০</option>
+                      <option value="badda">বাড্ডা — ৳১০০</option>
+                      <option value="shahjadpur">শাহজাদপুর — ৳১০০</option>
+                      <option value="notun-bazar">নতুন বাজার — ৳১০০</option>
+                    </optgroup>
+                  </select>
+                  <small>এলাকা নির্বাচন করলে চার্জ আপডেট হবে। দেখানো চার্জগুলো প্রাথমিক নমুনা—লাইভের আগে নিশ্চিত করতে হবে।</small>
+                </label>
+                <label class="checkout-field"><span>Block <b>*</b></span><input name="block" type="text" placeholder="যেমন: Block C" maxlength="40" required></label>
+                <label class="checkout-field"><span>Road <b>*</b></span><input name="road" type="text" placeholder="যেমন: Road 12" maxlength="40" required></label>
+                <label class="checkout-field checkout-field-wide"><span>House / Flat Number <b>*</b></span><input name="house" type="text" placeholder="বাড়ি / ফ্ল্যাট নম্বর" maxlength="60" required></label>
+                <label class="checkout-field checkout-field-wide"><span>সম্পূর্ণ ঠিকানা <b>*</b></span><textarea name="fullAddress" rows="3" placeholder="বাড়ির নাম, ল্যান্ডমার্ক, গেট বা প্রবেশের নির্দেশনা লিখুন" minlength="8" maxlength="500" required></textarea></label>
+              </div>
+            </section>
+
+            <section class="checkout-section">
+              <div class="checkout-section-title"><span class="checkout-step">03</span><div><h3>ডেলিভারি সময়</h3><p>আপনার সুবিধামতো সময় নির্বাচন করুন</p></div></div>
+              <label class="checkout-field"><span>ডেলিভারি সময় বেছে নিন <b>*</b></span>
+                <select name="deliverySlot" id="checkout-slot" required>
+                  <option value="">-- সময় বেছে নিন --</option>
+                  <option value="08:00-11:00">সকাল ৮টা – ১১টা</option>
+                  <option value="11:00-14:00">সকাল ১১টা – দুপুর ২টা</option>
+                  <option value="14:00-17:00">দুপুর ২টা – বিকাল ৫টা</option>
+                  <option value="17:00-20:00">বিকাল ৫টা – রাত ৮টা</option>
+                  <option value="20:00-22:00">রাত ৮টা – রাত ১০টা</option>
+                </select>
+              </label>
+              <label class="checkout-field checkout-field-wide"><span>অতিরিক্ত নোট <small>(ঐচ্ছিক)</small></span><textarea name="notes" rows="2" maxlength="500" placeholder="পণ্য বাছাই, প্যাকিং বা ডেলিভারি সংক্রান্ত নির্দেশনা"></textarea></label>
+            </section>
+
+            <section class="checkout-section">
+              <div class="checkout-section-title"><span class="checkout-step">04</span><div><h3>পেমেন্ট পদ্ধতি</h3><p>আপনার পছন্দের পদ্ধতিটি বেছে নিন</p></div></div>
+              <div class="payment-options">
+                <label class="payment-option"><input type="radio" name="paymentMethod" value="cod" required checked><span class="payment-emoji">💵</span><span><strong>Cash on Delivery</strong><small>পণ্য হাতে পেয়ে পেমেন্ট</small></span></label>
+                <label class="payment-option"><input type="radio" name="paymentMethod" value="bkash"><span class="payment-emoji">💚</span><span><strong>bKash</strong><small>ম্যানুয়াল পেমেন্ট যাচাই</small></span></label>
+                <label class="payment-option"><input type="radio" name="paymentMethod" value="nagad"><span class="payment-emoji">🟠</span><span><strong>Nagad</strong><small>ম্যানুয়াল পেমেন্ট যাচাই</small></span></label>
+                <label class="payment-option"><input type="radio" name="paymentMethod" value="rocket"><span class="payment-emoji">🔵</span><span><strong>Rocket</strong><small>ম্যানুয়াল পেমেন্ট যাচাই</small></span></label>
+              </div>
+              <div class="payment-reference" id="payment-reference-fields" hidden>
+                <p>অনলাইন পেমেন্ট করলে নম্বর ও Transaction ID দিলে পেমেন্টটি ম্যানুয়ালি যাচাই করা যাবে।</p>
+                <label class="checkout-field"><span>যে নম্বর থেকে পেমেন্ট করেছেন</span><input name="payerPhone" type="tel" inputmode="numeric" maxlength="11" placeholder="01XXXXXXXXX"></label>
+                <label class="checkout-field"><span>Transaction ID <small>(পেমেন্ট করে থাকলে)</small></span><input name="transactionId" type="text" maxlength="80" placeholder="TrxID লিখুন"></label>
+              </div>
+            </section>
+
+            <section class="checkout-section">
+              <div class="checkout-section-title"><span class="checkout-step">05</span><div><h3>কুপন কোড</h3><p>প্রযোজ্য কুপন ব্যবহার করে ছাড় নিন</p></div></div>
+              <div class="coupon-row"><input id="checkout-coupon" type="text" placeholder="কুপন কোড লিখুন" maxlength="30" autocomplete="off"><button id="checkout-coupon-apply" type="button">Apply</button></div>
+              <p class="coupon-feedback" id="checkout-coupon-feedback" aria-live="polite">ডেমো কুপন: ECO10 অথবা FRESH50</p>
+            </section>
+
+            <label class="checkout-field checkout-consent"><input type="checkbox" id="checkout-confirm-info" required><span>আমি নিশ্চিত করছি যে আমার দেওয়া নাম, ফোন নম্বর ও ডেলিভারি ঠিকানা সঠিক। <b>*</b></span></label>
+            <div class="checkout-status" id="checkout-status" role="status" aria-live="polite" hidden></div>
+          </form>
+
+          <aside class="checkout-summary">
+            <div class="summary-card">
+              <span class="section-kicker">ORDER SUMMARY</span>
+              <h3>অর্ডার সামারি</h3>
+              <div id="checkout-summary-items" class="summary-items"></div>
+              <div class="summary-divider"></div>
+              <div class="summary-row"><span>Subtotal</span><strong id="checkout-subtotal">৳০</strong></div>
+              <div class="summary-row"><span>Delivery Charge</span><strong id="checkout-delivery">এলাকা বাছুন</strong></div>
+              <div class="summary-row summary-discount"><span>Coupon Discount</span><strong id="checkout-discount">−৳০</strong></div>
+              <div class="summary-divider"></div>
+              <div class="summary-total"><span>Grand Total</span><strong id="checkout-grand-total">৳০</strong></div>
+              <p class="summary-disclaimer">এলাকা নির্বাচন ও কুপন প্রয়োগের সঙ্গে সঙ্গে মোট মূল্য আপডেট হবে। অর্ডারটি সার্ভারে জমা না হওয়া পর্যন্ত নিশ্চিত বলে গণ্য হবে না।</p>
+              <button class="button button-primary button-block checkout-submit" id="checkout-submit" type="submit" form="eco-checkout-form">✅ Order Confirm করুন</button>
+              <p class="checkout-security-note">🔒 আপনার তথ্য শুধু অর্ডার প্রসেস করার জন্য ব্যবহার করা হবে।</p>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </div>
 
   <!-- Login placeholder -->
   <div class="modal-scrim" id="login-scrim" hidden>

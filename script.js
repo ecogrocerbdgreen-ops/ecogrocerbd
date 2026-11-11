@@ -134,16 +134,16 @@ function productCard(product) {
   const imageUrl = PRODUCT_IMAGES[product.id];
   const addControl = qty > 0
     ? `<div class="qty-stepper" aria-label="${escapeHTML(product.name)} পরিমাণ"><button type="button" data-cart-action="decrease" data-id="${product.id}" aria-label="একটি কমান">−</button><span>${qty}</span><button type="button" data-cart-action="increase" data-id="${product.id}" aria-label="একটি বাড়ান">+</button></div>`
-    : `<button class="add-button" type="button" data-cart-action="increase" data-id="${product.id}" aria-label="${escapeHTML(product.name)} কার্টে যোগ করুন">+</button>`;
+    : `<button class="add-button" type="button" data-cart-action="increase" data-id="${product.id}" aria-label="${escapeHTML(product.name)} কার্টে যোগ করুন">Add to Cart</button>`;
 
   return `
     <article class="product-card" data-product-id="${product.id}" data-search="${escapeHTML(`${product.name} ${product.en} ${product.unit} ${(product.aliases || []).join(' ')} ${CATEGORIES.find(c => c.id === product.category)?.bangla || ''}`.toLowerCase())}">
-      <div class="product-media">
+      <div class="product-media" data-product-open="${product.id}" role="button" tabindex="0" aria-label="${escapeHTML(product.name)} অর্ডার করুন">
         <img class="product-image" src="${imageUrl}" alt="${escapeHTML(product.name)}" loading="lazy" decoding="async" draggable="false" referrerpolicy="no-referrer" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
         <span class="product-placeholder" hidden><span aria-hidden="true">▧</span><small>ছবি পাওয়া যায়নি</small></span>
       </div>
       ${product.featured ? '<span class="product-label">জনপ্রিয়</span>' : '<span class="product-label">নমুনা পণ্য</span>'}
-      <h3 class="product-name">${escapeHTML(product.name)}<span class="product-unit">${escapeHTML(product.unit)}</span></h3>
+      <h3 class="product-name" data-product-open="${product.id}" role="button" tabindex="0">${escapeHTML(product.name)}<span class="product-unit">${escapeHTML(product.unit)}</span></h3>
       <div class="product-buy-row"><strong class="product-price">${formatPrice(product.price)}</strong>${addControl}</div>
     </article>`;
 }
@@ -356,7 +356,7 @@ document.getElementById('login-close').addEventListener('click', closeLogin);
 document.getElementById('login-scrim').addEventListener('click', event => { if (event.target.id === 'login-scrim') closeLogin(); });
 document.getElementById('product-search-form').addEventListener('submit', event => { event.preventDefault(); runSearch(); });
 document.getElementById('product-search').addEventListener('input', refreshSearch);
-document.getElementById('checkout-placeholder').addEventListener('click', () => showToast('চেকআউট পরবর্তী ধাপে তৈরি করা হবে'));
+document.getElementById('checkout-placeholder').addEventListener('click', () => { if (typeof window.openEcoCheckout === 'function') window.openEcoCheckout(); else showToast('অর্ডার ফর্ম প্রস্তুত হচ্ছে'); });
 document.getElementById('market-request-button').addEventListener('click', () => showToast('Market Request ফিচার পরবর্তী ধাপে যুক্ত হবে'));
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape') { closeDrawer(); closeCart(); closeLogin(); }

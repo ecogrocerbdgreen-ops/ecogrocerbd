@@ -1,58 +1,39 @@
-# EcoGrocer BD — Mobile-first homepage package
+# EcoGrocer BD — homepage and checkout
 
-A standalone Phase 1 website build based on the HTML/CSS structure shared in the conversation, redesigned around EcoGrocer BD and its four agreed product categories.
+A standalone, mobile-first EcoGrocer BD storefront built with HTML, CSS and vanilla JavaScript. The site is published as a static Netlify site; the optional PHP/MySQL order API is intended for the separate hosting account.
 
-## Included files
+## Main files
 
-- `index.html` — mobile-first homepage, desktop navigation, mobile drawer, search, category anchors, featured section, category product sections, footer, cart drawer, and login preview.
-- `style.css` — responsive design system, mobile-safe spacing, two-column product cards on phones, desktop breakpoints, fixed mobile bottom navigation, menu/cart panels, and blank image canvases.
-- `script.js` — 32 editable sample products (8 per category), Bangla/English/Banglish search, category filtering via anchors, local browser cart, quantity changes, subtotal, hero slider, and menu/cart interactions.
-- `PRODUCT-PRICE-SOURCES.md` — dated reference notes for starter product prices and pack sizes.
-- `IMAGE-CREDITS.md` — product/category image inventory, direct source URLs, and free-stock license notes.
-- `netlify.toml` — static publish configuration; no build command is required.
-- `.gitignore` — excludes local Netlify state and common editor/OS files.
+- index.html — storefront, navigation, category/product sections, cart drawer and checkout form.
+- style.css — responsive storefront, product cards, cart and checkout styling.
+- script.js — 32 sample catalogue products, search, local cart and product interactions.
+- checkout.js — product-to-checkout flow, delivery-area search, running totals, sample coupons and order API client.
+- order-config.js — safe placeholders for the PHP order API URL and WhatsApp business number.
+- hosting-api/orders.php — PHP order receiver with server-side price/coupon/delivery recalculation.
+- hosting-api/schema.sql — MySQL table for order records.
+- hosting-api/config.example.php — template for private DB/CORS configuration; never put real credentials in GitHub.
+- PRODUCT-PRICE-SOURCES.md and IMAGE-CREDITS.md — catalogue reference notes and photo credits.
 
-## Categories and starter products
+## Checkout flow included
 
-| Category | Product count |
-|---|---:|
-| Grocery | 8 |
-| Vegetables | 8 |
-| Meat | 8 |
-| Fish | 8 |
-| **Total** | **32** |
+- Clicking a product image or product name opens the order form and places one unit in the cart if it is not already there.
+- Product cards use an explicit Add to Cart button; quantity controls appear after adding.
+- Checkout includes customer name and mobile number, searchable Gulshan-area selection, Block, Road, House/Flat, full address, delivery time, optional notes, COD/bKash/Nagad/Rocket method selection, coupon entry and a live order summary.
+- Sample delivery fees update when the area changes. Sample coupons: ECO10 and FRESH50.
+- The PHP API validates the cart and recalculates all prices on the server before saving an order to MySQL.
 
-Product cards and category tiles use representative free stock photography from Pexels and Unsplash. Product image URLs are centrally mapped by product ID in `script.js`; source URLs and license notes are documented in `IMAGE-CREDITS.md`.
+## Important before accepting real orders
+
+The current Netlify website is static. It does not run PHP or write orders to your separate hosting server by itself. The checkout UI is in place, but order submission stays safely disabled until the PHP API is installed and its HTTPS URL is added to order-config.js.
+
+Follow hosting-api/README.md to install the PHP endpoint and MySQL table on cPanel/PHP hosting. Do not share database passwords in chat or commit them to GitHub.
+
+Delivery fees and the ECO10 / FRESH50 coupon rules are sample values; confirm the final rates and offers before launch. bKash, Nagad and Rocket are currently method selections with optional payer details, not automatic payment-gateway integrations. A WhatsApp summary link appears only after an actual order is accepted and a business WhatsApp number has been configured.
+
+## Catalogue and pricing
+
+The 32 products are editable in the PRODUCTS array in script.js. Values are prototype reference prices, not guaranteed EcoGrocer retail prices or live supplier stock. The PHP product-price allowlist in hosting-api/orders.php must be kept in sync with script.js when prices or pack sizes change.
 
 ## Run locally
 
-Open `index.html` directly in a modern browser, or serve this folder with a local static server. No Node build, package install, Firebase setup, or API key is required for the current phase.
-
-## Implemented in this package
-
-- Responsive mobile-first homepage and desktop layout.
-- Sticky compact header and desktop navigation.
-- Three-slide hero carousel with manual dots, timed rotation, and reduced-motion support.
-- Mobile slide-out menu with Home, Category, Search, Products, How to Order, and Login/Account links.
-- Fixed mobile bottom navigation: Home, Category, Search, Cart, Account.
-- Search across Bangla, English, and common Banglish product terms.
-- 4 category sections with 8 products per category.
-- Product cards with non-clickable product photos, sample unit/price, and add/quantity controls.
-- Cart drawer with localStorage persistence, line totals, item count, and subtotal.
-- Accessible labels, focus states, Escape key handling, and reduced-motion support.
-
-## Not connected / next phase
-
-- Login and customer registration are UI previews only; Firebase Authentication is not connected.
-- Checkout, payment, order creation, order tracking, delivery fees, Market Request, wishlist, chatbot, and Admin Dashboard are not implemented in this Phase 1 homepage package.
-- Cart data remains in the visitor's current browser only. It is not sent to any server.
-- Product names, pack sizes, and prices are directly editable in the `PRODUCTS` array near the top of `script.js`. They are reference values, not confirmed EcoGrocer selling prices or live data. Confirm each price with suppliers before taking real orders.
-
-## Security and branding notes
-
-- No old EkNok branding, address, WhatsApp number, payment number, Firebase config, or customer data has been carried into this package.
-- Do not add Firebase credentials or payment secrets to frontend code. Use Firebase Security Rules and trusted server-side validation in the later backend phase.
-
-## Netlify deployment
-
-This is a static site. Publish the contents of this folder as the site root (the directory containing `index.html`). The code package is not deployed to the existing Netlify project from this step.
+Open index.html in a modern browser, or serve this folder with a local static server. No build command or package installation is required for the storefront.
