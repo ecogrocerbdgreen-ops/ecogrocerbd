@@ -37,3 +37,13 @@ The 32 products are editable in the PRODUCTS array in script.js. Values are prot
 ## Run locally
 
 Open index.html in a modern browser, or serve this folder with a local static server. No build command or package installation is required for the storefront.
+
+
+## Product detail experience
+
+- Clicking the product card or product name opens a full-screen product details view.
+- Clicking the product photo opens a separate enlarged image lightbox.
+- Product detail content includes the product description, unit/pack size, listed price and availability note.
+- Actions are separated: Order Now opens checkout for that product; Add to Cart only adds it to the cart; WhatsApp and Call use shop contact numbers from order-config.js.
+- Related products from the same category appear beneath the product description.
+- Configure order-config.js with the actual shop WhatsApp number and telephone number. Contact actions intentionally show a message until real contact details are supplied.
