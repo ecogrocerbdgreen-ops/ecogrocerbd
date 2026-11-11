@@ -589,14 +589,23 @@ section[id], div[id] { scroll-margin-top: 90px; }
 .product-detail-availability { display: flex; align-items: center; gap: 8px; margin: 0; padding: 10px 12px; border-radius: 10px; color: #496652; background: #f1f8f1; font-size: 10px; }
 .availability-dot { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 50%; background: #60a36a; box-shadow: 0 0 0 4px #e3f1e5; }
 .product-detail-cart-state { margin: 12px 0 8px; color: #3f744d; font-size: 10px; font-weight: 700; }
-.product-detail-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 13px; }
-.product-detail-actions button { min-height: 46px; padding: 9px 12px; border: 1px solid transparent; border-radius: 11px; font: 800 11px 'Noto Sans Bengali',sans-serif; cursor: pointer; transition: transform .15s, box-shadow .15s, background .15s; }
+.product-detail-actions { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 11px; margin-top: 15px; }
+.product-detail-actions button { display: flex; align-items: center; justify-content: center; gap: 9px; min-width: 0; min-height: 58px; padding: 10px 13px; border: 1px solid transparent; border-radius: 13px; font: 800 14px/1.2 'Noto Sans Bengali',sans-serif; text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform .15s, box-shadow .15s, background .15s, border-color .15s; }
 .product-detail-actions button:active { transform: scale(.98); }
-.detail-action-order { display: flex; align-items: center; justify-content: center; gap: 12px; color: #fff; background: linear-gradient(135deg,#238348,#146638); box-shadow: 0 6px 17px rgba(20,102,56,.2); }
-.detail-action-order span { font-size: 17px; }
+.product-detail-actions button:focus-visible { outline: 3px solid rgba(35,131,72,.3); outline-offset: 3px; }
+.product-detail-actions button:disabled { opacity: .5; cursor: not-allowed; }
+.detail-action-icon { display: block; width: 23px; height: 23px; flex: 0 0 23px; }
+.detail-action-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; min-width: 0; }
+.detail-action-label { display: block; white-space: nowrap; }
+.detail-action-copy small { display: block; color: inherit; font-size: 10px; font-weight: 650; line-height: 1; opacity: .78; }
+.detail-action-order { color: #fff; background: linear-gradient(135deg,#238348,#146638); box-shadow: 0 6px 17px rgba(20,102,56,.2); }
 .detail-action-cart { color: #236d3b; border-color: #b8d9bd !important; background: #eef8ef; }
-.detail-action-whatsapp { color: #16834e; border-color: #cce8d7 !important; background: #f3fbf6; }
-.detail-action-call { color: #40566c; border-color: #dce5eb !important; background: #f6f9fb; }
+.detail-action-whatsapp { color: #087b45; border-color: #bfe3ce !important; background: #effaf3; }
+.detail-action-call { color: #40566c; border-color: #d4e0e8 !important; background: #f2f7fa; }
+@media (hover:hover) {
+  .detail-action-order:hover { box-shadow: 0 9px 22px rgba(20,102,56,.28); }
+  .detail-action-cart:hover, .detail-action-whatsapp:hover, .detail-action-call:hover { background: #fff; box-shadow: 0 5px 15px rgba(29,66,42,.09); }
+}
 .product-detail-small-note { margin: 10px 0 0; color: #89958c; font-size: 9px; line-height: 1.6; }
 .product-description-section { padding: 23px 0; border-top: 1px solid #e9f0e9; }
 .detail-section-heading { margin-bottom: 14px; }
@@ -641,7 +650,10 @@ section[id], div[id] { scroll-margin-top: 90px; }
   .product-detail-price { margin-top: 11px; font-size: 27px; }
   .product-detail-meta { margin: 12px 0; }
   .product-detail-actions { position: sticky; bottom: 0; z-index: 3; padding: 9px 0 calc(9px + env(safe-area-inset-bottom)); background: rgba(255,255,255,.96); backdrop-filter: blur(10px); }
-  .product-detail-actions button { min-height: 45px; font-size: 10px; }
+  .product-detail-actions { gap: 9px; margin-top: 13px; }
+  .product-detail-actions button { min-height: 56px; padding: 9px 8px; gap: 7px; font-size: 13px; }
+  .detail-action-icon { width: 21px; height: 21px; flex-basis: 21px; }
+  .detail-action-copy small { font-size: 9px; }
   .product-information-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .recommended-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
   .recommended-product { padding: 8px; }
