@@ -302,6 +302,34 @@
     return 'EG' + timePart + randomPart;
   }
 
+  function showOrderSuccess(orderId, total, paymentMessage, whatsappUrl) {
+    byId('success-order-number').textContent = orderId;
+    // The server-issued order ID is also the customer's tracking reference.
+    byId('success-tracking-number').textContent = orderId;
+    byId('success-order-total').textContent = formatMoney(total);
+    byId('success-payment-note').textContent = paymentMessage.trim();
+    const done = byId('order-success-done');
+    done.textContent = 'ঠিক আছে';
+    if (whatsappUrl) {
+      const note = document.createElement('span');
+      note.textContent = ' অর্ডারের কপি WhatsApp-এ পাঠানোর লিংকটি পরে পাওয়া যাবে।';
+      byId('success-payment-note').appendChild(note);
+    }
+    byId('order-success-scrim').hidden = false;
+    document.body.classList.add('no-scroll');
+    byId('order-success-close').focus();
+  }
+
+  function closeOrderSuccess() {
+    byId('order-success-scrim').hidden = true;
+    document.body.classList.remove('no-scroll');
+    if (document.body.classList.contains('checkout-page-mode')) {
+      window.location.assign('index.html#home');
+      return;
+    }
+    closeCheckout();
+  }
+
   async function submitOrder(event) {
     event.preventDefault();
     if (requestInProgress) return;
@@ -382,22 +410,7 @@
       form.reset();
       appliedCoupon = '';
       renderCheckoutItems();
-      setStatus(
-        'অর্ডার সফলভাবে Supabase database-এ জমা হয়েছে। আপনার অর্ডার নম্বর: ' +
-          orderId + '। সার্ভার-নির্ধারিত মোট: ' + formatMoney(confirmedTotal) +
-          '।' + paymentMessage,
-        'success'
-      );
-      if (whatsappUrl) {
-        const link = document.createElement('a');
-        link.href = whatsappUrl;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        link.className = 'checkout-whatsapp-link';
-        link.textContent = 'WhatsApp-এ অর্ডার সামারি খুলুন';
-        byId('checkout-status').appendChild(document.createTextNode(' '));
-        byId('checkout-status').appendChild(link);
-      }
+      showOrderSuccess(orderId, confirmedTotal, paymentMessage, whatsappUrl);
     } catch (error) {
       setStatus(error && error.message ? error.message : 'অর্ডার জমা দেওয়া যায়নি। আবার চেষ্টা করুন।', 'error');
     } finally {
@@ -408,7 +421,23 @@
   }
 
   document.addEventListener('keydown', function (event) {
-    if (event.key === 'Escape' && !byId('checkout-scrim').hidden) closeCheckout();
+    if (event.key === 'Escape' && !byId('order-success-scrim').hidden) closeOrderSuccess();
+    else if (event.key === 'Escape' && !byId('checkout-scrim').hidden) closeCheckout();
+  });
+
+  byId('order-success-close').addEventListener('click', closeOrderSuccess);
+  byId('order-success-done').addEventListener('click', closeOrderSuccess);
+  byId('order-success-scrim').addEventListener('click', event => {
+    if (event.target.id === 'order-success-scrim') closeOrderSuccess();
+  });
+  byId('success-copy-tracking').addEventListener('click', async () => {
+    const value = byId('success-tracking-number').textContent;
+    try {
+      await navigator.clipboard.writeText(value);
+      byId('success-copy-tracking').textContent = 'কপি হয়েছে';
+    } catch (_) {
+      byId('success-copy-tracking').textContent = 'কপি হয়নি';
+    }
   });
 
   byId('checkout-close').addEventListener('click', function () {
