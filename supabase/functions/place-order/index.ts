@@ -1,5 +1,7 @@
 const allowedOrigins = new Set([
   "https://ecogrocerbdgreen-ops.github.io",
+  "https://ecogrocerbd.netlify.app",
+  "https://main--ecogrocerbd.netlify.app",
 ]);
 
 const encoder = new TextEncoder();
@@ -13,7 +15,7 @@ function json(data: unknown, status = 200, origin = "") {
   if (origin && allowedOrigins.has(origin)) {
     headers.set("access-control-allow-origin", origin);
     headers.set("access-control-allow-methods", "POST, OPTIONS");
-    headers.set("access-control-allow-headers", "apikey, content-type, x-client-info");
+    headers.set("access-control-allow-headers", "apikey, authorization, content-type, x-client-info, accept");
     headers.set("access-control-max-age", "86400");
   }
   return new Response(status === 204 ? null : JSON.stringify(data), { status, headers });
@@ -155,6 +157,8 @@ Deno.serve(async (request: Request) => {
   const clientIp = (
     request.headers.get("x-forwarded-for") ||
     request.headers.get("x-real-ip") ||
+    request.headers.get("cf-connecting-ip") ||
+    request.headers.get("fly-client-ip") ||
     ""
   ).split(",")[0].trim();
   if (!clientIp) {
