@@ -1380,3 +1380,27 @@ section[id], div[id] { scroll-margin-top: 90px; }
   .info-panel,
   .info-note { padding: 16px; border-radius: 15px; }
 }
+
+
+/* Order confirmation popup */
+.order-success-scrim[hidden] { display: none !important; }
+.order-success-scrim { position: fixed; inset: 0; z-index: 1200; display: grid; place-items: center; padding: 18px; background: rgba(10,30,18,.66); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
+.order-success-modal { position: relative; width: min(100%, 440px); max-height: min(90vh, 760px); overflow-y: auto; padding: 34px 28px 27px; border: 1px solid #e2eee5; border-radius: 25px; background: #fff; box-shadow: 0 24px 90px rgba(0,0,0,.24); text-align: center; animation: orderSuccessEnter .24s ease-out both; }
+.order-success-close { position: absolute; top: 13px; right: 14px; display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 50%; background: #f1f5f1; color: #425448; font-size: 25px; cursor: pointer; }
+.order-success-check { display: grid; place-items: center; width: 76px; height: 76px; margin: 0 auto 17px; border-radius: 50%; background: #e9f7ed; box-shadow: inset 0 0 0 7px #f5fbf6; color: #168342; }
+.order-success-check span { font: 800 43px/1 Arial,sans-serif; }
+.order-success-eyebrow { color: #398353; font-size: 10px; font-weight: 800; letter-spacing: 1.2px; }
+.order-success-modal h2 { margin: 9px 0 6px; color: #174b2b; font: 800 25px 'Baloo Da 2','Noto Sans Bengali',sans-serif; }
+.order-success-modal > p { margin: 0 auto 19px; max-width: 340px; color: #68776d; font-size: 13px; line-height: 1.7; }
+.order-success-details { margin: 0 0 14px; padding: 6px 17px; border: 1px solid #e6eee7; border-radius: 16px; background: #f8fbf8; text-align: left; }
+.order-success-details > div { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 51px; border-bottom: 1px solid #e8eee8; }
+.order-success-details > div:last-child { border-bottom: 0; }
+.order-success-details span { color: #68776d; font-size: 12px; }
+.order-success-details strong { color: #1d3927; font-size: 13px; overflow-wrap: anywhere; text-align: right; }
+.success-tracking-line { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.success-tracking-line button { padding: 6px 10px; border: 1px solid #cfe2d3; border-radius: 8px; background: #fff; color: #176d38; font-size: 11px; font-weight: 700; cursor: pointer; }
+.order-success-details .order-success-total { min-height: 59px; }
+.order-success-details .order-success-total strong { color: #14783b; font-size: 20px; }
+.order-success-modal .order-success-payment { margin: 0 0 17px; color: #68776d; font-size: 11px; }
+@keyframes orderSuccessEnter { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@media (max-width: 480px) { .order-success-modal { padding: 31px 19px 21px; border-radius: 21px; } .order-success-modal h2 { font-size: 22px; } .order-success-details { padding-inline: 12px; } }
