@@ -13,6 +13,7 @@
   <script src="script.js" defer></script>
   <script src="order-config.js" defer></script>
   <script src="checkout.js" defer></script>
+  <script src="product-detail.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main-content">মূল কনটেন্টে যান</a>
@@ -228,6 +229,27 @@
     <div class="cart-footer"><div class="cart-total-row"><span>সাবটোটাল</span><strong id="cart-subtotal">৳ ০</strong></div><p>ডেলিভারি চার্জ ও কুপন অর্ডার ফর্মে হিসাব হবে।</p><button class="button button-primary button-block" id="checkout-placeholder" type="button">ডেলিভারি ঠিকানা ও অর্ডার ফর্ম</button></div>
   </aside>
 
+
+
+  <!-- Product detail experience -->
+  <div class="product-detail-scrim" id="product-detail-scrim" hidden>
+    <section class="product-detail-modal" role="dialog" aria-modal="true" aria-labelledby="product-detail-title">
+      <header class="product-detail-header">
+        <div class="product-detail-brand">
+          <span class="product-detail-mark">e</span>
+          <div><strong>EcoGrocer BD</strong><small>পণ্যের বিস্তারিত</small></div>
+        </div>
+        <button class="icon-button" id="product-detail-close" type="button" aria-label="পণ্যের বিস্তারিত বন্ধ করুন">×</button>
+      </header>
+      <div class="product-detail-content" id="product-detail-content"></div>
+    </section>
+  </div>
+
+  <div class="product-lightbox" id="product-lightbox" hidden role="dialog" aria-modal="true" aria-label="পণ্যের ছবি">
+    <button class="product-lightbox-close" id="product-lightbox-close" type="button" aria-label="ছবি বন্ধ করুন">×</button>
+    <img id="product-lightbox-image" src="" alt="">
+    <p id="product-lightbox-caption"></p>
+  </div>
 
   <!-- Checkout / order form -->
   <div class="checkout-scrim" id="checkout-scrim" hidden>
