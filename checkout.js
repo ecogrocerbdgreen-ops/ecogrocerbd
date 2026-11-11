@@ -96,18 +96,6 @@
     updateTotals();
   }
 
-  function filterAreas() {
-    const query = normalizeSearch(byId('checkout-area-search').value);
-    const select = byId('checkout-area');
-    Array.from(select.options).forEach(option => {
-      if (!option.value) return;
-      option.hidden = Boolean(query) && !normalizeSearch(option.textContent).includes(query);
-    });
-    Array.from(select.querySelectorAll('optgroup')).forEach(group => {
-      group.hidden = Array.from(group.options).every(option => option.hidden);
-    });
-  }
-
   async function loadSupabaseDeliverySettings() {
     const config = window.ECOGROCER_CONFIG || CONFIG;
     const key = String(config.supabasePublishableKey || '').trim();
@@ -171,8 +159,6 @@
         });
         slotSelect.appendChild(slotGroup);
       }
-
-      filterAreas();
       updateTotals();
     } catch (error) {
       // Existing HTML options and fee values stay usable if Supabase is temporarily unavailable.
@@ -218,9 +204,7 @@
     byId('checkout-coupon').value = '';
     byId('checkout-coupon-feedback').textContent = 'ডেমো কুপন: ECO10 অথবা FRESH50';
     byId('checkout-coupon-feedback').className = 'coupon-feedback';
-    byId('checkout-area-search').value = '';
     byId('checkout-area').value = '';
-    filterAreas();
     clearStatus();
     renderCheckoutItems();
     byId('checkout-scrim').hidden = false;
@@ -437,7 +421,6 @@
   byId('checkout-scrim').addEventListener('click', event => {
     if (event.target.id === 'checkout-scrim') closeCheckout();
   });
-  byId('checkout-area-search').addEventListener('input', filterAreas);
   byId('checkout-area').addEventListener('change', updateTotals);
   byId('checkout-coupon-apply').addEventListener('click', applyCoupon);
 
