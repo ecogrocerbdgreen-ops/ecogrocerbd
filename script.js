@@ -204,8 +204,13 @@ function changeCart(productId, delta) {
     showToast('এই পণ্যটি বর্তমানে স্টকে নেই');
     return;
   }
-  const next = Math.min(stockCap, Math.max(0, (Number(cart[productId]) || 0) + delta));
-  if (delta > 0 && next === Number(cart[productId] || 0)) {
+  const currentQuantity = Number(cart[productId] || 0);
+  if (delta > 0 && currentQuantity >= stockCap) {
+    showToast('স্টকে থাকা সর্বোচ্চ পরিমাণ কার্টে আছে');
+    return;
+  }
+  const next = Math.min(stockCap, Math.max(0, currentQuantity + delta));
+  if (delta > 0 && next === currentQuantity) {
     showToast('স্টকে থাকা সর্বোচ্চ পরিমাণ কার্টে আছে');
     return;
   }
