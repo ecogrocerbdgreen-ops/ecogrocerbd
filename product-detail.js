@@ -340,7 +340,8 @@
 
     var productCard = event.target.closest('[data-product-detail]');
     if (productCard && !event.target.closest('button, a, input, select, textarea, [data-cart-action]')) {
-      openProductDetail(productCard.dataset.productDetail);
+      var cardProduct = findProduct(productCard.dataset.productDetail);
+      if (cardProduct) window.location.href = productPageUrl(cardProduct);
     }
   });
 
