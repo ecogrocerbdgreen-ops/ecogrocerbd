@@ -1,6 +1,7 @@
 (() => {
   "use strict";
   const API = "/.netlify/functions/api?action=";
+  const AUTH_API = "/.netlify/functions/auth?action=";
   const SESSION_KEY = "ecogrocer-customer-session";
   const $ = (id) => document.getElementById(id);
   let config = null;
