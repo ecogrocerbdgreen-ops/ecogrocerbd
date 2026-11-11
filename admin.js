@@ -20,9 +20,9 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
   const $ = (id) => document.getElementById(id);
   const query = new URLSearchParams(window.location.search);
   const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-  const callbackFlow = query.get("flow") || "";
-  const isRecoveryCallback = callbackFlow === "recovery" || hash.get("type") === "recovery";
-  const isSetupCallback = callbackFlow === "setup" || hash.get("type") === "magiclink" || hash.get("type") === "email";
+  const hashType = hash.get("type") || "";
+  let flowMode = query.get("flow") || (hashType === "recovery" ? "recovery" :
+    (hashType === "magiclink" || hashType === "email" ? "setup" : ""));
 
   function showView(name) {
     $("login-view").classList.toggle("hidden", name !== "login");
@@ -50,6 +50,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
   }
 
   function clearCallbackUrl() {
+    flowMode = "";
     window.history.replaceState({}, document.title, window.location.pathname);
   }
 
@@ -68,7 +69,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
 
   async function syncSessionToScreen(event, session) {
     if (!session?.user) {
-      if (!isRecoveryCallback && !isSetupCallback) showView("login");
+      if (!flowMode) showView("login");
       return;
     }
 
@@ -79,8 +80,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
       return;
     }
 
-    if (event === "PASSWORD_RECOVERY" || isRecoveryCallback || isSetupCallback) {
-      showPasswordForm(isSetupCallback && !isRecoveryCallback);
+    if (event === "PASSWORD_RECOVERY" || flowMode === "recovery" || flowMode === "setup") {
+      showPasswordForm(flowMode === "setup");
       return;
     }
 
