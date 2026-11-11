@@ -18,7 +18,7 @@ function json(data: unknown, status = 200, origin = "") {
     headers.set("access-control-allow-headers", "apikey, content-type, x-client-info");
     headers.set("access-control-max-age", "86400");
   }
-  return new Response(JSON.stringify(data), { status, headers });
+  return new Response(status === 204 ? null : JSON.stringify(data), { status, headers });
 }
 
 function constantTimeEqual(left: string, right: string) {
