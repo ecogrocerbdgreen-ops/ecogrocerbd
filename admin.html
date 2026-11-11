@@ -121,13 +121,7 @@
     }
     .primary:hover { background: var(--green-dark); transform: translateY(-1px); }
     .primary:disabled { cursor: wait; opacity: .65; transform: none; }
-    .forgot {
-      display: block; margin: 17px auto 0; padding: 4px 6px;
-      border: 0; background: transparent; color: var(--green);
-      font-size: 12px; font-weight: 800;
-    }
-    .forgot:hover { text-decoration: underline; }
-    .status {
+.status {
       margin-top: 17px; padding: 12px 13px; border-radius: 10px;
       background: #f2f6f3; color: #596c60; font-size: 12px; line-height: 1.7;
     }
@@ -212,42 +206,15 @@
           <input class="input" id="admin-password" name="password" type="password" autocomplete="current-password" placeholder="আপনার পাসওয়ার্ড লিখুন" required minlength="8">
           <button class="primary" id="login-button" type="submit">লগইন করুন <span aria-hidden="true">→</span></button>
         </form>
-        <button class="forgot" id="forgot-button" type="button">পাসওয়ার্ড ভুলে গেছেন?</button>
-        <div class="status" id="login-status" role="status" aria-live="polite"></div>
-        <p class="note">প্রথমবার পাসওয়ার্ড তৈরি বা পরে পরিবর্তন করতে “পাসওয়ার্ড ভুলে গেছেন?” নির্বাচন করুন। ইমেইলের লিংক যাচাই করার পর নতুন পাসওয়ার্ড দুবার লিখুন।</p>
+<div class="status" id="login-status" role="status" aria-live="polite"></div>
+        <p class="note">নিরাপত্তার জন্য পাসওয়ার্ড পরিবর্তন কেবল Supabase-এর অনুমোদিত সার্ভার ব্যবস্থাপনা থেকেই করা হবে।</p>
         <div class="security-line">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.7 3.1 7.8 7.5 9.5 4.4-1.7 7.5-4.8 7.5-9.5V6L12 3Z"/><path d="m9 12 2 2 4-4"/></svg>
           ENCRYPTED AUTHENTICATION BY SUPABASE
         </div>
       </section>
 
-
-
-      <section class="card hidden" id="recovery-verify-view">
-        <div class="card-icon" aria-hidden="true">✉</div>
-        <h2>ইমেইল যাচাই করুন</h2>
-        <p class="card-copy">আপনার পাসওয়ার্ড রিসেটের অনুরোধটি নিশ্চিত করতে নিচের বাটনে ক্লিক করুন। এরপর নতুন পাসওয়ার্ড ও নিশ্চিতকরণ দেওয়ার ঘর আসবে।</p>
-        <button class="primary" id="verify-recovery-button" type="button">পাসওয়ার্ড রিসেট চালিয়ে যান</button>
-        <div class="status" id="recovery-verify-status" role="status" aria-live="polite"></div>
-        <p class="note">এই ধাপে অ্যাডমিন লগইন সম্পন্ন হবে না। শুধু পাসওয়ার্ড পরিবর্তনের অনুমতি যাচাই করা হবে।</p>
-      </section>
-
-      <section class="card hidden" id="password-view">
-        <div class="card-icon" aria-hidden="true">✳</div>
-        <h2 id="password-heading">নতুন পাসওয়ার্ড তৈরি করুন</h2>
-        <p class="card-copy" id="password-copy">আপনার অ্যাডমিন অ্যাকাউন্টের জন্য একটি শক্তিশালী পাসওয়ার্ড দিন।</p>
-        <form id="password-form">
-          <label class="label" for="new-password">নতুন পাসওয়ার্ড</label>
-          <input class="input" id="new-password" name="password" type="password" autocomplete="new-password" minlength="10" placeholder="কমপক্ষে ১০ অক্ষর" required>
-          <label class="label" for="confirm-password">পাসওয়ার্ড নিশ্চিত করুন</label>
-          <input class="input" id="confirm-password" name="confirmPassword" type="password" autocomplete="new-password" minlength="10" placeholder="আবার পাসওয়ার্ড লিখুন" required>
-          <button class="primary" id="save-password-button" type="submit">পাসওয়ার্ড সংরক্ষণ করুন</button>
-        </form>
-        <div class="status" id="password-status" role="status" aria-live="polite"></div>
-        <p class="note">এই পাসওয়ার্ডটি Supabase Auth-এ নিরাপদভাবে সংরক্ষিত হবে। পাসওয়ার্ড কাউকে জানাবেন না।</p>
-      </section>
-
-      <section class="card hidden" id="success-view">
+<section class="card hidden" id="success-view">
         <div class="card-icon" aria-hidden="true">✓</div>
         <div class="success-box">
           <div class="success-mark">✓</div>
