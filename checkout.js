@@ -73,7 +73,7 @@
         const quantity = Number(cart[product.id]);
         const lineTotal = product.price * quantity;
         return '<article class="checkout-product-line" data-checkout-product="' + product.id + '">' +
-          '<div class="checkout-product-art"><img src="' + escapeHTML(PRODUCT_IMAGES[product.id] || '') + '" alt="' + escapeHTML(product.name) + '" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="checkout-product-image-fallback" hidden>ছবি নেই</span></div>' +
+          '<div class="checkout-product-art"><img src="' + escapeHTML(product.image_url || PRODUCT_IMAGES[product.id] || '') + '" alt="' + escapeHTML(product.name) + '" loading="eager" decoding="async" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="checkout-product-image-fallback" hidden>ছবি পাওয়া যায়নি</span></div>' +
           '<div class="checkout-product-info">' +
             '<strong>' + escapeHTML(product.name) + '</strong>' +
             '<small>প্যাক সাইজ: ' + escapeHTML(product.unit) + '</small>' +
@@ -483,6 +483,10 @@
   });
   byId('eco-checkout-form').addEventListener('submit', submitOrder);
 
+  // Supabase may replace catalogue rows and image URLs after the initial page render.
+  // Refresh the selected-product cards when that update completes.
+  document.addEventListener('ecogrocer:catalogue-updated', renderCheckoutItems);
+
   loadSupabaseDeliverySettings();
 
   // Restore cart items passed from the storefront URL before opening the standalone form.
@@ -525,6 +529,7 @@
     const selectedProduct = params.get('product') || '';
     try {
       openCheckout(selectedProduct);
+      renderCheckoutItems();
     } catch (error) {
       // Never leave customers on a blank/loading screen if enhancement code encounters an error.
       byId('checkout-scrim').hidden = false;
