@@ -72,13 +72,29 @@
     document.body.classList.toggle('no-scroll', locked);
   }
 
+  function recommendationCartControl(product) {
+    var qty = Number(cart[product.id] || 0);
+    var outOfStock = Boolean(product.track_inventory) && Number(product.stock_quantity || 0) <= 0;
+    if (outOfStock) {
+      return '<button type="button" class="recommended-add" disabled aria-label="' + escapeHTML(product.name) + ' বর্তমানে স্টকে নেই">Out of Stock</button>';
+    }
+    if (qty > 0) {
+      return '<div class="recommended-qty-stepper" role="group" aria-label="' + escapeHTML(product.name) + ' পরিমাণ">' +
+        '<button type="button" data-recommend-action="decrease" data-recommend-id="' + product.id + '" aria-label="' + escapeHTML(product.name) + ' একটি কমান">−</button>' +
+        '<span aria-live="polite">' + qty + '</span>' +
+        '<button type="button" data-recommend-action="increase" data-recommend-id="' + product.id + '" aria-label="' + escapeHTML(product.name) + ' একটি বাড়ান">+</button>' +
+      '</div>';
+    }
+    return '<button type="button" class="recommended-add" data-recommend-add="' + product.id + '" aria-label="' + escapeHTML(product.name) + ' কার্টে যোগ করুন">Add to Cart</button>';
+  }
+
   function recommendationCard(product) {
     return '<article class="recommended-product">' +
       '<button type="button" class="recommended-product-open" data-recommend-open="' + product.id + '" aria-label="' + escapeHTML(product.name) + ' বিস্তারিত দেখুন">' +
         '<span class="recommended-product-image"><img src="' + imageFor(product) + '" alt="" loading="lazy" onerror="this.hidden=true"></span>' +
         '<span class="recommended-product-copy"><strong>' + escapeHTML(product.name) + '</strong><small>' + escapeHTML(product.unit) + '</small><b>' + money(product.price) + '</b></span>' +
       '</button>' +
-      '<button type="button" class="recommended-add" data-recommend-add="' + product.id + '" aria-label="' + escapeHTML(product.name) + ' কার্টে যোগ করুন">+ Add</button>' +
+      '<div class="recommended-cart-control" data-recommend-control="' + product.id + '">' + recommendationCartControl(product) + '</div>' +
     '</article>';
   }
 
@@ -183,6 +199,13 @@
     if (state) state.textContent = 'আপনার কার্টে এই পণ্যটি ' + Number(cart[id] || 0) + ' টি আছে';
   }
 
+  function updateRecommendationCartControl(id) {
+    var product = findProduct(id);
+    var control = detailContent.querySelector('[data-recommend-control="' + id + '"]');
+    if (!product || !control) return;
+    control.innerHTML = recommendationCartControl(product);
+  }
+
   function openProductWhatsApp(id) {
     var product = findProduct(id);
     if (!product) return;
@@ -215,7 +238,17 @@
       var recommendId = recommendAdd.dataset.recommendAdd;
       changeCart(recommendId, 1);
       updateDetailCartState(recommendId);
-      recommendAdd.textContent = '✓ Added';
+      updateRecommendationCartControl(recommendId);
+      return;
+    }
+
+    var recommendAction = event.target.closest('[data-recommend-action]');
+    if (recommendAction) {
+      var recommendId = recommendAction.dataset.recommendId;
+      var quantityDelta = recommendAction.dataset.recommendAction === 'decrease' ? -1 : 1;
+      changeCart(recommendId, quantityDelta);
+      updateDetailCartState(recommendId);
+      updateRecommendationCartControl(recommendId);
       return;
     }
 
