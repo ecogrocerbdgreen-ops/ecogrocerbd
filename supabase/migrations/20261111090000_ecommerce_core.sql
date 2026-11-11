@@ -232,15 +232,146 @@ begin
   select * into v_slot from public.delivery_slots where id = v_slot_id and is_active = true;
   if not found then raise exception 'ডেলিভারি সময় পাওয়া যায়নি।'; end if;
 
-  if jsonb_typeof(p_order->'items') <> 'array'
-    or jsonb_array_length(p_order->'items') < 1
-    or jsonb_array_length(p_order->'items') > 32 then
+  if jsonb_typeof(p_order->'items') is distinct from 'array' then
+    raise exception 'কার্টে পণ্যের তালিকা সঠিক নয়।';
+  end if;
+  if jsonb_array_length(p_order->'items') < 1 or jsonb_array_length(p_order->'items') > 32 then
     raise exception 'কার্টে পণ্যের তালিকা সঠিক নয়।';
   end if;
 
-  for v_item in select value from jsonb_array_elements(p_order->'items')
+  for v_item in select value from jsonb_array_elements(p_order->'items') order by value->>'id'
   loop
     v_count := v_count + 1;
+    if coalesce(v_item->>'quantity','') !~ '^[0-9]+
+    if v_qty < 1 or v_qty > 99 then raise exception 'পণ্যের পরিমাণ সঠিক নয়।'; end if;
+    select * into v_product from public.products
+      where id = v_item->>'id' and is_active = true for update;
+    if not found then raise exception 'একটি পণ্য বর্তমানে পাওয়া যাচ্ছে না।'; end if;
+    if v_product.track_inventory and v_product.stock_quantity < v_qty then
+      raise exception 'স্টকে পর্যাপ্ত পণ্য নেই: %', v_product.name;
+    end if;
+    v_line := v_product.price * v_qty;
+    v_subtotal := v_subtotal + v_line;
+    if v_product.track_inventory then
+      update public.products
+      set stock_quantity = stock_quantity - v_qty, updated_at = now()
+      where id = v_product.id;
+    end if;
+  end loop;
+
+  if v_count <> (select count(distinct value->>'id') from jsonb_array_elements(p_order->'items')) then
+    raise exception 'একই পণ্য একাধিকবার পাঠানো যাবে না।';
+  end if;
+
+  if v_code <> '' then
+    select * into v_coupon from public.coupons where code = v_code and is_active = true for update;
+    if not found then raise exception 'কুপন কোডটি বৈধ নয়।'; end if;
+    if v_coupon.starts_at is not null and now() < v_coupon.starts_at then raise exception 'কুপনটি এখনো চালু হয়নি।'; end if;
+    if v_coupon.expires_at is not null and now() > v_coupon.expires_at then raise exception 'কুপনের মেয়াদ শেষ।'; end if;
+    if v_coupon.usage_limit is not null and v_coupon.usage_count >= v_coupon.usage_limit then raise exception 'কুপনের ব্যবহার সীমা শেষ।'; end if;
+    if v_subtotal < v_coupon.minimum_order then raise exception 'এই কুপনের জন্য ন্যূনতম অর্ডার ৳' || v_coupon.minimum_order || '।'; end if;
+    if v_coupon.discount_type = 'fixed' then
+      v_discount := least(v_subtotal,v_coupon.discount_value);
+    else
+      v_discount := round(v_subtotal * v_coupon.discount_value / 100,2);
+      if v_coupon.max_discount is not null then v_discount := least(v_discount,v_coupon.max_discount); end if;
+    end if;
+    update public.coupons set usage_count = usage_count + 1 where code = v_code;
+  end if;
+
+  v_delivery := v_area.fee;
+  v_total := greatest(0,v_subtotal + v_delivery - v_discount);
+  if v_payment_method <> 'cod' then v_payment_status := 'pending_verification'; end if;
+
+  v_order_number := 'EG' || to_char(now() at time zone 'Asia/Dhaka','YYMMDD') || '-' || upper(substr(replace(gen_random_uuid()::text,'-',''),1,6));
+  insert into public.orders (
+    order_number,status,payment_method,payment_status,customer_name,customer_phone,
+    delivery_area_id,delivery_area_name,delivery_fee,block_name,road_name,house_number,
+    full_address,delivery_slot_id,delivery_notes,payer_phone,transaction_id,coupon_code,
+    subtotal,discount,grand_total
+  ) values (
+    v_order_number,'pending',v_payment_method,v_payment_status,v_name,v_phone,
+    v_area.id,v_area.name,v_delivery,trim(v_delivery->>'block'),trim(v_delivery->>'road'),
+    trim(v_delivery->>'house'),trim(v_delivery->>'fullAddress'),v_slot.id,
+    coalesce(trim(v_delivery->>'notes'),''),regexp_replace(coalesce(v_payment->>'payerPhone',''),'\s','','g'),
+    trim(coalesce(v_payment->>'transactionId','')),nullif(v_code,''),v_subtotal,v_discount,v_total
+  ) returning id into v_order_id;
+
+  for v_item in select value from jsonb_array_elements(p_order->'items')
+  loop
+    v_qty := (v_item->>'quantity')::integer;
+    select * into v_product from public.products where id = v_item->>'id';
+    v_line := v_product.price * v_qty;
+    insert into public.order_items(order_id,product_id,product_name,unit,quantity,unit_price,line_total)
+    values(v_order_id,v_product.id,v_product.name,v_product.unit,v_qty,v_product.price,v_line);
+  end loop;
+
+  return jsonb_build_object(
+    'success',true,'orderId',v_order_number,'subtotal',v_subtotal,
+    'deliveryCharge',v_delivery,'discount',v_discount,'grandTotal',v_total,
+    'paymentStatus',v_payment_status
+  );
+end;
+$$;
+
+create or replace function public.set_ecogrocer_order_status(p_order_id uuid,p_status text)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_order public.orders%rowtype;
+  v_item record;
+begin
+  if p_status not in ('pending','confirmed','processing','out_for_delivery','delivered','cancelled','refunded') then
+    raise exception 'অর্ডারের Status সঠিক নয়।';
+  end if;
+  select * into v_order from public.orders where id = p_order_id for update;
+  if not found then raise exception 'অর্ডার পাওয়া যায়নি।'; end if;
+
+  if p_status = 'cancelled' and v_order.status <> 'cancelled' then
+    for v_item in
+      select product_id,quantity from public.order_items where order_id = v_order.id
+    loop
+      if v_item.product_id is not null then
+        update public.products
+        set stock_quantity = stock_quantity + v_item.quantity, updated_at = now()
+        where id = v_item.product_id;
+      end if;
+    end loop;
+  elsif v_order.status = 'cancelled' and p_status <> 'cancelled' then
+    raise exception 'বাতিল অর্ডার পুনরায় চালু করতে নতুন অর্ডার তৈরি করুন।';
+  end if;
+
+  update public.orders set status = p_status, updated_at = now() where id = v_order.id;
+  insert into public.admin_audit_log(action,entity_type,entity_id,details)
+  values('status_changed','order',v_order.order_number,jsonb_build_object('from',v_order.status,'to',p_status));
+  return jsonb_build_object('success',true,'orderId',v_order.order_number,'status',p_status);
+end;
+$$;
+
+alter table public.categories enable row level security;
+alter table public.products enable row level security;
+alter table public.delivery_areas enable row level security;
+alter table public.delivery_slots enable row level security;
+alter table public.coupons enable row level security;
+alter table public.orders enable row level security;
+alter table public.order_items enable row level security;
+alter table public.admin_audit_log enable row level security;
+
+revoke all on public.categories,public.products,public.delivery_areas,public.delivery_slots,
+  public.coupons,public.orders,public.order_items,public.admin_audit_log from anon,authenticated;
+grant usage on schema public to service_role;
+grant all on all tables in schema public to service_role;
+grant all on all sequences in schema public to service_role;
+revoke all on function public.place_ecogrocer_order(jsonb) from public, anon, authenticated;
+revoke all on function public.set_ecogrocer_order_status(uuid,text) from public, anon, authenticated;
+grant execute on function public.place_ecogrocer_order(jsonb) to service_role;
+grant execute on function public.set_ecogrocer_order_status(uuid,text) to service_role;
+ then
+      raise exception 'পণ্যের পরিমাণ সঠিক নয়।';
+    end if;
     v_qty := (v_item->>'quantity')::integer;
     if v_qty < 1 or v_qty > 99 then raise exception 'পণ্যের পরিমাণ সঠিক নয়।'; end if;
     select * into v_product from public.products
