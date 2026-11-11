@@ -12,6 +12,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
   let orders = [];
   let loaded = false;
   let loading = false;
+  let activeOrderId = null;
   const money = (n) => "৳ " + Number(n || 0).toLocaleString("en-BD", { maximumFractionDigits: 2 });
   const dateText = (v) => v ? new Date(v).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" }) : "—";
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -109,7 +110,29 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
       return orderCard(o).replace('<div class="order-card-actions">','<div class="order-card-actions order-card-controls"><label class="control-label">অর্ডার <select class="admin-select order-status-select" data-status-id="'+esc(o.id)+'">'+statusOptions+'</select></label><label class="control-label">পেমেন্ট <select class="admin-select payment-status-select" data-payment-id="'+esc(o.id)+'">'+payOptions+'</select></label><button class="row-action save-order-status" data-save-order="'+esc(o.id)+'" type="button">আপডেট</button>');
     }).join("")+'</div>':'<p class="admin-empty">এই অনুসন্ধানে কোনো অর্ডার পাওয়া যায়নি।</p>';
   }
+  function addressEditorMarkup(o) {
+    const fields=[['full_address','মূল ঠিকানা / এলাকা'],['delivery_area_name','ডেলিভারি এরিয়া'],['block_name','ব্লক / সেক্টর'],['road_name','রোড / লেন'],['house_number','বাড়ি / হোল্ডিং নম্বর']];
+    return '<section class="address-editor"><div class="address-editor-head"><div><h3>ডেলিভারি ঠিকানা</h3><p>কাস্টমারের দেওয়া ঠিকানা যাচাই করে প্রয়োজন হলে সংশোধন করুন।</p></div><button class="row-action" type="button" data-address-edit>✎ ঠিকানা এডিট</button></div>'+
+      '<div class="address-current">'+fields.map(([key,label])=>'<div><small>'+label+'</small><strong>'+esc(o[key]||'—')+'</strong></div>').join('')+'</div>'+
+      '<form id="order-address-form" class="address-form hidden">'+fields.map(([key,label])=>'<label>'+label+'<input type="text" name="'+key+'" data-address-field="'+key+'" value="'+esc(o[key]||'')+'" maxlength="500" autocomplete="off"></label>').join('')+
+      '<div class="address-form-actions"><button class="row-action address-save" type="submit" data-address-save>ঠিকানা সংরক্ষণ</button><button class="row-action address-cancel" type="button" data-address-cancel>বাতিল</button></div></form></section>';
+  }
+  async function saveOrderAddress(id) {
+    const form=$('order-address-form'); if(!form)return;
+    const values={};
+    ['full_address','delivery_area_name','block_name','road_name','house_number'].forEach(key=>{values[key]=String(form.querySelector('[data-address-field="'+key+'"]')?.value||'').trim();});
+    if(!Object.values(values).some(Boolean)){feedback('কমপক্ষে একটি ঠিকানার তথ্য দিতে হবে।',true);return;}
+    const button=form.querySelector('[data-address-save]'); button.disabled=true;
+    try {
+      const update={...values,updated_at:new Date().toISOString()};
+      const {data,error}=await supabase.from('orders').update(update).eq('id',id).select('id,full_address,delivery_area_name,block_name,road_name,house_number,updated_at').single();
+      if(error)throw error;
+      const order=orders.find(o=>o.id===id); if(order)Object.assign(order,data);
+      openOrderDetails(id); renderOverview(); renderOrders(); feedback('ডেলিভারি ঠিকানা সফলভাবে আপডেট হয়েছে।');
+    } catch(e) {feedback('ঠিকানা সংরক্ষণ করা যায়নি: '+e.message,true);button.disabled=false;}
+  }
   function openOrderDetails(id) {
+    activeOrderId=id;
     const o=orders.find(x=>x.id===id); if(!o)return;
     const transactions=Array.isArray(o.payment_transactions)?o.payment_transactions:[];
     const latest=transactions.slice().sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0))[0]||{};
@@ -118,11 +141,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
     const items=(o.order_items||[]).map(i=>'<tr><td>'+esc(i.product_name)+' × '+esc(i.quantity)+' '+esc(i.unit||"")+'</td><td>'+money(i.line_total)+'</td></tr>').join("")||'<tr><td colspan="2">Product details unavailable</td></tr>';
     const boxes=[
       ["Customer name",o.customer_name],["Customer phone",phoneLink(o.customer_phone)],["Email",o.customer_email],
-      ["Delivery address",address],["Payment method",paymentLabel(o.payment_method)],["Payment status",o.payment_status],
+      ["Payment method",paymentLabel(o.payment_method)],["Payment status",o.payment_status],
       ["Payer phone",payer],["Transaction ID",txn],["Gateway",o.payment_gateway||latest.gateway],["Gateway reference",latest.validation_id||"—"]
     ];
     $("order-modal-title").textContent=(o.order_number||"অর্ডার")+" · "+money(o.grand_total);
-    $("order-modal-body").innerHTML='<div class="detail-grid">'+boxes.map(([label,value])=>'<div class="detail-box"><small>'+esc(label)+'</small><strong>'+(label==="Customer phone"?(value||"—"):esc(value||"—"))+'</strong></div>').join("")+'</div>'+
+    $("order-modal-body").innerHTML='<div class="detail-grid">'+boxes.map(([label,value])=>'<div class="detail-box"><small>'+esc(label)+'</small><strong>'+(label==="Customer phone"?(value||"—"):esc(value||"—"))+'</strong></div>').join("")+'</div>'+addressEditorMarkup(o)+
       '<h3 class="detail-heading">Order items</h3><table class="detail-items">'+items+'</table>'+
       '<h3 class="detail-heading">হিসাব</h3><div class="detail-grid">'+[["Subtotal",money(o.subtotal)],["Discount",money(o.discount)],["Delivery fee",money(o.delivery_fee)],["Grand total",money(o.grand_total)]].map(([a,b])=>'<div class="detail-box"><small>'+a+'</small><strong>'+b+'</strong></div>').join("")+'</div>'+
       '<div class="payment-note">পেমেন্ট নম্বর ও Transaction ID দেখানো হবে। PIN, OTP বা কোনো গোপন ভেরিফিকেশন কোড এই প্যানেলে সংগ্রহ বা সংরক্ষণ করা হবে না.</div>'+
@@ -166,9 +189,16 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
     const refresh=event.target.closest("#refresh-dashboard,[data-refresh]"); if(refresh){loaded=false;void loadDashboard();}
     const detail=event.target.closest("[data-order-details]"); if(detail)openOrderDetails(detail.dataset.orderDetails);
     const save=event.target.closest("[data-save-order]"); if(save)void saveOrder(save.dataset.saveOrder);
+    const editAddress=event.target.closest("[data-address-edit]"); if(editAddress){$("order-address-form").classList.remove("hidden");editAddress.classList.add("hidden");}
+    const cancelAddress=event.target.closest("[data-address-cancel]"); if(cancelAddress&&activeOrderId)openOrderDetails(activeOrderId);
+    const printOrder=event.target.closest("[data-print-order]"); if(printOrder){document.body.classList.add("print-order-mode");window.print();}
     if(event.target.closest("[data-close-modal]"))$("order-modal").classList.add("hidden");
   });
   document.addEventListener("keydown",event=>{if(event.key==="Escape")$("order-modal").classList.add("hidden");});
+  $("order-modal-body").addEventListener("submit",event=>{
+    if(event.target.matches("#order-address-form")){event.preventDefault();if(activeOrderId)void saveOrderAddress(activeOrderId);}
+  });
+  window.addEventListener("afterprint",()=>document.body.classList.remove("print-order-mode"));
   $("order-search").addEventListener("input",renderOrders);
   $("order-filter").addEventListener("change",renderOrders);
   $("overview-period").addEventListener("change",renderOverview);
