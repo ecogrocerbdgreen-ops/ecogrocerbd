@@ -283,6 +283,29 @@
     clearStatus();
 
     try {
+      // GitHub Pages is a static host and cannot run Netlify Functions.
+      // Forward its order form as a native POST to the already-registered Netlify Form.
+      if (window.location.hostname.toLowerCase().endsWith('.github.io')) {
+        const netlifyForm = document.createElement('form');
+        netlifyForm.method = 'POST';
+        netlifyForm.action = 'https://ecogrocerbd.netlify.app/';
+        netlifyForm.enctype = 'application/x-www-form-urlencoded';
+        netlifyForm.hidden = true;
+        const submission = new FormData(form);
+        submission.set('form-name', 'ecogrocer-orders');
+        submission.set('subject', 'New EcoGrocer order — ' + orderId);
+        submission.forEach((value, name) => {
+          const field = document.createElement('input');
+          field.type = 'hidden';
+          field.name = name;
+          field.value = String(value);
+          netlifyForm.appendChild(field);
+        });
+        document.body.appendChild(netlifyForm);
+        netlifyForm.submit();
+        return;
+      }
+
       const configUrl = String(CONFIG.orderApiUrl || '').trim();
       let backendUnavailable = !configUrl;
       if (configUrl) {
