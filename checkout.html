@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="style.css?v=20261111-cart-page-v1">
   <script src="order-config.js?v=20261111-supabase-catalogue-v1" defer></script>
   <script src="script.js?v=20261111-supabase-catalogue-v1" defer></script>
-  <script src="checkout.js?v=20261111-supabase-delivery-v1" defer></script>
+  <script src="checkout.js?v=20261111-checkout-items-v2" defer></script>
   <script src="product-detail.js?v=20261111-order-flow-v3" defer></script>
 </head>
 <body class="checkout-page-mode">
@@ -265,12 +265,12 @@
             <input type="hidden" name="orderStatus" id="checkout-order-status" value="pending">
             <input type="hidden" name="orderDate" id="checkout-order-date">
             <section class="checkout-section">
-              <div class="checkout-section-title"><span class="checkout-step">01</span><div><h3>অর্ডারের পণ্যসমূহ</h3><p>ছবি, দাম ও পরিমাণ দেখে পরিবর্তন বা পণ্য সরিয়ে দিন</p></div></div>
+              <div class="checkout-section-title"><div><h3>অর্ডারের পণ্যসমূহ</h3><p>ছবি, নাম, দাম ও পরিমাণ দেখে পণ্য পরিবর্তন বা সরিয়ে দিন</p></div></div>
               <div class="checkout-items-preview" id="checkout-items-preview"></div>
             </section>
 
             <section class="checkout-section">
-              <div class="checkout-section-title"><span class="checkout-step">02</span><div><h3>ডেলিভারি ঠিকানা</h3><p>সঠিক ঠিকানা দিলে দ্রুত পণ্য পৌঁছে দেওয়া যাবে</p></div></div>
+              <div class="checkout-section-title"><span class="checkout-step">01</span><div><h3>ডেলিভারি ঠিকানা</h3><p>সঠিক ঠিকানা দিলে দ্রুত পণ্য পৌঁছে দেওয়া যাবে</p></div></div>
               <div class="checkout-fields">
                 <label class="checkout-field"><span>আপনার নাম <b>*</b></span><input name="customerName" id="checkout-name" type="text" autocomplete="name" placeholder="সম্পূর্ণ নাম লিখুন" minlength="2" maxlength="80" required></label>
                 <label class="checkout-field"><span>মোবাইল নম্বর <b>*</b></span><input name="phone" id="checkout-phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="01XXXXXXXXX" pattern="01[3-9][0-9]{8}" maxlength="11" required><small>১১ সংখ্যার বাংলাদেশি মোবাইল নম্বর দিন</small></label>
@@ -306,7 +306,7 @@
             </section>
 
             <section class="checkout-section">
-              <div class="checkout-section-title"><span class="checkout-step">03</span><div><h3>ডেলিভারি সময়</h3><p>আপনার সুবিধামতো সময় নির্বাচন করুন</p></div></div>
+              <div class="checkout-section-title"><span class="checkout-step">02</span><div><h3>ডেলিভারি সময়</h3><p>আপনার সুবিধামতো সময় নির্বাচন করুন</p></div></div>
               <label class="checkout-field"><span>ডেলিভারি সময় বেছে নিন <b>*</b></span>
                 <select name="deliverySlot" id="checkout-slot" required>
                   <option value="">-- সময় বেছে নিন --</option>
@@ -321,7 +321,7 @@
             </section>
 
             <section class="checkout-section">
-              <div class="checkout-section-title"><span class="checkout-step">04</span><div><h3>পেমেন্ট পদ্ধতি</h3><p>আপনার পছন্দের পদ্ধতিটি বেছে নিন</p></div></div>
+              <div class="checkout-section-title"><span class="checkout-step">03</span><div><h3>পেমেন্ট পদ্ধতি</h3><p>আপনার পছন্দের পদ্ধতিটি বেছে নিন</p></div></div>
               <div class="payment-options">
                 <label class="payment-option"><input type="radio" name="paymentMethod" value="cod" required checked><span class="payment-emoji">💵</span><span><strong>Cash on Delivery</strong><small>পণ্য হাতে পেয়ে পেমেন্ট</small></span></label>
                 <label class="payment-option"><input type="radio" name="paymentMethod" value="bkash"><span class="payment-emoji">💚</span><span><strong>bKash</strong><small>ম্যানুয়াল পেমেন্ট যাচাই</small></span></label>
@@ -336,7 +336,7 @@
             </section>
 
             <section class="checkout-section">
-              <div class="checkout-section-title"><span class="checkout-step">05</span><div><h3>কুপন কোড</h3><p>প্রযোজ্য কুপন ব্যবহার করে ছাড় নিন</p></div></div>
+              <div class="checkout-section-title"><span class="checkout-step">04</span><div><h3>কুপন কোড</h3><p>প্রযোজ্য কুপন ব্যবহার করে ছাড় নিন</p></div></div>
               <div class="coupon-row"><input id="checkout-coupon" name="couponInput" type="text" placeholder="কুপন কোড লিখুন" maxlength="30" autocomplete="off"><button id="checkout-coupon-apply" type="button">Apply</button></div>
               <p class="coupon-feedback" id="checkout-coupon-feedback" aria-live="polite">ডেমো কুপন: ECO10 অথবা FRESH50</p>
             </section>
