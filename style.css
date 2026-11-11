@@ -617,18 +617,20 @@ section[id], div[id] { scroll-margin-top: 90px; }
 .product-information-grid span { color: #89958c; font-size: 9px; }
 .product-information-grid strong { color: #304e38; font-size: 11px; }
 .product-description-section .detail-price-note { margin-top: 13px; color: #9a8a69; font-size: 9px; }
-.recommended-section { padding: 22px 0 25px; border-top: 1px solid #e9f0e9; }
-.recommended-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; }
-.recommended-product { position: relative; display: flex; flex-direction: column; min-width: 0; padding: 10px; border: 1px solid #e8eee8; border-radius: 14px; background: #fff; transition: border-color .15s, box-shadow .15s, transform .15s; }
-.recommended-product:hover { border-color: #c4ddc8; box-shadow: 0 6px 18px rgba(30,80,39,.07); transform: translateY(-2px); }
-.recommended-product-open { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 0; border: 0; color: inherit; background: transparent; text-align: left; cursor: pointer; }
-.recommended-product-image { width: 65px; height: 65px; flex: 0 0 65px; overflow: hidden; border-radius: 10px; background: #f1f6f1; }
-.recommended-product-image img { width: 100%; height: 100%; object-fit: cover; }
-.recommended-product-copy { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.recommended-product-copy strong { overflow: hidden; color: #263c2d; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
-.recommended-product-copy small { color: #89958c; font-size: 9px; }
-.recommended-product-copy b { color: var(--green-dark); font-size: 11px; }
-.recommended-add { align-self: flex-end; margin-top: 8px; padding: 5px 10px; border: 1px solid #d4e7d6; border-radius: 999px; color: #26733b; background: #f3faf4; font-size: 9px; font-weight: 800; cursor: pointer; }
+.recommended-section { padding: 24px 0 28px; border-top: 1px solid #e9f0e9; }
+.recommended-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 14px; }
+.recommended-product { position: relative; display: flex; flex-direction: column; min-width: 0; padding: 11px; border: 1px solid #e8eee8; border-radius: 16px; background: #fff; box-shadow: 0 5px 16px rgba(20,65,35,.035); transition: border-color .15s, box-shadow .15s, transform .15s; }
+.recommended-product:hover { border-color: #c4ddc8; box-shadow: 0 7px 20px rgba(30,80,39,.08); transform: translateY(-2px); }
+.recommended-product-open { display: flex; flex: 1 1 auto; flex-direction: column; align-items: stretch; gap: 10px; min-width: 0; padding: 0; border: 0; color: inherit; background: transparent; text-align: left; cursor: pointer; }
+.recommended-product-image { display: block; width: 100%; aspect-ratio: 1.08 / 1; flex: 0 0 auto; overflow: hidden; border-radius: 12px; background: #f1f6f1; }
+.recommended-product-image img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.recommended-product-copy { display: flex; flex-direction: column; gap: 4px; min-width: 0; padding: 0 2px; }
+.recommended-product-copy strong { overflow: hidden; color: #263c2d; font-size: 13px; line-height: 1.4; text-overflow: ellipsis; white-space: nowrap; }
+.recommended-product-copy small { color: #89958c; font-size: 10px; }
+.recommended-product-copy b { color: var(--green-dark); font-size: 15px; }
+.recommended-add { align-self: flex-start; margin-top: 9px; min-height: 32px; padding: 6px 13px; border: 1px solid #cde3d1; border-radius: 999px; color: #26733b; background: #f3faf4; font-size: 11px; font-weight: 800; cursor: pointer; transition: background .15s, box-shadow .15s; }
+.recommended-add:hover { background: #e8f6ea; box-shadow: 0 3px 10px rgba(38,115,59,.1); }
+.recommended-product-open:focus-visible, .recommended-add:focus-visible { outline: 3px solid rgba(42,145,77,.35); outline-offset: 3px; }
 .product-detail-footer { display: flex; justify-content: space-between; padding: 15px 0 0; border-top: 1px solid #edf2ed; color: #8d9a90; font-size: 9px; }
 
 .product-lightbox { position: fixed; inset: 0; z-index: 130; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 13px; padding: 55px 22px 25px; background: rgba(7,17,10,.94); }
@@ -655,10 +657,15 @@ section[id], div[id] { scroll-margin-top: 90px; }
   .detail-action-icon { width: 21px; height: 21px; flex-basis: 21px; }
   .detail-action-copy small { font-size: 9px; }
   .product-information-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
-  .recommended-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
-  .recommended-product { padding: 8px; }
-  .recommended-product-open { gap: 7px; }
-  .recommended-product-image { width: 54px; height: 54px; flex-basis: 54px; }
+  .recommended-grid { grid-template-columns: minmax(0,1fr); gap: 12px; }
+  .recommended-product { flex-direction: row; align-items: center; gap: 12px; padding: 10px; }
+  .recommended-product-open { flex: 1 1 auto; flex-direction: row; align-items: center; gap: 12px; }
+  .recommended-product-image { width: 112px; height: 112px; flex: 0 0 112px; aspect-ratio: 1; }
+  .recommended-product-copy { flex: 1 1 auto; gap: 5px; }
+  .recommended-product-copy strong { font-size: 13px; line-height: 1.4; white-space: normal; }
+  .recommended-product-copy small { font-size: 10px; }
+  .recommended-product-copy b { font-size: 15px; }
+  .recommended-add { align-self: center; flex: 0 0 auto; margin: 0; min-height: 34px; padding: 7px 11px; font-size: 11px; }
   .product-detail-footer { padding-bottom: 4px; }
 }
 @media (max-width: 390px) {
@@ -667,8 +674,11 @@ section[id], div[id] { scroll-margin-top: 90px; }
   .product-detail-meta { gap: 7px; }
   .product-detail-actions { gap: 7px; }
   .product-detail-actions button { padding-inline: 8px; }
-  .recommended-product-open { align-items: flex-start; }
-  .recommended-product-image { width: 48px; height: 48px; flex-basis: 48px; }
+  .recommended-product { gap: 8px; padding: 9px; }
+  .recommended-product-open { gap: 9px; }
+  .recommended-product-image { width: 96px; height: 96px; flex-basis: 96px; }
+  .recommended-product-copy strong { font-size: 12px; }
+  .recommended-add { min-width: 45px; padding-inline: 8px; font-size: 10px; }
 }
 
 
