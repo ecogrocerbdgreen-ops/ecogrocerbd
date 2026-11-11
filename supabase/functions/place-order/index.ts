@@ -28,17 +28,24 @@ function constantTimeEqual(left: string, right: string) {
   return diff === 0;
 }
 
-function getPublishableKey() {
+function getPublishableKeys() {
+  const values: string[] = [];
   const raw = Deno.env.get("SUPABASE_PUBLISHABLE_KEYS") || "";
   if (raw) {
     try {
       const keys = JSON.parse(raw);
-      if (keys && typeof keys.default === "string") return keys.default;
+      if (keys && typeof keys === "object") {
+        Object.values(keys).forEach((value) => {
+          if (typeof value === "string" && value) values.push(value);
+        });
+      }
     } catch (_) {
-      // Fall through to the legacy anon key during the API-key transition.
+      // The legacy anon key remains a compatibility option during API-key migration.
     }
   }
-  return Deno.env.get("SUPABASE_ANON_KEY") || "";
+  const legacyAnon = Deno.env.get("SUPABASE_ANON_KEY") || "";
+  if (legacyAnon) values.push(legacyAnon);
+  return [...new Set(values)];
 }
 
 function getSecretKey() {
@@ -81,9 +88,10 @@ Deno.serve(async (request: Request) => {
     return json({ error: "শুধু POST request গ্রহণযোগ্য।" }, 405, origin);
   }
 
-  const expectedKey = getPublishableKey();
+  const expectedKeys = getPublishableKeys();
   const providedKey = request.headers.get("apikey") || "";
-  if (!expectedKey || !providedKey || !constantTimeEqual(providedKey, expectedKey)) {
+  if (!expectedKeys.length || !providedKey ||
+      !expectedKeys.some((expectedKey) => constantTimeEqual(providedKey, expectedKey))) {
     return json({ error: "Supabase API key সঠিক নয়।" }, 401, origin);
   }
 
