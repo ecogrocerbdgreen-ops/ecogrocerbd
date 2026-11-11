@@ -618,7 +618,7 @@ section[id], div[id] { scroll-margin-top: 90px; }
 .product-information-grid strong { color: #304e38; font-size: 11px; }
 .product-description-section .detail-price-note { margin-top: 13px; color: #9a8a69; font-size: 9px; }
 .recommended-section { padding: 24px 0 28px; border-top: 1px solid #e9f0e9; }
-.recommended-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 14px; }
+.recommended-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; width: min(100%, 880px); margin-inline: auto; }
 .recommended-product { position: relative; display: flex; flex-direction: column; min-width: 0; padding: 11px; border: 1px solid #e8eee8; border-radius: 16px; background: #fff; box-shadow: 0 5px 16px rgba(20,65,35,.035); transition: border-color .15s, box-shadow .15s, transform .15s; }
 .recommended-product:hover { border-color: #c4ddc8; box-shadow: 0 7px 20px rgba(30,80,39,.08); transform: translateY(-2px); }
 .recommended-product-open { display: flex; flex: 1 1 auto; flex-direction: column; align-items: stretch; gap: 10px; min-width: 0; padding: 0; border: 0; color: inherit; background: transparent; text-align: left; cursor: pointer; }
