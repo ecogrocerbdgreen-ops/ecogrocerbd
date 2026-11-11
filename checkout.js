@@ -60,12 +60,29 @@
     const preview = byId('checkout-items-preview');
     const summary = byId('checkout-summary-items');
     if (!lines.length) {
-      preview.innerHTML = '<p class="checkout-empty">কার্টে কোনো পণ্য নেই। আগে পণ্য যোগ করুন।</p>';
+      preview.innerHTML = '<div class="checkout-empty checkout-items-empty"><span aria-hidden="true">🧺</span><strong>কার্টে কোনো পণ্য নেই</strong><p>পণ্য যোগ করতে বাজারে ফিরে যান।</p><a href="./" class="checkout-empty-link">পণ্য বেছে নিন</a></div>';
       summary.innerHTML = '<p class="checkout-empty">কার্ট খালি</p>';
     } else {
-      preview.innerHTML = lines.map(product =>
-        '<div class="checkout-product-line"><img src="' + escapeHTML(PRODUCT_IMAGES[product.id]) + '" alt="" loading="lazy"><div><strong>' + escapeHTML(product.name) + '</strong><small>' + escapeHTML(product.unit) + ' × ' + Number(cart[product.id]) + '</small></div><b>' + formatMoney(product.price * Number(cart[product.id])) + '</b></div>'
-      ).join('');
+      preview.innerHTML = lines.map(product => {
+        const quantity = Number(cart[product.id]);
+        const lineTotal = product.price * quantity;
+        return '<article class="checkout-product-line" data-checkout-product="' + product.id + '">' +
+          '<div class="checkout-product-art"><img src="' + escapeHTML(PRODUCT_IMAGES[product.id] || '') + '" alt="' + escapeHTML(product.name) + '" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="checkout-product-image-fallback" hidden>ছবি নেই</span></div>' +
+          '<div class="checkout-product-info">' +
+            '<strong>' + escapeHTML(product.name) + '</strong>' +
+            '<small>প্যাক সাইজ: ' + escapeHTML(product.unit) + '</small>' +
+            '<span class="checkout-unit-price">একক দাম: ' + formatMoney(product.price) + '</span>' +
+            '<div class="checkout-quantity-control" role="group" aria-label="' + escapeHTML(product.name) + ' পরিমাণ">' +
+              '<span class="checkout-quantity-label">পরিমাণ</span>' +
+              '<button type="button" data-cart-action="decrease" data-id="' + product.id + '" aria-label="' + escapeHTML(product.name) + ' একটি কমান">−</button>' +
+              '<strong aria-live="polite">' + quantity + '</strong>' +
+              '<button type="button" data-cart-action="increase" data-id="' + product.id + '" aria-label="' + escapeHTML(product.name) + ' একটি বাড়ান">+</button>' +
+            '</div>' +
+          '</div>' +
+          '<div class="checkout-product-pricing"><span>মোট মূল্য</span><strong>' + formatMoney(lineTotal) + '</strong>' +
+            '<button type="button" class="checkout-remove-product" data-checkout-remove="' + product.id + '" aria-label="' + escapeHTML(product.name) + ' অর্ডার থেকে সরান">সরিয়ে দিন</button></div>' +
+        '</article>';
+      }).join('');
       summary.innerHTML = lines.map(product =>
         '<div class="summary-item"><span>' + escapeHTML(product.name) + ' × ' + Number(cart[product.id]) + '</span><strong>' + formatMoney(product.price * Number(cart[product.id])) + '</strong></div>'
       ).join('');
@@ -372,6 +389,30 @@
   byId('checkout-area-search').addEventListener('input', filterAreas);
   byId('checkout-area').addEventListener('change', updateTotals);
   byId('checkout-coupon-apply').addEventListener('click', applyCoupon);
+
+  // Keep the editable order list in sync with the shared cart.
+  document.addEventListener('click', event => {
+    const quantityAction = event.target.closest('#checkout-items-preview [data-cart-action]');
+    if (quantityAction) {
+      // The shared cart handler runs first and persists the new quantity.
+      renderCheckoutItems();
+      return;
+    }
+
+    const removeAction = event.target.closest('#checkout-items-preview [data-checkout-remove]');
+    if (!removeAction) return;
+    const productId = removeAction.dataset.checkoutRemove;
+    const product = PRODUCTS.find(item => item.id === productId);
+    if (!product || !Number(cart[productId])) return;
+
+    delete cart[productId];
+    saveCart();
+    renderProducts();
+    renderCart();
+    renderCheckoutItems();
+    showToast(product.name + ' অর্ডার তালিকা থেকে সরানো হয়েছে');
+  });
+
   byId('checkout-coupon').addEventListener('keydown', event => {
     if (event.key === 'Enter') { event.preventDefault(); applyCoupon(); }
   });
