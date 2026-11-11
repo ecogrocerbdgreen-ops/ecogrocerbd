@@ -2,7 +2,13 @@
 
 (function () {
   const CONFIG = window.ECOGROCER_CONFIG || {};
-  const WHATSAPP_NUMBER = String(CONFIG.whatsappNumber || window.ECOGROCER_WHATSAPP_NUMBER || '').replace(/\D/g, '');
+  function normalizeBangladeshPhone(value) {
+    const digits = String(value || '').replace(/\D/g, '');
+    if (digits.startsWith('00880')) return digits.slice(2);
+    if (digits.startsWith('01') && digits.length === 11) return '88' + digits;
+    return digits;
+  }
+  const WHATSAPP_NUMBER = normalizeBangladeshPhone(CONFIG.whatsappNumber || window.ECOGROCER_WHATSAPP_NUMBER || '');
 
   // Area delivery fees are provisional display values until EcoGrocer confirms its final tariff.
   const DELIVERY_AREAS = {
