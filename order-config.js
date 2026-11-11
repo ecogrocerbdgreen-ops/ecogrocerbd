@@ -1,9 +1,8 @@
 'use strict';
 
-// Set the endpoint after the PHP API has been installed on EcoGrocer's hosting.
-// Example: https://api.yourdomain.com/orders.php
+// Netlify Forms stores checkout submissions in the site's authenticated Forms dashboard.
 window.ECOGROCER_CONFIG = window.ECOGROCER_CONFIG || {};
-window.ECOGROCER_CONFIG.orderApiUrl = window.ECOGROCER_CONFIG.orderApiUrl || '';
+window.ECOGROCER_CONFIG.orderApiUrl = window.ECOGROCER_CONFIG.orderApiUrl || '/'; // legacy PHP API is optional
 window.ECOGROCER_CONFIG.whatsappNumber = window.ECOGROCER_CONFIG.whatsappNumber || '';
 
 // Add the public shop contact numbers after EcoGrocer confirms them.
