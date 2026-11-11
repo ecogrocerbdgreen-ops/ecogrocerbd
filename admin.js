@@ -42,9 +42,9 @@
     return '<article class="metric"><small>' + escapeHtml(label) + '</small><strong>' + escapeHtml(value) + '</strong></article>';
   }
   async function loadDashboard() {
-    const [dashboard, orderResult, productResult, areaResult, couponResult] = await Promise.all([
+    const [dashboard, orderResult, productResult, areaResult, couponResult, slotResult] = await Promise.all([
       api("admin/dashboard"), api("admin/orders"), api("admin/products"),
-      api("admin/delivery-areas"), api("admin/coupons")
+      api("admin/delivery-areas"), api("admin/coupons"), api("admin/delivery-slots")
     ]);
     const m = dashboard.metrics;
     $("metrics").innerHTML = [
@@ -58,6 +58,8 @@
     areas = areaResult.areas || [];
     renderAreas();
     renderCoupons(couponResult.coupons || []);
+    window.__ecoSlots = slotResult.slots || [];
+    renderSlots(window.__ecoSlots);
   }
   function statusLabel(status) {
     return ({
@@ -101,6 +103,12 @@
     $("delivery-table").innerHTML = areas.map((area) =>
       '<tr><td>' + escapeHtml(area.name) + '<br><small>' + escapeHtml(area.id) + '</small></td><td>' + money(area.fee) +
       '</td><td>' + (area.is_active ? "Active" : "Off") + '</td><td><button class="btn" type="button" data-edit-area="' + escapeHtml(area.id) + '">Edit</button></td></tr>'
+    ).join("");
+  }
+  function renderSlots(slots) {
+    $("slots-table").innerHTML = slots.map((slot) =>
+      '<tr><td><strong>' + escapeHtml(slot.label) + '</strong><br><small>' + escapeHtml(slot.id) + '</small></td>' +
+      '<td>' + (slot.is_active ? "Active" : "Off") + '</td><td><button class="btn" type="button" data-edit-slot="' + escapeHtml(slot.id) + '">Edit</button></td></tr>'
     ).join("");
   }
   function renderCoupons(coupons) {
@@ -216,6 +224,23 @@
     $("delivery-form").elements.name.value = area.name;
     $("delivery-form").elements.fee.value = area.fee;
     $("delivery-form").elements.is_active.checked = area.is_active;
+  });
+  $("slot-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const values = formData(event.currentTarget);
+    values.is_active = event.currentTarget.elements.is_active.checked;
+    try { await api("admin/delivery-slots", { method: "POST", body: values }); await loadDashboard(); event.currentTarget.reset(); }
+    catch (error) { showMessage($("dashboard-status"), error.message, "error"); }
+  });
+  $("slots-table").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-edit-slot]");
+    if (!button) return;
+    const slot = (window.__ecoSlots || []).find((item) => item.id === button.dataset.editSlot);
+    if (slot) {
+      $("slot-form").elements.id.value = slot.id;
+      $("slot-form").elements.label.value = slot.label;
+      $("slot-form").elements.is_active.checked = slot.is_active;
+    }
   });
   $("coupon-form").addEventListener("submit", async (event) => {
     event.preventDefault();
