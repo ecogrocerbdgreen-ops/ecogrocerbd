@@ -233,7 +233,7 @@
     if (!form.reportValidity()) return;
 
     const payload = buildOrderPayload(form);
-    const orderId = createOrderId();
+    let orderId = createOrderId();
     const subtotal = getSubtotal();
     const deliveryFee = getDeliveryFee();
     const discount = getDiscount();
@@ -265,15 +265,37 @@
     clearStatus();
 
     try {
-      const formData = new FormData(form);
-      formData.set('form-name', 'ecogrocer-orders');
-      const response = await fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(formData).toString()
-      });
-      if (!response.ok) {
-        throw new Error('সার্ভার অর্ডারটি গ্রহণ করেনি। অনুগ্রহ করে আবার চেষ্টা করুন। (HTTP ' + response.status + ')');
+      const configUrl = String(CONFIG.orderApiUrl || '').trim();
+      let backendUnavailable = !configUrl;
+      if (configUrl) {
+        const apiResponse = await fetch(configUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const apiData = await apiResponse.json().catch(() => ({}));
+        if (apiResponse.ok) {
+          orderId = apiData.orderId || orderId;
+        } else if (apiResponse.status === 503 && /Database connection is not configured yet/i.test(apiData.error || '')) {
+          backendUnavailable = true;
+        } else {
+          throw new Error(apiData.error || 'অর্ডার সার্ভার অর্ডারটি গ্রহণ করেনি।');
+        }
+      }
+
+      // Temporary compatibility fallback while the external database credentials
+      // are being connected. Once Supabase is configured, orders go to PostgreSQL.
+      if (backendUnavailable) {
+        const formData = new FormData(form);
+        formData.set('form-name', 'ecogrocer-orders');
+        const response = await fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(formData).toString()
+        });
+        if (!response.ok) {
+          throw new Error('অর্ডার সার্ভার অর্ডারটি গ্রহণ করেনি। অনুগ্রহ করে আবার চেষ্টা করুন। (HTTP ' + response.status + ')');
+        }
       }
 
       const whatsappUrl = whatsappOrderLink(orderId, payload, grandTotal);
