@@ -47,3 +47,8 @@ Open index.html in a modern browser, or serve this folder with a local static se
 - Actions are separated: Order Now opens checkout for that product; Add to Cart only adds it to the cart; WhatsApp and Call use shop contact numbers from order-config.js.
 - Related products from the same category appear beneath the product description.
 - Configure order-config.js with the actual shop WhatsApp number and telephone number. Contact actions intentionally show a message until real contact details are supplied.
+
+
+## Dedicated checkout page
+
+Product detail's **Order Now** action navigates to checkout.html?product=<product-id>. The dedicated page restores the browser cart from localStorage, adds the selected product if needed, and opens the full-page order form. If the cart is empty, it shows a clear link back to product browsing. The cart drawer checkout button remains available on the homepage.
