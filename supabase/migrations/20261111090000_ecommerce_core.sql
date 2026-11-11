@@ -266,8 +266,13 @@ begin
   for v_item in select value from jsonb_array_elements(p_order->'items') order by value->>'id'
   loop
     v_count := v_count + 1;
-    if coalesce(v_item->>'quantity','') !~ '^[0-9]+
-    if v_qty < 1 or v_qty > 99 then raise exception 'পণ্যের পরিমাণ সঠিক নয়।'; end if;
+    if coalesce(v_item->>'quantity','') !~ '^[0-9]+$' then
+      raise exception 'পণ্যের পরিমাণ সঠিক নয়।';
+    end if;
+    v_qty := (v_item->>'quantity')::integer;
+    if v_qty < 1 or v_qty > 99 then
+      raise exception 'পণ্যের পরিমাণ সঠিক নয়।';
+    end if;
     select * into v_product from public.products
       where id = v_item->>'id' and is_active = true for update;
     if not found then raise exception 'একটি পণ্য বর্তমানে পাওয়া যাচ্ছে না।'; end if;
