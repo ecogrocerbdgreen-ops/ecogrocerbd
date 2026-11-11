@@ -117,7 +117,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
     const address=[o.full_address,o.delivery_area_name,o.block_name,o.road_name,o.house_number].filter(Boolean).join(", ")||"—";
     const items=(o.order_items||[]).map(i=>'<tr><td>'+esc(i.product_name)+' × '+esc(i.quantity)+' '+esc(i.unit||"")+'</td><td>'+money(i.line_total)+'</td></tr>').join("")||'<tr><td colspan="2">Product details unavailable</td></tr>';
     const boxes=[
-      ["Customer name",o.customer_name],["Customer phone",o.customer_phone],["Email",o.customer_email],
+      ["Customer name",o.customer_name],["Customer phone",phoneLink(o.customer_phone)],["Email",o.customer_email],
       ["Delivery address",address],["Payment method",paymentLabel(o.payment_method)],["Payment status",o.payment_status],
       ["Payer phone",payer],["Transaction ID",txn],["Gateway",o.payment_gateway||latest.gateway],["Gateway reference",latest.validation_id||"—"]
     ];
