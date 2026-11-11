@@ -21,8 +21,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
   const $ = (id) => document.getElementById(id);
 
   function showView(name) {
-    $("login-view").classList.toggle("hidden", name !== "login");
-    $("success-view").classList.toggle("hidden", name !== "success");
+    const isAdmin = name === "success";
+    $("login-view").classList.toggle("hidden", isAdmin);
+    $("success-view").classList.toggle("hidden", !isAdmin);
+    $("login-intro").classList.toggle("hidden", isAdmin);
+    document.querySelector(".layout").classList.toggle("admin-mode", isAdmin);
   }
 
   function showStatus(message, kind = "") {
