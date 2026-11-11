@@ -267,21 +267,7 @@
     }
   }
 
-  document.addEventListener('click', function (event) {
-    const productTrigger = event.target.closest('[data-product-open]');
-    if (productTrigger) {
-      event.preventDefault();
-      openCheckout(productTrigger.dataset.productOpen);
-      return;
-    }
-  });
-
   document.addEventListener('keydown', function (event) {
-    const productTrigger = event.target.closest && event.target.closest('[data-product-open]');
-    if (productTrigger && (event.key === 'Enter' || event.key === ' ')) {
-      event.preventDefault();
-      openCheckout(productTrigger.dataset.productOpen);
-    }
     if (event.key === 'Escape' && !byId('checkout-scrim').hidden) closeCheckout();
   });
 
