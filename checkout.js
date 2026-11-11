@@ -99,10 +99,12 @@
   }
 
   function openCheckout(productId) {
+    const loadingFallback = byId('checkout-load-fallback');
     if (productId && !cart[productId]) changeCart(productId, 1);
     if (!getLines().length) {
       if (document.body.classList.contains('checkout-page-mode')) {
         byId('checkout-scrim').hidden = true;
+        if (loadingFallback) loadingFallback.hidden = true;
         byId('checkout-empty-page').hidden = false;
         document.body.classList.remove('no-scroll');
       } else {
@@ -125,6 +127,7 @@
     clearStatus();
     renderCheckoutItems();
     byId('checkout-scrim').hidden = false;
+    if (loadingFallback) loadingFallback.hidden = true;
     document.body.classList.add('no-scroll');
     byId('checkout-close').focus();
   }

@@ -12,8 +12,8 @@
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
   <script src="order-config.js" defer></script>
-  <script src="checkout.js" defer></script>
-  <script src="product-detail.js" defer></script>
+  <script src="checkout.js?v=20261111-checkout-fix" defer></script>
+  <script src="product-detail.js?v=20261111-checkout-fix" defer></script>
 </head>
 <body class="checkout-page-mode">
   <a class="skip-link" href="#main-content">মূল কনটেন্টে যান</a>
@@ -379,6 +379,15 @@
     </section>
   </div>
 
+
+  <section class="checkout-load-fallback" id="checkout-load-fallback">
+    <div class="checkout-load-fallback-card">
+      <span class="checkout-load-fallback-icon">🛒</span>
+      <h1>আপনার অর্ডার ফর্ম প্রস্তুত হচ্ছে</h1>
+      <p>ফর্ম লোড হতে সমস্যা হলে পণ্যটি আবার নির্বাচন করুন অথবা পেজটি রিফ্রেশ করুন।</p>
+      <a href="./" class="button button-primary">বাজারে ফিরে যান</a>
+    </div>
+  </section>
 
   <section class="checkout-empty-page" id="checkout-empty-page" hidden>
     <div class="checkout-empty-page-card">

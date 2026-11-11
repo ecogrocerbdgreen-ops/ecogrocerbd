@@ -236,7 +236,8 @@
         return;
       }
       if (!cart[orderId]) changeCart(orderId, 1);
-      window.location.assign('checkout.html');
+      // Keep the product ID in the URL as a fallback if browser storage is unavailable.
+      window.location.assign('checkout.html?product=' + encodeURIComponent(orderId));
       return;
     }
 
