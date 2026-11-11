@@ -423,10 +423,40 @@
   });
   byId('eco-checkout-form').addEventListener('submit', submitOrder);
 
+  // Restore cart items passed from the storefront URL before opening the standalone form.
+  // This is also a recovery path when browser storage is unavailable or the user crosses pages.
+  function restoreCartFromUrl() {
+    const pageUrl = new URL(window.location.href);
+    const serialized = pageUrl.searchParams.get('cart');
+    if (!serialized) return;
+
+    try {
+      const incoming = JSON.parse(serialized);
+      if (!incoming || typeof incoming !== 'object' || Array.isArray(incoming)) throw new Error('Invalid cart snapshot');
+      const validIds = new Set(PRODUCTS.map(product => product.id));
+      const restored = {};
+      Object.entries(incoming).forEach(([id, rawQuantity]) => {
+        const quantity = Math.floor(Number(rawQuantity));
+        if (validIds.has(id) && Number.isFinite(quantity) && quantity > 0) {
+          restored[id] = Math.min(99, quantity);
+        }
+      });
+      if (Object.keys(restored).length) {
+        cart = restored;
+        saveCart();
+      }
+      pageUrl.searchParams.delete('cart');
+      window.history.replaceState({}, '', pageUrl.pathname + (pageUrl.search ? pageUrl.search : '') + pageUrl.hash);
+    } catch (error) {
+      console.warn('Checkout cart snapshot could not be restored.', error);
+    }
+  }
+
   // A dedicated checkout page is used for Order Now so customers get a full page rather than a small overlay.
   // Standalone checkout is visible from the initial HTML; JS only enriches it.
   window.openEcoCheckout = openCheckout;
   if (document.body.classList.contains('checkout-page-mode')) {
+    restoreCartFromUrl();
     byId('checkout-scrim').hidden = false;
     document.body.classList.remove('no-scroll');
     const params = new URLSearchParams(window.location.search);
