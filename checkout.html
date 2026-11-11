@@ -9,11 +9,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20261111-mobile-header-direction-v3">
-  <script src="script.js?v=20261111-mobile-header-direction-v2" defer></script>
+  <link rel="stylesheet" href="style.css?v=20261111-cart-page-v1">
+  <script src="script.js?v=20261111-order-flow-v1" defer></script>
   <script src="order-config.js" defer></script>
-  <script src="checkout.js?v=20261111-unified-routing" defer></script>
-  <script src="product-detail.js?v=20261111-unified-routing" defer></script>
+  <script src="checkout.js?v=20261111-order-flow-v1" defer></script>
+  <script src="product-detail.js?v=20261111-order-flow-v1" defer></script>
 </head>
 <body class="checkout-page-mode">
   <a class="skip-link" href="#main-content">মূল কনটেন্টে যান</a>
@@ -33,7 +33,7 @@
       </a>
 
       <nav class="desktop-nav" aria-label="প্রধান নেভিগেশন">
-        <a class="active" href="#home">হোম</a>
+        <a class="active" href="index.html#home">হোম</a>
         <a href="index.html#categories">ক্যাটাগরি</a>
         <a href="index.html#products">সব পণ্য</a>
         <a href="index.html#how-it-works">কীভাবে অর্ডার করবেন</a>
@@ -174,12 +174,6 @@
       </section>
     </div>
 
-    <section class="section-wrap market-banner" id="market-request">
-      <div class="market-banner-icon" aria-hidden="true">＋</div>
-      <div class="market-banner-copy"><span class="section-kicker">NEED SOMETHING ELSE?</span><h2>তালিকায় নেই এমন পণ্য খুঁজছেন?</h2><p>আপনার প্রয়োজনীয় পণ্যের তালিকা আমাদের জানান। Market Request সুবিধা পরবর্তী ধাপে যুক্ত হবে।</p></div>
-      <button class="button button-orange" type="button" id="market-request-button">Market Request</button>
-    </section>
-
     <section class="section-wrap how-section" id="how-it-works" aria-labelledby="how-title">
       <div class="section-heading centered-heading"><div><span class="section-kicker">SIMPLE & EASY</span><h2 id="how-title">কীভাবে অর্ডার করবেন</h2></div></div>
       <div class="steps-grid">
@@ -197,10 +191,10 @@
 
   <footer class="site-footer" id="contact">
     <div class="footer-inner">
-      <div class="footer-brand-block"><a class="brand footer-brand" href="#home"><span class="brand-mark" aria-hidden="true"><span>e</span></span><span class="brand-copy"><strong>EcoGrocer <em>BD</em></strong><small>Fresh • Daily • Local</small></span></a><p>আপনার প্রতিদিনের বাজার, আরও সহজে।</p></div>
-      <div class="footer-column"><h3>দ্রুত লিংক</h3><a href="#home">হোম</a><a href="#categories">ক্যাটাগরি</a><a href="#products">পণ্যসমূহ</a><a href="#how-it-works">কীভাবে অর্ডার করবেন</a></div>
+      <div class="footer-brand-block"><a class="brand footer-brand" href="index.html#home"><span class="brand-mark" aria-hidden="true"><span>e</span></span><span class="brand-copy"><strong>EcoGrocer <em>BD</em></strong><small>Fresh • Daily • Local</small></span></a><p>আপনার প্রতিদিনের বাজার, আরও সহজে।</p></div>
+      <div class="footer-column"><h3>দ্রুত লিংক</h3><a href="index.html#home">হোম</a><a href="#categories">ক্যাটাগরি</a><a href="#products">পণ্যসমূহ</a><a href="#how-it-works">কীভাবে অর্ডার করবেন</a></div>
       <div class="footer-column"><h3>ক্যাটাগরি</h3><a href="#category-grocery">Grocery</a><a href="#category-vegetables">Vegetables</a><a href="#category-meat">Meat</a><a href="#category-fish">Fish</a></div>
-      <div class="footer-column footer-contact"><h3>যোগাযোগ</h3><p>যোগাযোগের নম্বর ও ঠিকানা ব্যবসার তথ্য নিশ্চিত হওয়ার পর যুক্ত করা হবে।</p><span class="footer-status"><i></i> ওয়েবসাইট প্রস্তুত হচ্ছে</span></div>
+      <div class="footer-column"><h3>গ্রাহক সেবা</h3><a href="help.html">সাহায্য কেন্দ্র</a><a href="delivery.html">ডেলিভারি তথ্য</a><a href="account.html">আমার অর্ডার</a><a href="policies.html">গোপনীয়তা ও শর্ত</a></div><div class="footer-column footer-contact"><h3>EcoGrocer BD</h3><p>অর্ডার, ডেলিভারি ও পেমেন্ট বিষয়ে প্রয়োজনীয় তথ্য সাহায্য কেন্দ্রে দেখুন।</p><a class="footer-status" href="help.html">সাহায্য ও FAQ দেখুন →</a></div>
     </div>
     <div class="footer-bottom"><span>© <span id="current-year">2026</span> EcoGrocer BD. সর্বস্বত্ব সংরক্ষিত।</span><span>Made for everyday freshness <b>✳</b></span></div>
   </footer>
@@ -208,10 +202,10 @@
   <!-- Mobile / desktop navigation drawer -->
   <div class="drawer-scrim" id="drawer-scrim" hidden></div>
   <aside class="site-drawer" id="site-drawer" aria-label="সাইট মেনু" aria-hidden="true">
-    <div class="drawer-head"><a class="brand" href="#home"><span class="brand-mark"><span>e</span></span><span class="brand-copy"><strong>EcoGrocer <em>BD</em></strong><small>Fresh • Daily • Local</small></span></a><button class="icon-button" id="menu-close" type="button" aria-label="মেনু বন্ধ করুন">×</button></div>
+    <div class="drawer-head"><a class="brand" href="index.html#home"><span class="brand-mark"><span>e</span></span><span class="brand-copy"><strong>EcoGrocer <em>BD</em></strong><small>Fresh • Daily • Local</small></span></a><button class="icon-button" id="menu-close" type="button" aria-label="মেনু বন্ধ করুন">×</button></div>
     <div class="drawer-welcome"><span class="section-kicker">WELCOME</span><strong>আপনার বাজার শুরু হোক এখান থেকেই</strong></div>
     <nav class="drawer-nav">
-      <a href="#home"><span>⌂</span> হোম</a>
+      <a href="index.html#home"><span>⌂</span> হোম</a>
       <a href="#categories"><span>▦</span> ক্যাটাগরি</a>
       <a href="#search-section" data-focus-search><span>⌕</span> পণ্য সার্চ</a>
       <a href="#products"><span>🛍</span> সব পণ্য</a>
@@ -226,7 +220,7 @@
   <aside class="cart-drawer" id="cart-drawer" aria-label="আপনার শপিং কার্ট" aria-hidden="true">
     <div class="drawer-head"><div><span class="section-kicker">YOUR BASKET</span><h2>আপনার কার্ট</h2></div><button class="icon-button" id="cart-close" type="button" aria-label="কার্ট বন্ধ করুন">×</button></div>
     <div class="cart-items" id="cart-items"><div class="cart-empty"><span>🧺</span><strong>আপনার কার্ট এখনো খালি</strong><p>পছন্দের পণ্য কার্টে যোগ করুন।</p></div></div>
-    <div class="cart-footer"><div class="cart-total-row"><span>সাবটোটাল</span><strong id="cart-subtotal">৳ ০</strong></div><p>ডেলিভারি চার্জ ও কুপন অর্ডার ফর্মে হিসাব হবে।</p><button class="button button-primary button-block" id="checkout-placeholder" type="button">ডেলিভারি ঠিকানা ও অর্ডার ফর্ম</button></div>
+    <div class="cart-footer"><div class="cart-total-row"><span>সাবটোটাল</span><strong id="cart-subtotal">৳ ০</strong></div><a class="cart-full-link" href="cart.html">পূর্ণ কার্ট দেখুন →</a><p>ডেলিভারি চার্জ ও কুপন অর্ডার ফর্মে হিসাব হবে।</p><button class="button button-primary button-block" id="checkout-placeholder" type="button">ডেলিভারি ঠিকানা ও অর্ডার ফর্ম</button></div>
   </aside>
 
 
@@ -406,7 +400,7 @@
 
   <!-- Mobile bottom navigation -->
   <nav class="mobile-bottom-nav" aria-label="মোবাইল নেভিগেশন">
-    <a class="bottom-link active" href="#home"><span class="bottom-icon">⌂</span><small>হোম</small></a>
+    <a class="bottom-link active" href="index.html#home"><span class="bottom-icon">⌂</span><small>হোম</small></a>
     <a class="bottom-link" href="#categories"><span class="bottom-icon">▦</span><small>ক্যাটাগরি</small></a>
     <a class="bottom-link" href="#search-section" data-focus-search><span class="bottom-icon search-bottom-icon">⌕</span><small>সার্চ</small></a>
     <button class="bottom-link" type="button" id="bottom-cart-open"><span class="bottom-icon">🛒<i id="bottom-cart-count">0</i></span><small>কার্ট</small></button>
