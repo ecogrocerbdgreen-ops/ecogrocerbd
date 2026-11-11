@@ -227,8 +227,33 @@
     .order-card-controls button{min-height:38px}
     @media(max-width:650px){.order-cards{grid-template-columns:1fr}.order-modal{padding:8px;align-items:end}.order-modal-card{max-height:92vh;padding:17px;border-radius:18px 18px 10px 10px}.detail-grid{grid-template-columns:1fr 1fr}.admin-table{min-width:620px}}
     @media(max-width:380px){.detail-grid{grid-template-columns:1fr}.overview-toolbar{justify-content:space-between}}
-  </style>
-  <script type="module" src="admin.js?v=20261111-orders-dashboard-2"></script>
+  
+/* Polished responsive admin workspace */
+.layout.admin-mode{width:min(1440px,calc(100% - 36px));max-width:1440px;padding:22px 0 38px}
+.admin-dashboard{padding:clamp(18px,3vw,38px);border:1px solid #e4ece6;border-radius:22px;background:linear-gradient(145deg,#fff,#fbfdfb);box-shadow:0 20px 60px rgba(24,51,41,.08)}
+.dashboard-topline{align-items:center;margin-bottom:24px}
+.admin-shell{grid-template-columns:205px minmax(0,1fr);gap:25px}
+.admin-sidebar{position:sticky;top:16px;align-self:start;min-height:400px;padding:12px;border:1px solid #e8eee9;border-radius:15px;background:#fbfdfb}
+.admin-nav{min-height:45px;padding:11px;border-radius:10px;font-size:13px}
+.admin-nav.active{background:#eaf5ed;box-shadow:inset 3px 0 #176b46;color:#145b3b}
+.panel-title-row{align-items:center;margin-bottom:17px}
+.dashboard-heading{font-size:clamp(26px,3vw,36px);letter-spacing:-1px}
+.dashboard-subtitle{margin-top:7px;font-size:13px}
+.admin-refresh,.text-action{min-height:38px;border-radius:10px}
+.overview-toolbar{justify-content:flex-end;align-items:center;margin:17px 0 8px}
+.stats-heading{display:flex;align-items:center;gap:9px;margin:20px 0 0;color:#294536;font-size:13px;font-weight:900}
+.admin-stats{gap:11px;margin:11px 0 17px}
+.stat-card{min-height:116px;padding:16px;border-radius:14px;box-shadow:0 4px 15px #18332908}
+.stat-card span{font-size:10px;font-weight:700}.stat-card strong{font-size:clamp(21px,2vw,28px)}.stat-card small{font-size:9px}
+.admin-section-card{margin-top:20px;padding:18px;border-radius:15px;box-shadow:0 5px 18px #18332908}
+.call-link{color:#176b46!important;text-decoration:none!important;font-weight:800!important}
+.call-action{display:inline-flex;align-items:center;justify-content:center;gap:6px;margin-top:7px;padding:7px 10px;border:1px solid #cfe5d5;border-radius:8px;background:#f1faf3;color:#176b46;text-decoration:none;font-size:10px;font-weight:800}
+@media(max-width:900px){.admin-shell{grid-template-columns:1fr;gap:13px}.admin-sidebar{position:static;min-height:0;flex-direction:row;align-items:center;padding:7px;overflow-x:auto}.admin-nav{flex:1;justify-content:center;white-space:nowrap}}
+@media(max-width:650px){.layout.admin-mode{width:calc(100% - 16px);padding:9px 0 20px}.admin-dashboard{padding:14px 10px;border-radius:16px}.dashboard-topline{gap:8px;margin-bottom:14px;padding-bottom:13px}.admin-shell{gap:11px}.admin-sidebar{gap:4px}.admin-nav{gap:5px;padding:9px 7px;font-size:11px}.panel-title-row{flex-direction:row;align-items:center;gap:7px}.panel-title-row .dashboard-heading{font-size:23px}.dashboard-subtitle{max-width:250px;font-size:10px;line-height:1.55}.admin-refresh{padding:8px;font-size:9px;white-space:nowrap}.overview-toolbar{flex-direction:row;justify-content:space-between}.overview-toolbar .admin-select{width:auto;min-width:130px}.admin-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:9px 0 14px}.stat-card{min-height:100px;padding:11px 9px}.stat-card span{font-size:9px}.stat-card strong{font-size:20px}.stat-card small{font-size:8px}.admin-section-card{margin-top:13px;padding:11px}.order-cards{grid-template-columns:1fr}.order-card{padding:12px}.admin-toolbar{flex-direction:column}.admin-search,.admin-toolbar .admin-select{width:100%;min-width:0}.order-modal{padding:7px;align-items:end}.order-modal-card{max-height:92vh;padding:15px;border-radius:16px 16px 8px 8px}}
+@media(max-width:370px){.panel-title-row .dashboard-heading{font-size:21px}.dashboard-subtitle{max-width:200px}.admin-refresh{font-size:8px;padding:7px}.overview-toolbar .admin-select{min-width:120px}}
+
+</style>
+  <script type="module" src="admin.js?v=20261111-admin-polish-4"></script>
 </head>
 <body>
   <div class="page">
@@ -237,7 +262,7 @@
         <span class="brand-mark">e</span>
         <span><span class="brand-name">EcoGrocer BD</span><span class="brand-caption">FRESH • DAILY • LOCAL</span></span>
       </a>
-      <a class="site-link" href="./">ওয়েবসাইট দেখুন ↗</a>
+      <a class="site-link" href="./">Visit website ↗</a>
     </header>
 
     <main class="layout">
@@ -272,38 +297,38 @@
 
 <section class="admin-dashboard hidden" id="success-view" aria-label="Admin dashboard">
   <div class="dashboard-topline">
-    <div><div class="dashboard-label">ECOGROCER BD · ADMIN</div><div class="dashboard-user">স্টোর ম্যানেজমেন্ট</div></div>
+    <div><div class="dashboard-label">ECOGROCER BD · ADMIN</div><div class="dashboard-user">STORE MANAGEMENT</div></div>
     <button class="secondary dashboard-logout" id="logout-button" type="button">লগআউট</button>
   </div>
   <div class="admin-shell">
     <aside class="admin-sidebar" aria-label="অ্যাডমিন মেনু">
-      <button class="admin-nav active" data-panel="overview" type="button">▦ <span>ওভারভিউ</span></button>
+      <button class="admin-nav active" data-panel="overview" type="button">▦ <span>Overview</span></button>
       <button class="admin-nav" data-panel="orders" type="button">▤ <span>অর্ডার</span><b id="nav-order-count">0</b></button>
     </aside>
     <div class="admin-content">
       <section class="admin-panel" id="panel-overview">
-        <div class="panel-title-row"><div><span class="dashboard-label">STORE OVERVIEW</span><h1 class="dashboard-heading">Welcome to Admin Panel</h1><p class="dashboard-subtitle">আপনার স্টোরের বর্তমান অবস্থা এক নজরে দেখুন।</p></div><button class="admin-refresh" id="refresh-dashboard" type="button">↻ রিফ্রেশ</button></div>
+        <div class="panel-title-row"><div><span class="dashboard-label">STORE OVERVIEW</span><h1 class="dashboard-heading">Good to see you.</h1><p class="dashboard-subtitle">Track orders, payments and store performance in one place.</p></div><button class="admin-refresh" id="refresh-dashboard" type="button">↻ Refresh</button></div>
         <div class="admin-toolbar overview-toolbar">
-          <label class="toolbar-note" for="overview-period">হিসাবের সময়</label>
-          <select id="overview-period" class="admin-select"><option value="all">সর্বমোট</option><option value="today">আজ</option><option value="7">গত ৭ দিন</option><option value="30">গত ৩০ দিন</option><option value="month">এই মাস</option></select>
+          <label class="toolbar-note" for="overview-period">REPORTING PERIOD</label>
+          <select id="overview-period" class="admin-select"><option value="all">All time</option><option value="today">Today</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="month">This month</option></select>
         </div>
         <div class="admin-stats">
-          <article class="stat-card"><span>মোট অর্ডার</span><strong id="stat-orders">—</strong><small>নির্বাচিত সময়</small></article>
-          <article class="stat-card"><span>অর্ডারের মোট মূল্য</span><strong id="stat-order-value">—</strong><small>বাতিল অর্ডার বাদে</small></article>
-          <article class="stat-card"><span>পেমেন্ট নিশ্চিত</span><strong id="stat-paid">—</strong><small>Paid হিসেবে চিহ্নিত</small></article>
-          <article class="stat-card"><span>পেমেন্ট বাকি / যাচাই</span><strong id="stat-unpaid">—</strong><small>Unpaid ও verification pending</small></article>
+          <article class="stat-card"><span>Total orders</span><strong id="stat-orders">—</strong><small>Orders in selected period</small></article>
+          <article class="stat-card"><span>Order value</span><strong id="stat-order-value">—</strong><small>Excludes cancelled & refunded</small></article>
+          <article class="stat-card"><span>Paid & verified</span><strong id="stat-paid">—</strong><small>Payment status: Paid</small></article>
+          <article class="stat-card"><span>Due / verification</span><strong id="stat-unpaid">—</strong><small>Unpaid or pending verification</small></article>
         </div>
         <div class="admin-stats admin-stats-secondary">
-          <article class="stat-card"><span>নতুন / পেন্ডিং অর্ডার</span><strong id="stat-pending">—</strong><small>অর্ডার পরিচালনা</small></article>
-          <article class="stat-card"><span>সম্পন্ন অর্ডার</span><strong id="stat-delivered">—</strong><small>Delivered</small></article>
-          <article class="stat-card"><span>বাতিল অর্ডার</span><strong id="stat-cancelled">—</strong><small>Cancelled</small></article>
-          <article class="stat-card"><span>মোট অর্ডার রেকর্ড</span><strong id="stat-all-orders">—</strong><small>সর্বমোট সংরক্ষিত</small></article>
+          <article class="stat-card"><span>New / pending</span><strong id="stat-pending">—</strong><small>Awaiting action</small></article>
+          <article class="stat-card"><span>Delivered</span><strong id="stat-delivered">—</strong><small>Delivered</small></article>
+          <article class="stat-card"><span>Cancelled</span><strong id="stat-cancelled">—</strong><small>Cancelled</small></article>
+          <article class="stat-card"><span>Total orders রেকর্ড</span><strong id="stat-all-orders">—</strong><small>Total saved in database</small></article>
         </div>
-        <div class="admin-section-card"><div class="section-card-head"><div><h2>সাম্প্রতিক অর্ডার</h2><p>সর্বশেষ ৫টি অর্ডার</p></div><button class="text-action" data-go-panel="orders" type="button">সব অর্ডার দেখুন →</button></div><div id="recent-orders" class="admin-table-wrap"><p class="admin-empty">ডেটা লোড হচ্ছে…</p></div></div>
+        <div class="admin-section-card"><div class="section-card-head"><div><h2>Recent orders</h2><p>Latest 5 customer orders</p></div><button class="text-action" data-go-panel="orders" type="button">View all orders →</button></div><div id="recent-orders" class="admin-table-wrap"><p class="admin-empty">ডেটা লোড হচ্ছে…</p></div></div>
       </section>
       <section class="admin-panel hidden" id="panel-orders">
-        <div class="panel-title-row"><div><span class="dashboard-label">ORDER MANAGEMENT</span><h1 class="dashboard-heading">অর্ডারসমূহ</h1><p class="dashboard-subtitle">গ্রাহকের অর্ডার, ডেলিভারি ও পেমেন্টের অবস্থা পরিচালনা করুন।</p></div><button class="admin-refresh" data-refresh="orders" type="button">↻ রিফ্রেশ</button></div>
-        <div class="admin-toolbar"><input id="order-search" class="admin-search" type="search" placeholder="অর্ডার নম্বর / গ্রাহকের নাম / ফোন খুঁজুন"><select id="order-filter" class="admin-select"><option value="all">সব স্ট্যাটাস</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="processing">Processing</option><option value="out_for_delivery">Out for delivery</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option><option value="refunded">Refunded</option></select></div>
+        <div class="panel-title-row"><div><span class="dashboard-label">ORDER MANAGEMENT</span><h1 class="dashboard-heading">Orders</h1><p class="dashboard-subtitle">Review customer details, delivery information and update order or payment status.</p></div><button class="admin-refresh" data-refresh="orders" type="button">↻ Refresh</button></div>
+        <div class="admin-toolbar"><input id="order-search" class="admin-search" type="search" placeholder="Search order ID, customer name, phone or transaction ID"><select id="order-filter" class="admin-select"><option value="all">All statuses</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="processing">Processing</option><option value="out_for_delivery">Out for delivery</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option><option value="refunded">Refunded</option></select></div>
         <div id="orders-table" class="admin-table-wrap"><p class="admin-empty">অর্ডার লোড হচ্ছে…</p></div>
       </section>
       <div class="admin-feedback" id="admin-feedback" role="status" aria-live="polite"></div>
