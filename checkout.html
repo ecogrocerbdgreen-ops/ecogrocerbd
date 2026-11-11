@@ -338,12 +338,12 @@
               <div class="checkout-section-title"><span class="checkout-step">04</span><div><h3>পেমেন্ট পদ্ধতি</h3><p>আপনার পছন্দের পদ্ধতিটি বেছে নিন</p></div></div>
               <div class="payment-options">
                 <label class="payment-option"><input type="radio" name="paymentMethod" value="cod" required checked><span class="payment-emoji">💵</span><span><strong>Cash on Delivery</strong><small>পণ্য হাতে পেয়ে পেমেন্ট</small></span></label>
-                <label class="payment-option"><input type="radio" name="paymentMethod" value="bkash"><span class="payment-emoji">💚</span><span><strong>bKash</strong><small>ম্যানুয়াল পেমেন্ট যাচাই</small></span></label>
+                <label class="payment-option"><input type="radio" name="paymentMethod" value="bkash"><span class="payment-emoji">💚</span><span><strong>bKash</strong><small>নিরাপদ Gateway / Manual Verification</small></span></label>
                 <label class="payment-option"><input type="radio" name="paymentMethod" value="nagad"><span class="payment-emoji">🟠</span><span><strong>Nagad</strong><small>ম্যানুয়াল পেমেন্ট যাচাই</small></span></label>
                 <label class="payment-option"><input type="radio" name="paymentMethod" value="rocket"><span class="payment-emoji">🔵</span><span><strong>Rocket</strong><small>ম্যানুয়াল পেমেন্ট যাচাই</small></span></label>
               </div>
               <div class="payment-reference" id="payment-reference-fields" hidden>
-                <p>অনলাইন পেমেন্ট করলে নম্বর ও Transaction ID দিলে পেমেন্টটি ম্যানুয়ালি যাচাই করা যাবে।</p>
+                <p>Gateway চালু থাকলে নিরাপদ Payment Page খুলবে। Gateway চালু না থাকলে নম্বর ও Transaction ID দিয়ে Manual Verification করা হবে।</p>
                 <label class="checkout-field"><span>যে নম্বর থেকে পেমেন্ট করেছেন</span><input name="payerPhone" type="tel" inputmode="numeric" maxlength="11" placeholder="01XXXXXXXXX"></label>
                 <label class="checkout-field"><span>Transaction ID <small>(পেমেন্ট করে থাকলে)</small></span><input name="transactionId" type="text" maxlength="80" placeholder="TrxID লিখুন"></label>
               </div>
