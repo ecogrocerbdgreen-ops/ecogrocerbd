@@ -845,3 +845,97 @@ section[id], div[id] { scroll-margin-top: 90px; }
     padding-top: 16px;
   }
 }
+
+
+/* Suggested product quantity controls */
+.recommended-cart-control {
+  width: 100%;
+  margin-top: 10px;
+}
+.recommended-cart-control .recommended-add {
+  width: 100%;
+  min-height: 38px;
+  margin: 0;
+  font-size: 12px;
+}
+.recommended-qty-stepper {
+  display: grid;
+  grid-template-columns: minmax(36px, 1fr) auto minmax(36px, 1fr);
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  min-height: 38px;
+  padding: 3px;
+  border: 1px solid #cde3d1;
+  border-radius: 10px;
+  color: #276f3a;
+  background: #f3faf4;
+}
+.recommended-qty-stepper button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  min-height: 30px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 7px;
+  color: #276f3a;
+  background: #e5f3e7;
+  font: 800 19px/1 Arial, sans-serif;
+  cursor: pointer;
+  transition: background .15s, transform .15s;
+}
+.recommended-qty-stepper button:hover {
+  background: #d7ecd9;
+}
+.recommended-qty-stepper button:active {
+  transform: scale(.96);
+}
+.recommended-qty-stepper button:focus-visible {
+  outline: 3px solid rgba(42,145,77,.35);
+  outline-offset: 2px;
+}
+.recommended-qty-stepper span {
+  min-width: 20px;
+  color: #264b31;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 760px) {
+  .recommended-cart-control {
+    margin-top: 9px;
+  }
+  .recommended-cart-control .recommended-add {
+    min-height: 35px;
+    padding: 7px 7px;
+    font-size: 11px;
+  }
+  .recommended-qty-stepper {
+    min-height: 35px;
+    gap: 3px;
+  }
+  .recommended-qty-stepper button {
+    min-width: 32px;
+    min-height: 29px;
+    padding-inline: 5px;
+  }
+}
+@media (max-width: 390px) {
+  .recommended-cart-control .recommended-add {
+    min-height: 33px;
+    padding-inline: 5px;
+    font-size: 10px;
+  }
+  .recommended-qty-stepper {
+    grid-template-columns: minmax(30px, 1fr) auto minmax(30px, 1fr);
+    min-height: 33px;
+  }
+  .recommended-qty-stepper button {
+    min-width: 29px;
+    min-height: 27px;
+  }
+}
