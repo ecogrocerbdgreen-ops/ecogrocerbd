@@ -90,9 +90,9 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
     const id=esc(o.id), status=esc(o.status);
     return '<article class="order-card"><div class="order-card-top"><div><div class="order-card-name">'+esc(o.customer_name||"নাম নেই")+'</div><span class="cell-sub">'+esc(o.order_number||o.id.slice(0,8))+' · '+esc(dateText(o.created_at))+'</span></div><span class="status-pill '+status+'">'+esc(statusLabel(o.status))+'</span></div>'+
       '<div class="order-card-line"><span>Phone</span><strong>'+phoneLink(o.customer_phone)+'</strong></div>'+
-      '<div class="order-card-line"><span>ডেলিভারি এলাকা</span><strong>'+esc(o.delivery_area_name||"—")+'</strong></div>'+
-      '<div class="order-card-line"><span>পেমেন্ট</span><strong>'+esc(paymentLabel(o.payment_method))+' · '+esc(o.payment_status||"—")+'</strong></div>'+
-      '<div class="order-card-line"><span>অর্ডারের মূল্য</span><strong>'+money(o.grand_total)+'</strong></div>'+
+      '<div class="order-card-line"><span>Delivery area</span><strong>'+esc(o.delivery_area_name||"—")+'</strong></div>'+
+      '<div class="order-card-line"><span>Payment</span><strong>'+esc(paymentLabel(o.payment_method))+' · '+esc(o.payment_status||"—")+'</strong></div>'+
+      '<div class="order-card-line"><span>Order total</span><strong>'+money(o.grand_total)+'</strong></div>'+
       '<div class="order-card-actions"><button class="row-action" data-order-details="'+id+'" type="button">View details</button>'+(phoneHref(o.customer_phone)?'<a class="call-action" href="'+esc(phoneHref(o.customer_phone))+'">☎ Call customer</a>':"") + '</div></article>';
   }
   function renderRecentOrders() {
@@ -115,18 +115,18 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
     const latest=transactions.slice().sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0))[0]||{};
     const payer=o.payer_phone||"—", txn=o.transaction_id||o.payment_gateway_transaction_id||latest.gateway_transaction_id||latest.bank_transaction_id||"—";
     const address=[o.full_address,o.delivery_area_name,o.block_name,o.road_name,o.house_number].filter(Boolean).join(", ")||"—";
-    const items=(o.order_items||[]).map(i=>'<tr><td>'+esc(i.product_name)+' × '+esc(i.quantity)+' '+esc(i.unit||"")+'</td><td>'+money(i.line_total)+'</td></tr>').join("")||'<tr><td colspan="2">পণ্যের তথ্য পাওয়া যায়নি</td></tr>';
+    const items=(o.order_items||[]).map(i=>'<tr><td>'+esc(i.product_name)+' × '+esc(i.quantity)+' '+esc(i.unit||"")+'</td><td>'+money(i.line_total)+'</td></tr>').join("")||'<tr><td colspan="2">Product details unavailable</td></tr>';
     const boxes=[
-      ["গ্রাহকের নাম",o.customer_name],["মোবাইল নম্বর",o.customer_phone],["ইমেইল",o.customer_email],
-      ["ডেলিভারি ঠিকানা",address],["পেমেন্ট মাধ্যম",paymentLabel(o.payment_method)],["পেমেন্ট অবস্থা",o.payment_status],
-      ["যে নম্বর থেকে পেমেন্ট",payer],["Transaction ID",txn],["Gateway",o.payment_gateway||latest.gateway],["Gateway reference",latest.validation_id||"—"]
+      ["Customer name",o.customer_name],["Customer phone",o.customer_phone],["Email",o.customer_email],
+      ["Delivery address",address],["Payment method",paymentLabel(o.payment_method)],["Payment status",o.payment_status],
+      ["Payer phone",payer],["Transaction ID",txn],["Gateway",o.payment_gateway||latest.gateway],["Gateway reference",latest.validation_id||"—"]
     ];
     $("order-modal-title").textContent=(o.order_number||"অর্ডার")+" · "+money(o.grand_total);
     $("order-modal-body").innerHTML='<div class="detail-grid">'+boxes.map(([label,value])=>'<div class="detail-box"><small>'+esc(label)+'</small><strong>'+esc(value||"—")+'</strong></div>').join("")+'</div>'+
-      '<h3 class="detail-heading">পণ্যের তালিকা</h3><table class="detail-items">'+items+'</table>'+
-      '<h3 class="detail-heading">হিসাব</h3><div class="detail-grid">'+[["পণ্যের মূল্য",money(o.subtotal)],["ডিসকাউন্ট",money(o.discount)],["ডেলিভারি চার্জ",money(o.delivery_fee)],["সর্বমোট",money(o.grand_total)]].map(([a,b])=>'<div class="detail-box"><small>'+a+'</small><strong>'+b+'</strong></div>').join("")+'</div>'+
+      '<h3 class="detail-heading">Order items</h3><table class="detail-items">'+items+'</table>'+
+      '<h3 class="detail-heading">হিসাব</h3><div class="detail-grid">'+[["Subtotal",money(o.subtotal)],["Discount",money(o.discount)],["Delivery fee",money(o.delivery_fee)],["Grand total",money(o.grand_total)]].map(([a,b])=>'<div class="detail-box"><small>'+a+'</small><strong>'+b+'</strong></div>').join("")+'</div>'+
       '<div class="payment-note">পেমেন্ট নম্বর ও Transaction ID দেখানো হবে। PIN, OTP বা কোনো গোপন ভেরিফিকেশন কোড এই প্যানেলে সংগ্রহ বা সংরক্ষণ করা হবে না.</div>'+
-      (o.delivery_notes?'<h3 class="detail-heading">ডেলিভারি নোট</h3><p>'+esc(o.delivery_notes)+'</p>':"");
+      (o.delivery_notes?'<h3 class="detail-heading">Delivery notes</h3><p>'+esc(o.delivery_notes)+'</p>':"");
     $("order-modal").classList.remove("hidden");
   }
   async function saveOrder(id) {
