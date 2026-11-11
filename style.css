@@ -366,6 +366,13 @@ section[id], div[id] { scroll-margin-top: 90px; }
 
 /* Mobile readability pass — tuned for common 360–430px Android screens. */
 @media (max-width: 760px) {
+  /* Let the brand header scroll away; keep the bottom tab bar pinned. */
+  .site-header {
+    position: static;
+    top: auto;
+    z-index: auto;
+    backdrop-filter: none;
+  }
   .delivery-inner { font-size: 11px; line-height: 1.45; }
   .section-heading h2 { font-size: 24px; }
   .section-kicker { font-size: 9px; }
