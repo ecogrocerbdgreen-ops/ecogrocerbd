@@ -687,23 +687,13 @@ section[id], div[id] { scroll-margin-top: 90px; }
 /* Dedicated, shareable checkout page */
 .checkout-back-button { display: inline-flex; align-items: center; justify-content: center; min-height: 38px; flex: 0 0 auto; padding: 0 13px; border: 1px solid #dce9de; border-radius: 10px; color: #286d3b; background: #f5faf5; font: 700 10px 'Noto Sans Bengali',sans-serif; cursor: pointer; }
 .checkout-page-mode { min-height: 100vh; padding-bottom: 0 !important; background: #f5f8f5; overflow: auto !important; }
-.checkout-page-mode .site-header,
-.checkout-page-mode .delivery-strip,
 .checkout-page-mode main,
-.checkout-page-mode .site-footer,
-.checkout-page-mode .drawer-scrim,
-.checkout-page-mode .site-drawer,
-.checkout-page-mode .panel-scrim,
-.checkout-page-mode .cart-drawer,
-.checkout-page-mode .modal-scrim,
-.checkout-page-mode .mobile-bottom-nav,
-.checkout-page-mode .toast,
 .checkout-page-mode .product-detail-scrim,
 .checkout-page-mode .product-lightbox { display: none !important; }
 .checkout-page-mode .checkout-scrim { position: static; inset: auto; z-index: auto; display: block; min-height: 100vh; padding: 0; background: transparent; backdrop-filter: none; }
 .checkout-page-mode .checkout-scrim[hidden] { display: none !important; }
 .checkout-page-mode .checkout-modal { display: flex; width: 100%; min-height: 100vh; max-height: none; overflow: visible; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
-.checkout-page-mode .checkout-header { position: sticky; top: 0; z-index: 8; align-items: center; gap: 16px; padding: 16px max(20px,calc((100vw - 1160px)/2)); border-bottom: 1px solid #e5ece5; background: rgba(255,255,255,.97); box-shadow: 0 4px 18px rgba(28,68,34,.045); backdrop-filter: blur(12px); }
+ .checkout-page-mode .checkout-header { position: relative; top: auto; z-index: 8; align-items: center; gap: 16px; padding: 16px max(20px,calc((100vw - 1160px)/2)); border-bottom: 1px solid #e5ece5; background: rgba(255,255,255,.97); box-shadow: 0 4px 18px rgba(28,68,34,.045); backdrop-filter: blur(12px); }
 .checkout-page-mode .checkout-header h2 { font-size: 25px; }
 .checkout-page-mode .checkout-header > div { flex: 1; }
 .checkout-page-mode .checkout-body { width: min(100%,1200px); min-height: 0; margin: 0 auto; padding: 24px 24px 55px; overflow: visible; }
@@ -1142,4 +1132,24 @@ section[id], div[id] { scroll-margin-top: 90px; }
     justify-self: start;
     min-height: 27px;
   }
+}
+
+
+/* Full-page product details */
+.product-page-mode { min-height: 100vh; padding-bottom: 0; background: #fff; }
+.product-page-main { width: min(100% - 32px, 1120px); margin: 0 auto; min-height: 55vh; }
+.product-page-shell { width: 100%; padding: 16px 0 38px; }
+.product-page-mode .product-detail-content { padding: 0 0 28px; }
+.product-page-mode .product-detail-breadcrumb a { color: var(--green); font-size: inherit; font-weight: 700; text-decoration: none; }
+.product-page-mode .product-detail-breadcrumb a:hover { text-decoration: underline; }
+.product-page-loading { padding: 70px 18px; color: var(--ink-soft); text-align: center; }
+.product-page-not-found { display: flex; flex-direction: column; align-items: center; gap: 12px; min-height: 52vh; justify-content: center; padding: 35px 12px; text-align: center; }
+.product-page-not-found > span { font-size: 44px; }
+.product-page-not-found h1 { margin: 0; color: var(--green-dark); font: 800 28px 'Baloo Da 2','Noto Sans Bengali',sans-serif; }
+.product-page-not-found p { margin: 0 0 8px; color: var(--ink-soft); font-size: 12px; }
+.product-page-mode .recommended-product-open { text-decoration: none; }
+@media (max-width: 760px) {
+  .product-page-main { width: min(100% - 24px, 1120px); }
+  .product-page-shell { padding-top: 8px; padding-bottom: 24px; }
+  .product-page-mode .product-detail-content { padding-inline: 3px; }
 }
