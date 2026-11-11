@@ -284,15 +284,19 @@ function closeLogin() {
 function refreshSearch() {
   const query = normalizeSearch(document.getElementById('product-search').value);
   let totalMatches = 0;
+  const activeCategory = document.body.classList.contains('category-page')
+    ? document.body.dataset.categoryPage
+    : '';
   document.querySelectorAll('[data-section-category]').forEach(section => {
+    const inScope = !activeCategory || section.dataset.sectionCategory === activeCategory;
     let sectionMatches = 0;
     section.querySelectorAll('.product-card').forEach(card => {
       const text = normalizeSearch(card.dataset.search || '');
-      const matched = !query || text.includes(query) || query.split(' ').every(part => text.includes(part));
+      const matched = inScope && (!query || text.includes(query) || query.split(' ').every(part => text.includes(part)));
       card.hidden = !matched;
       if (matched) sectionMatches++;
     });
-    section.hidden = sectionMatches === 0;
+    section.hidden = !inScope || sectionMatches === 0;
     totalMatches += sectionMatches;
   });
   const featuredSection = document.querySelector('.featured-section');
