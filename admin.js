@@ -19,7 +19,10 @@
     const headers = { ...(options.headers || {}) };
     if (token) headers.Authorization = "Bearer " + token;
     if (options.body) headers["Content-Type"] = "application/json";
-    const response = await fetch(API + encodeURIComponent(action), {
+    const actionParts = String(action).split("&");
+    const route = encodeURIComponent(actionParts.shift());
+    const query = actionParts.length ? "&" + actionParts.join("&") : "";
+    const response = await fetch(API + route + query, {
       method: options.method || "GET", headers,
       body: options.body ? JSON.stringify(options.body) : undefined,
     });
