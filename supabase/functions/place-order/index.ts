@@ -1,5 +1,3 @@
-import { createClient } from "npm:@supabase/supabase-js@2.119.0";
-
 const allowedOrigins = new Set([
   "https://ecogrocerbdgreen-ops.github.io",
 ]);
@@ -49,18 +47,55 @@ function getPublishableKeys() {
 }
 
 function getSecretKey() {
-  const legacy = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
-  if (legacy) return legacy;
   const raw = Deno.env.get("SUPABASE_SECRET_KEYS") || "";
   if (raw) {
     try {
       const keys = JSON.parse(raw);
       if (keys && typeof keys.default === "string") return keys.default;
     } catch (_) {
-      // Missing or malformed server secret is handled below.
+      // Fall back to the legacy service-role JWT during API-key migration.
     }
   }
-  return "";
+  return Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+}
+
+async function callDatabaseRpc(
+  supabaseUrl: string,
+  serverKey: string,
+  functionName: string,
+  args: Record<string, unknown>,
+) {
+  const headers = new Headers({
+    "apikey": serverKey,
+    "content-type": "application/json",
+    "accept": "application/json",
+  });
+
+  // Legacy service_role keys are JWTs; new sb_secret_ keys must only use apikey.
+  if (serverKey.startsWith("eyJ")) {
+    headers.set("authorization", "Bearer " + serverKey);
+  }
+
+  const response = await fetch(
+    supabaseUrl.replace(/\\/$/, "") + "/rest/v1/rpc/" + encodeURIComponent(functionName),
+    { method: "POST", headers, body: JSON.stringify(args) },
+  );
+  const text = await response.text();
+  let data: unknown = null;
+  try { data = text ? JSON.parse(text) : null; } catch (_) { data = text; }
+  if (!response.ok) {
+    const detail = data && typeof data === "object"
+      ? data as Record<string, unknown>
+      : {};
+    return {
+      data: null,
+      error: {
+        code: String(detail.code || response.status),
+        message: String(detail.message || detail.details || "Database request failed."),
+      },
+    };
+  }
+  return { data, error: null };
 }
 
 async function hashClientIp(ip: string, secret: string) {
@@ -126,33 +161,31 @@ Deno.serve(async (request: Request) => {
     return json({ error: "Request verification সম্পন্ন হয়নি। আবার চেষ্টা করুন।" }, 400, origin);
   }
 
-  const admin = createClient(supabaseUrl, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-
   try {
     const keyHash = await hashClientIp(clientIp, serviceKey);
-    const { data: allowed, error: rateError } = await admin.rpc(
-      "consume_ecogrocer_order_rate_limit",
-      { p_key_hash: keyHash, p_max_requests: 5, p_window_seconds: 600 },
-    );
+    const rateResult = await callDatabaseRpc(supabaseUrl, serviceKey, "consume_ecogrocer_order_rate_limit", {
+      p_key_hash: keyHash,
+      p_max_requests: 5,
+      p_window_seconds: 600,
+    });
 
-    if (rateError) {
-      console.error("Order rate limiter failed:", rateError.code || "unknown");
+    if (rateResult.error) {
+      console.error("Order rate limiter failed:", rateResult.error.code || "unknown");
       return json({ error: "অর্ডার যাচাই করা যাচ্ছে না। কিছুক্ষণ পর আবার চেষ্টা করুন।" }, 503, origin);
     }
-    if (allowed !== true) {
+    if (rateResult.data !== true) {
       return json({ error: "অল্প সময়ে অনেকগুলো অর্ডার দেওয়ার চেষ্টা হয়েছে। ১০ মিনিট পর আবার চেষ্টা করুন।" }, 429, origin);
     }
 
-    const { data, error } = await admin.rpc("place_ecogrocer_order", {
+    const orderResult = await callDatabaseRpc(supabaseUrl, serviceKey, "place_ecogrocer_order", {
       p_order: order,
       p_customer_user_id: null,
     });
+    const data = orderResult.data as Record<string, unknown> | null;
 
-    if (error) {
-      console.warn("Order validation rejected:", error.code || "unknown");
-      return json({ error: error.message || "অর্ডার গ্রহণ করা যায়নি। তথ্য যাচাই করে আবার চেষ্টা করুন।" }, 422, origin);
+    if (orderResult.error) {
+      console.warn("Order validation rejected:", orderResult.error.code || "unknown");
+      return json({ error: orderResult.error.message || "অর্ডার গ্রহণ করা যায়নি। তথ্য যাচাই করে আবার চেষ্টা করুন।" }, 422, origin);
     }
     if (!data || data.success !== true || !data.orderId) {
       console.error("Order RPC returned an unexpected result.");
