@@ -6,6 +6,9 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
   const SUPABASE_URL = "https://ucwaoytakqldicdtoran.supabase.co";
   const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_wpp9kVHNg5pZeGRY0Eoxaw_iyyQez9Q";
   const ADMIN_EMAIL = "ecogrocerbdgreen@gmail.com";
+
+  // Keep the recovery session in memory only. A reset link can never be
+  // treated as the normal admin sign-in.
   const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     auth: {
       autoRefreshToken: true,
@@ -16,13 +19,18 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
   });
 
   const $ = (id) => document.getElementById(id);
+  const search = new URLSearchParams(window.location.search);
   const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-  const hashType = hash.get("type") || "";
-  let flowMode = hashType === "recovery" ? "recovery" :
-    (hashType === "magiclink" || hashType === "email" || hashType === "signup" ? "setup" : "");
+  const recoveryTokenHash = search.get("token_hash") || "";
+  const recoveryTokenType = search.get("type") || "";
+  const hasManualRecoveryLink = Boolean(recoveryTokenHash && recoveryTokenType === "recovery");
+  const legacyRecoveryLink = hash.get("type") === "recovery";
+  let recoverySessionReady = false;
+  let verifyInProgress = false;
 
   function showView(name) {
     $("login-view").classList.toggle("hidden", name !== "login");
+    $("recovery-verify-view").classList.toggle("hidden", name !== "verify");
     $("password-view").classList.toggle("hidden", name !== "password");
     $("success-view").classList.toggle("hidden", name !== "success");
   }
@@ -45,49 +53,121 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
   }
 
   function clearCallbackUrl() {
-    flowMode = "";
     window.history.replaceState({}, document.title, window.location.pathname);
-  }
-
-  function showPasswordForm(isFirstSetup) {
-    showView("password");
-    $("password-heading").textContent = isFirstSetup ? "প্রথম পাসওয়ার্ড তৈরি করুন" : "নতুন পাসওয়ার্ড সেট করুন";
-    $("password-copy").textContent = isFirstSetup
-      ? "আপনার ইমেইল যাচাই হয়েছে। এখন অ্যাডমিন অ্যাকাউন্টের জন্য নিজের পাসওয়ার্ড তৈরি করুন।"
-      : "আপনার ইমেইল যাচাই হয়েছে। এখন একটি নতুন পাসওয়ার্ড দিন।";
-    showStatus("password-status", "");
   }
 
   function isAuthorizedUser(user) {
     return String(user?.email || "").trim().toLowerCase() === ADMIN_EMAIL;
   }
 
+  function friendlyAuthError(error) {
+    const code = String(error?.code || "");
+    const message = String(error?.message || "");
+    const combined = (code + " " + message).toLowerCase();
+
+    if (combined.includes("over_email_send_rate_limit") ||
+        combined.includes("email rate limit") ||
+        combined.includes("rate limit exceeded")) {
+      return "Supabase-এর ইমেইল পাঠানোর সীমা আপাতত শেষ হয়েছে। বারবার বাটনে চাপবেন না। কিছুক্ষণ পরে আবার চেষ্টা করুন এবং Gmail-এর Inbox/Spam-এ সর্বশেষ ইমেইলটি দেখুন।";
+    }
+
+    if (combined.includes("otp_expired") ||
+        combined.includes("one-time token not found") ||
+        (combined.includes("email link") && combined.includes("expired")) ||
+        combined.includes("invalid token")) {
+      return "এই রিসেট লিংকটি মেয়াদোত্তীর্ণ বা আগে ব্যবহার হয়ে গেছে। নতুন রিসেট ইমেইল চাইতে হবে। Gmail-এর পুরোনো ইমেইল নয়, সর্বশেষ ইমেইলের লিংক ব্যবহার করুন।";
+    }
+
+    return message || "অনুরোধটি সম্পন্ন করা যায়নি। আবার চেষ্টা করুন।";
+  }
+
+  function showPasswordForm() {
+    showView("password");
+    $("password-heading").textContent = "নতুন পাসওয়ার্ড সেট করুন";
+    $("password-copy").textContent = "আপনার ইমেইল যাচাই হয়েছে। এখন নতুন পাসওয়ার্ডটি দুবার লিখে সংরক্ষণ করুন।";
+    showStatus("password-status", "");
+  }
+
   async function syncSessionToScreen(event, session) {
     if (!session?.user) {
-      if (!flowMode) showView("login");
+      if (hasManualRecoveryLink) showView("verify");
+      else if (!legacyRecoveryLink) showView("login");
       return;
     }
 
     if (!isAuthorizedUser(session.user)) {
-      await supabase.auth.signOut();
+      await supabase.auth.signOut({ scope: "local" });
+      recoverySessionReady = false;
       showView("login");
       showStatus("login-status", "এই Gmail অ্যাডমিন ব্যবহারের জন্য অনুমোদিত নয়।", "error");
       return;
     }
 
-    // Email links only verify account ownership / allow password recovery.
-    // They must never grant the normal admin-login success screen.
-    if (event === "PASSWORD_RECOVERY" || flowMode === "recovery" || flowMode === "setup") {
-      showPasswordForm(flowMode === "setup");
+    // PASSWORD_RECOVERY is a temporary permission to change the password,
+    // never proof that the user completed a password-based admin login.
+    if (event === "PASSWORD_RECOVERY" || legacyRecoveryLink || verifyInProgress) {
+      recoverySessionReady = true;
+      showPasswordForm();
       return;
     }
 
     if (event === "INITIAL_SESSION") {
-      await supabase.auth.signOut();
+      await supabase.auth.signOut({ scope: "local" });
       showView("login");
-      showStatus("login-status", "নিরাপত্তার জন্য আগের সেশন বন্ধ করা হয়েছে। অ্যাডমিনে ঢুকতে পাসওয়ার্ড দিয়ে লগইন করুন।", "success");
+      showStatus("login-status", "আগের সেশন বন্ধ করা হয়েছে। অ্যাডমিনে ঢুকতে Gmail ও পাসওয়ার্ড দিয়ে লগইন করুন।", "success");
     }
   }
+
+  // New links use TokenHash + an explicit Continue button. This prevents
+  // email security scanners from consuming Supabase's single-use token.
+  if (hasManualRecoveryLink) {
+    showView("verify");
+  } else if (search.get("error_code") || hash.get("error_code")) {
+    showView("login");
+    const errorCode = search.get("error_code") || hash.get("error_code") || "";
+    const errorDescription = search.get("error_description") || hash.get("error_description") || "";
+    showStatus(
+      "login-status",
+      errorCode === "otp_expired"
+        ? "রিসেট লিংকটি মেয়াদোত্তীর্ণ বা আগে ব্যবহার হয়েছে। নতুন লিংক চাইতে হবে।"
+        : (errorDescription ? decodeURIComponent(errorDescription.replace(/\+/g, " ")) : "ইমেইল লিংকটি যাচাই করা যায়নি। নতুন লিংক চাইুন।"),
+      "error"
+    );
+  } else if (legacyRecoveryLink) {
+    showView("login");
+  }
+
+  $("verify-recovery-button").addEventListener("click", async () => {
+    if (!hasManualRecoveryLink) {
+      showStatus("recovery-verify-status", "রিসেট লিংকটি অসম্পূর্ণ। Forgot Password থেকে নতুন ইমেইল চাইুন।", "error");
+      return;
+    }
+
+    verifyInProgress = true;
+    setBusy("verify-recovery-button", true, "ইমেইল যাচাই হচ্ছে…");
+    showStatus("recovery-verify-status", "");
+
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({
+        token_hash: recoveryTokenHash,
+        type: "recovery"
+      });
+      if (error) throw error;
+
+      if (!isAuthorizedUser(data.user)) {
+        await supabase.auth.signOut({ scope: "local" });
+        throw new Error("এই ইমেইলটি অ্যাডমিন অ্যাকাউন্টের সঙ্গে মেলে না।");
+      }
+
+      recoverySessionReady = true;
+      showPasswordForm();
+    } catch (error) {
+      verifyInProgress = false;
+      showStatus("recovery-verify-status", friendlyAuthError(error), "error");
+    } finally {
+      setBusy("verify-recovery-button", false);
+    }
+  });
 
   $("login-form").addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -103,14 +183,14 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
       if (error) throw error;
 
       if (!isAuthorizedUser(data.user)) {
-        await supabase.auth.signOut();
+        await supabase.auth.signOut({ scope: "local" });
         throw new Error("এই Gmail অ্যাডমিন ব্যবহারের জন্য অনুমোদিত নয়।");
       }
 
       $("admin-password").value = "";
       showView("success");
     } catch (error) {
-      showStatus("login-status", error.message || "লগইন করা যায়নি। আবার চেষ্টা করুন।", "error");
+      showStatus("login-status", friendlyAuthError(error), "error");
     } finally {
       setBusy("login-button", false);
     }
@@ -121,15 +201,18 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
     showStatus("login-status", "");
 
     try {
-      // The account already exists in Supabase Auth. Always send a password
-      // recovery link; do not use passwordless sign-in as an admin login.
       const { error } = await supabase.auth.resetPasswordForEmail(ADMIN_EMAIL, {
         redirectTo: callbackUrl()
       });
       if (error) throw error;
-      showStatus("login-status", "পাসওয়ার্ড রিসেট লিংক আপনার Gmail-এ পাঠানো হয়েছে। ইমেইলের লিংকটি খুলে নতুন পাসওয়ার্ড সেট করুন। Inbox ও Spam ফোল্ডার দেখুন।", "success");
+
+      showStatus(
+        "login-status",
+        "রিসেট ইমেইল পাঠানোর অনুরোধ গ্রহণ করা হয়েছে। Inbox ও Spam দেখুন। ইমেইলের সর্বশেষ লিংক খুলে Continue চাপুন; তারপর নতুন পাসওয়ার্ড দুবার লিখুন।",
+        "success"
+      );
     } catch (error) {
-      showStatus("login-status", error.message || "ইমেইল পাঠানো যায়নি। Supabase Auth-এর URL ও Email সেটিংস পরীক্ষা করুন।", "error");
+      showStatus("login-status", friendlyAuthError(error), "error");
     } finally {
       setBusy("forgot-button", false);
     }
@@ -137,6 +220,12 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
 
   $("password-form").addEventListener("submit", async (event) => {
     event.preventDefault();
+
+    if (!recoverySessionReady) {
+      showStatus("password-status", "আগে ইমেইলের রিসেট লিংকটি যাচাই করুন।", "error");
+      return;
+    }
+
     const password = $("new-password").value;
     const confirmation = $("confirm-password").value;
 
@@ -157,20 +246,21 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
       if (error) throw error;
 
       $("password-form").reset();
+      recoverySessionReady = false;
 
-      const { error: signOutError } = await supabase.auth.signOut();
-      if (signOutError) {
-        clearCallbackUrl();
-        showView("success");
-        showStatus("password-status", "পাসওয়ার্ড পরিবর্তন হয়েছে। আপনার সেশন বন্ধ করতে লগআউট বাটন ব্যবহার করুন।", "success");
-        return;
-      }
-
+      const { error: signOutError } = await supabase.auth.signOut({ scope: "local" });
       clearCallbackUrl();
       showView("login");
-      showStatus("login-status", "পাসওয়ার্ড সফলভাবে তৈরি/রিসেট হয়েছে। এখন নতুন পাসওয়ার্ড দিয়ে লগইন করুন।", "success");
+
+      showStatus(
+        "login-status",
+        signOutError
+          ? "পাসওয়ার্ড পরিবর্তন হয়েছে। নিরাপত্তার জন্য এই পেজটি বন্ধ করে আবার Admin Login খুলুন, তারপর নতুন পাসওয়ার্ড দিয়ে প্রবেশ করুন।"
+          : "পাসওয়ার্ড সফলভাবে সংরক্ষিত হয়েছে। এখন নতুন পাসওয়ার্ড দিয়ে আলাদা করে লগইন করুন।",
+        "success"
+      );
     } catch (error) {
-      showStatus("password-status", error.message || "পাসওয়ার্ড সংরক্ষণ করা যায়নি। ইমেইলের লিংকটি মেয়াদোত্তীর্ণ হলে আবার রিসেট করুন।", "error");
+      showStatus("password-status", friendlyAuthError(error), "error");
     } finally {
       setBusy("save-password-button", false);
     }
@@ -180,22 +270,24 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
     const button = $("logout-button");
     button.disabled = true;
     try {
-      const { error } = await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut({ scope: "local" });
       if (error) throw error;
       clearCallbackUrl();
       showView("login");
       showStatus("login-status", "আপনি নিরাপদভাবে লগআউট করেছেন।", "success");
     } catch (error) {
-      showStatus("login-status", error.message || "লগআউট করা যায়নি।", "error");
+      showStatus("login-status", friendlyAuthError(error), "error");
     } finally {
       button.disabled = false;
     }
   });
 
   supabase.auth.onAuthStateChange((event, session) => {
-    Promise.resolve().then(() => syncSessionToScreen(event, session)).catch((error) => {
-      showView("login");
-      showStatus("login-status", error.message || "অ্যাকাউন্ট যাচাই করা যায়নি।", "error");
-    });
+    Promise.resolve()
+      .then(() => syncSessionToScreen(event, session))
+      .catch((error) => {
+        showView("login");
+        showStatus("login-status", friendlyAuthError(error), "error");
+      });
   });
 })();
