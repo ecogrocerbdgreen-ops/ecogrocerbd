@@ -137,11 +137,11 @@ function productCard(product) {
     : `<button class="add-button" type="button" data-cart-action="increase" data-id="${product.id}" aria-label="${escapeHTML(product.name)} কার্টে যোগ করুন">Add to Cart</button>`;
 
   return `
-    <article class="product-card" data-product-id="${product.id}" data-search="${escapeHTML(`${product.name} ${product.en} ${product.unit} ${(product.aliases || []).join(' ')} ${CATEGORIES.find(c => c.id === product.category)?.bangla || ''}`.toLowerCase())}">
-      <div class="product-media" data-product-open="${product.id}" role="button" tabindex="0" aria-label="${escapeHTML(product.name)} অর্ডার করুন">
+    <article class="product-card" data-product-id="${product.id}" data-product-detail="${product.id}" data-search="${escapeHTML(`${product.name} ${product.en} ${product.unit} ${(product.aliases || []).join(' ')} ${CATEGORIES.find(c => c.id === product.category)?.bangla || ''}`.toLowerCase())}">
+      <div class="product-media"><button class="product-image-trigger" type="button" data-product-image-open="${product.id}" aria-label="${escapeHTML(product.name)}-এর ছবি বড় করে দেখুন">
         <img class="product-image" src="${imageUrl}" alt="${escapeHTML(product.name)}" loading="lazy" decoding="async" draggable="false" referrerpolicy="no-referrer" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
         <span class="product-placeholder" hidden><span aria-hidden="true">▧</span><small>ছবি পাওয়া যায়নি</small></span>
-      </div>
+      </button></div>
       ${product.featured ? '<span class="product-label">জনপ্রিয়</span>' : '<span class="product-label">নমুনা পণ্য</span>'}
       <h3 class="product-name" data-product-open="${product.id}" role="button" tabindex="0">${escapeHTML(product.name)}<span class="product-unit">${escapeHTML(product.unit)}</span></h3>
       <div class="product-buy-row"><strong class="product-price">${formatPrice(product.price)}</strong>${addControl}</div>
