@@ -182,7 +182,28 @@
       .site-link { padding: 8px 10px; font-size: 11px; }
       .card { padding: 23px 18px; }
     }
-  </style>
+
+    .dashboard-user{margin-top:5px;color:#78867e;font-size:12px}
+    .admin-shell{display:grid;grid-template-columns:205px minmax(0,1fr);gap:28px}
+    .admin-sidebar{display:flex;flex-direction:column;gap:7px}
+    .admin-nav{display:flex;align-items:center;gap:11px;padding:13px 14px;border:0;border-radius:10px;background:transparent;color:#56675d;text-align:left;font-size:14px;font-weight:700}
+    .admin-nav:hover,.admin-nav.active{background:#edf6ef;color:#176b46}.admin-nav b{margin-left:auto;font-size:11px}
+    .admin-content{min-width:0}.panel-title-row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:24px}
+    .panel-title-row .dashboard-heading{margin-top:8px}.admin-refresh,.text-action{border:1px solid #dce8e0;background:#fff;color:#176b46;border-radius:9px;padding:9px 13px;font-size:12px;font-weight:800;cursor:pointer}
+    .admin-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:24px 0}
+    .stat-card,.admin-section-card{border:1px solid #e7eee9;border-radius:13px;background:#fff;padding:18px}
+    .stat-card span,.stat-card small{display:block;color:#748279;font-size:11px}.stat-card strong{display:block;margin:9px 0 4px;color:#183329;font-size:28px}
+    .admin-section-card{margin-top:20px}.section-card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.section-card-head h2{margin:0;font-size:17px}.section-card-head p{margin:4px 0 0;color:#87938c;font-size:11px}
+    .admin-toolbar{display:flex;gap:10px;margin:0 0 15px}.admin-search,.admin-select,.product-edit-input{min-height:40px;border:1px solid #dce8e0;border-radius:8px;padding:8px 11px;background:#fff;color:#183329;font:inherit;font-size:12px}.admin-search{flex:1;min-width:150px}.admin-select{min-width:150px}.toolbar-note{align-self:center;color:#7b8980;font-size:11px}
+    .admin-table-wrap{overflow:auto;border:1px solid #e7eee9;border-radius:11px;background:#fff}
+    .admin-table{width:100%;border-collapse:collapse;min-width:650px;font-size:12px}.admin-table th,.admin-table td{padding:12px 13px;border-bottom:1px solid #edf1ee;text-align:left;vertical-align:middle}.admin-table th{background:#f7faf7;color:#65746b;font-size:10px;white-space:nowrap}.admin-table tr:last-child td{border-bottom:0}
+    .admin-table td strong{display:block;color:#20372b}.cell-sub{display:block;margin-top:4px;color:#89958d;font-size:10px}.status-pill{display:inline-block;padding:5px 8px;border-radius:20px;background:#f0f4f1;color:#53645a;font-size:10px;font-weight:800}.status-pill.pending{background:#fff5df;color:#8c6416}.status-pill.delivered{background:#eaf6ed;color:#176b46}.status-pill.cancelled{background:#fff0ef;color:#ad3c36}
+    .row-action{border:1px solid #dce8e0;border-radius:7px;padding:6px 8px;background:#fff;color:#176b46;font-size:10px;font-weight:800;cursor:pointer}
+    .admin-empty{padding:24px;text-align:center;color:#829087;font-size:12px}.admin-feedback{margin-top:14px;color:#176b46;font-size:12px}.admin-feedback.error{color:#ad3c36}
+    .product-edit-input{width:88px;min-width:72px}.product-save{white-space:nowrap}.product-active{accent-color:#176b46}
+    @media(max-width:850px){.admin-shell{grid-template-columns:1fr;gap:16px}.admin-sidebar{flex-direction:row;overflow:auto}.admin-nav{white-space:nowrap}.admin-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:560px){.panel-title-row{flex-direction:column}.admin-toolbar{flex-direction:column}.admin-select{width:100%}.admin-stats{gap:9px}.stat-card{padding:14px}.stat-card strong{font-size:24px}.dashboard-topline{align-items:center}}
+\n  </style>
   <script type="module" src="admin.js"></script>
 </head>
 <body>
@@ -226,18 +247,41 @@
       </section>
 
 <section class="admin-dashboard hidden" id="success-view" aria-label="Admin dashboard">
-        <div class="dashboard-topline">
-          <div>
-            <div class="dashboard-label">ECOGROCER BD · ADMIN</div>
-          </div>
-          <button class="secondary dashboard-logout" id="logout-button" type="button">লগআউট</button>
+  <div class="dashboard-topline">
+    <div><div class="dashboard-label">ECOGROCER BD · ADMIN</div><div class="dashboard-user">স্টোর ম্যানেজমেন্ট</div></div>
+    <button class="secondary dashboard-logout" id="logout-button" type="button">লগআউট</button>
+  </div>
+  <div class="admin-shell">
+    <aside class="admin-sidebar" aria-label="অ্যাডমিন মেনু">
+      <button class="admin-nav active" data-panel="overview" type="button">▦ <span>ওভারভিউ</span></button>
+      <button class="admin-nav" data-panel="orders" type="button">▤ <span>অর্ডার</span><b id="nav-order-count">0</b></button>
+      <button class="admin-nav" data-panel="products" type="button">▧ <span>পণ্য ও স্টক</span></button>
+    </aside>
+    <div class="admin-content">
+      <section class="admin-panel" id="panel-overview">
+        <div class="panel-title-row"><div><span class="dashboard-label">STORE OVERVIEW</span><h1 class="dashboard-heading">Welcome to Admin Panel</h1><p class="dashboard-subtitle">আপনার স্টোরের বর্তমান অবস্থা এক নজরে দেখুন।</p></div><button class="admin-refresh" id="refresh-dashboard" type="button">↻ রিফ্রেশ</button></div>
+        <div class="admin-stats">
+          <article class="stat-card"><span>মোট অর্ডার</span><strong id="stat-orders">—</strong><small>সর্বমোট</small></article>
+          <article class="stat-card"><span>নতুন অর্ডার</span><strong id="stat-pending">—</strong><small>পেন্ডিং</small></article>
+          <article class="stat-card"><span>মোট পণ্য</span><strong id="stat-products">—</strong><small>ক্যাটালগ</small></article>
+          <article class="stat-card"><span>সক্রিয় পণ্য</span><strong id="stat-active">—</strong><small>ওয়েবসাইটে দৃশ্যমান</small></article>
         </div>
-        <div class="dashboard-welcome">
-          <h1 class="dashboard-heading">Welcome to Admin Panel</h1>
-          <p class="dashboard-subtitle">আপনি সফলভাবে EcoGrocer BD-এর অ্যাডমিন প্যানেলে প্রবেশ করেছেন।</p>
-          <div class="dashboard-status"><span class="dashboard-status-dot"></span> Admin access active</div>
-        </div>
+        <div class="admin-section-card"><div class="section-card-head"><div><h2>সাম্প্রতিক অর্ডার</h2><p>সর্বশেষ ৫টি অর্ডার</p></div><button class="text-action" data-go-panel="orders" type="button">সব অর্ডার দেখুন →</button></div><div id="recent-orders" class="admin-table-wrap"><p class="admin-empty">ডেটা লোড হচ্ছে…</p></div></div>
       </section>
+      <section class="admin-panel hidden" id="panel-orders">
+        <div class="panel-title-row"><div><span class="dashboard-label">ORDER MANAGEMENT</span><h1 class="dashboard-heading">অর্ডারসমূহ</h1><p class="dashboard-subtitle">গ্রাহকের অর্ডার, ডেলিভারি ও পেমেন্টের অবস্থা পরিচালনা করুন।</p></div><button class="admin-refresh" data-refresh="orders" type="button">↻ রিফ্রেশ</button></div>
+        <div class="admin-toolbar"><input id="order-search" class="admin-search" type="search" placeholder="অর্ডার নম্বর / গ্রাহকের নাম / ফোন খুঁজুন"><select id="order-filter" class="admin-select"><option value="all">সব স্ট্যাটাস</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="processing">Processing</option><option value="out_for_delivery">Out for delivery</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select></div>
+        <div id="orders-table" class="admin-table-wrap"><p class="admin-empty">অর্ডার লোড হচ্ছে…</p></div>
+      </section>
+      <section class="admin-panel hidden" id="panel-products">
+        <div class="panel-title-row"><div><span class="dashboard-label">CATALOGUE & INVENTORY</span><h1 class="dashboard-heading">পণ্য ও স্টক</h1><p class="dashboard-subtitle">পণ্যের দাম, স্টক এবং ওয়েবসাইটে প্রদর্শন নিয়ন্ত্রণ করুন।</p></div><button class="admin-refresh" data-refresh="products" type="button">↻ রিফ্রেশ</button></div>
+        <div class="admin-toolbar"><input id="product-search" class="admin-search" type="search" placeholder="পণ্যের নাম খুঁজুন"><span class="toolbar-note">পরিবর্তনের পর সংরক্ষণ করুন</span></div>
+        <div id="products-table" class="admin-table-wrap"><p class="admin-empty">পণ্য লোড হচ্ছে…</p></div>
+      </section>
+      <div class="admin-feedback" id="admin-feedback" role="status" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
     </main>
 
     <footer class="footer">© 2026 EcoGrocer BD · Admin access is restricted to the authorized account.</footer>
