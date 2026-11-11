@@ -115,23 +115,42 @@ async function placeOrder(body) {
   return json(result.data, 201);
 }
 
+async function exactCount(path) {
+  const result = await sb(path, { headers: { Prefer: "count=exact", Range: "0-0" } });
+  const range = result.response.headers.get("content-range") || "";
+  const total = Number(range.split("/")[1]);
+  return Number.isFinite(total) ? total : 0;
+}
+
 async function adminDashboard() {
-  const [orders, products] = await Promise.all([
-    sb("orders?select=id,order_number,status,payment_status,grand_total,created_at,customer_name,customer_phone&order=created_at.desc&limit=250"),
+  const dateParts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Dhaka", year: "numeric", month: "2-digit", day: "2-digit"
+  }).format(new Date());
+  const dayStart = new Date(dateParts + "T00:00:00+06:00").toISOString();
+  const dayEnd = new Date(new Date(dayStart).getTime() + 86400000).toISOString();
+  const todayQuery = new URLSearchParams({
+    select: "grand_total",
+    created_at: "gte." + dayStart,
+  }).toString() + "&created_at=lt." + encodeURIComponent(dayEnd);
+
+  const [orders, totalOrders, pendingOrders, todayOrders, products] = await Promise.all([
+    sb("orders?select=id,order_number,status,payment_status,grand_total,created_at,customer_name,customer_phone&order=created_at.desc&limit=12"),
+    exactCount("orders?select=id"),
+    exactCount("orders?select=id&status=eq.pending"),
+    sb("orders?" + todayQuery),
     sb("products?select=id,is_active,track_inventory,stock_quantity")
   ]);
-  const list = orders.data || [];
-  const today = new Date().toISOString().slice(0, 10);
-  const todayOrders = list.filter((o) => String(o.created_at).slice(0, 10) === today);
+  const todayList = todayOrders.data || [];
+  const productList = products.data || [];
   return json({
-    orders: list.slice(0, 12),
+    orders: orders.data || [],
     metrics: {
-      totalOrders: list.length,
-      pendingOrders: list.filter((o) => o.status === "pending").length,
-      todaysOrders: todayOrders.length,
-      todaysSales: todayOrders.reduce((sum, o) => sum + Number(o.grand_total || 0), 0),
-      activeProducts: (products.data || []).filter((p) => p.is_active).length,
-      lowStock: (products.data || []).filter((p) => p.track_inventory && p.stock_quantity <= 5).length,
+      totalOrders,
+      pendingOrders,
+      todaysOrders: todayList.length,
+      todaysSales: todayList.reduce((sum, order) => sum + Number(order.grand_total || 0), 0),
+      activeProducts: productList.filter((product) => product.is_active).length,
+      lowStock: productList.filter((product) => product.track_inventory && product.stock_quantity <= 5).length,
     }
   });
 }
