@@ -457,6 +457,57 @@ const style = document.createElement('style');
 style.textContent = 'body.no-scroll{overflow:hidden;} [hidden]{display:none !important;}';
 document.head.appendChild(style);
 
+// On mobile, reveal the header on upward movement and tuck it away on downward movement.
+function initMobileHeaderScrollBehavior() {
+  const header = document.querySelector('.site-header');
+  if (!header || !window.matchMedia) return;
+
+  const mobileQuery = window.matchMedia('(max-width: 760px)');
+  const getScrollY = () => Math.max(
+    0,
+    window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0
+  );
+
+  let lastScrollY = getScrollY();
+  let framePending = false;
+
+  const revealHeader = () => header.classList.remove('is-scroll-hidden');
+  const concealHeader = () => header.classList.add('is-scroll-hidden');
+
+  const updateHeader = () => {
+    const currentY = getScrollY();
+    const movement = currentY - lastScrollY;
+
+    if (!mobileQuery.matches || document.body.classList.contains('no-scroll') || currentY <= 4) {
+      revealHeader();
+    } else if (movement > 1.5) {
+      concealHeader();
+    } else if (movement < -1.5) {
+      revealHeader();
+    }
+
+    lastScrollY = currentY;
+    framePending = false;
+  };
+
+  window.addEventListener('scroll', () => {
+    if (framePending) return;
+    framePending = true;
+    window.requestAnimationFrame(updateHeader);
+  }, { passive: true });
+
+  window.addEventListener('resize', () => {
+    lastScrollY = getScrollY();
+    if (!mobileQuery.matches) revealHeader();
+  }, { passive: true });
+
+  window.addEventListener('pageshow', () => {
+    lastScrollY = getScrollY();
+    revealHeader();
+  });
+}
+initMobileHeaderScrollBehavior();
+
 function initHeroSlider() {
   const slides = [...document.querySelectorAll('[data-hero-slide]')];
   const dots = [...document.querySelectorAll('[data-hero-target]')];
