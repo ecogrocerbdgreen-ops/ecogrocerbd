@@ -10,6 +10,8 @@ const env = (key) => {
 
 const baseUrl = () => env("SUPABASE_URL").replace(/\/$/, "");
 const serviceKey = () => env("SUPABASE_SERVICE_ROLE_KEY");
+const anonKey = () => env("SUPABASE_ANON_KEY");
+const siteUrl = () => (env("SITE_URL") || "https://ecogrocerbd.netlify.app").replace(/\\/$/, "");
 
 const b64url = (bytes) => {
   let binary = "";
@@ -110,9 +112,249 @@ async function publicDeliveryAreas() {
   return json({ areas: result.data || [] }, 200, { "cache-control": "public, max-age=60, s-maxage=120" });
 }
 
-async function placeOrder(body) {
-  const result = await sb("rpc/place_ecogrocer_order", { method: "POST", body: { p_order: body } });
+async function getCustomer(request) {
+  const bearer = request.headers.get("authorization") || "";
+  if (!/^Bearer\\s+.+/i.test(bearer)) return null;
+  if (!baseUrl() || !anonKey()) throw new Error("Customer account authentication is not configured yet.");
+  const response = await fetch(baseUrl() + "/auth/v1/user", {
+    headers: { apikey: anonKey(), authorization: bearer }
+  });
+  const user = await response.json().catch(() => ({}));
+  if (!response.ok || !user.id) throw new Error("আপনার Login মেয়াদ শেষ। আবার OTP দিয়ে Login করুন।");
+  return user;
+}
+
+const normalizedPhone = (value) => {
+  const digits = String(value || "").replace(/\\D/g, "");
+  if (digits.startsWith("8801") && digits.length === 13) return "0" + digits.slice(3);
+  return digits;
+};
+
+async function publicConfig() {
+  return json({
+    supabaseUrl: baseUrl(),
+    supabaseAnonKey: anonKey(),
+    phoneOtpEnabled: Boolean(baseUrl() && anonKey())
+  });
+}
+
+async function customerOrders(request) {
+  const user = await getCustomer(request);
+  if (!user) return json({ error: "অর্ডার দেখতে আগে মোবাইল OTP দিয়ে Login করুন।" }, 401);
+  const phone = normalizedPhone(user.phone);
+  const query = new URLSearchParams({
+    select: "id,order_number,status,payment_method,payment_status,grand_total,created_at,delivery_area_name,delivery_slot_id,order_items(product_name,unit,quantity,unit_price,line_total)",
+    order: "created_at.desc",
+    limit: "100",
+  });
+  if (phone) query.set("or", "(customer_user_id.eq." + user.id + ",customer_phone.eq." + phone + ")");
+  else query.set("customer_user_id", "eq." + user.id);
+  const result = await sb("orders?" + query.toString());
+  return json({ orders: result.data || [], phone: user.phone || "" });
+}
+
+async function placeOrder(body, request) {
+  const user = await getCustomer(request);
+  const result = await sb("rpc/place_ecogrocer_order", {
+    method: "POST",
+    body: { p_order: body, p_customer_user_id: user ? user.id : null }
+  });
   return json(result.data, 201);
+}
+
+const sslConfig = () => ({
+  storeId: env("SSLCOMMERZ_STORE_ID"),
+  storePassword: env("SSLCOMMERZ_STORE_PASSWORD"),
+  defaultEmail: env("SSLCOMMERZ_DEFAULT_CUSTOMER_EMAIL"),
+  mode: (env("SSLCOMMERZ_MODE") || "sandbox").toLowerCase(),
+});
+
+const sslBase = () => sslConfig().mode === "live"
+  ? "https://securepay.sslcommerz.com"
+  : "https://sandbox.sslcommerz.com";
+
+async function initSslPayment(orderNumber) {
+  const cfg = sslConfig();
+  if (!cfg.storeId || !cfg.storePassword || !cfg.defaultEmail) {
+    return json({ enabled: false, message: "অনলাইন Payment Gateway এখনো Merchant Credentials দিয়ে চালু করা হয়নি। চাইলে আপাতত Manual Payment ব্যবহার করুন।" });
+  }
+  const orders = await sb("orders?select=id,order_number,customer_name,customer_email,customer_phone,full_address,grand_total,payment_status,payment_method&order_number=eq." + encodeURIComponent(orderNumber) + "&limit=1");
+  const order = (orders.data || [])[0];
+  if (!order) return json({ error: "অর্ডার পাওয়া যায়নি।" }, 404);
+  if (order.payment_method === "cod") return json({ error: "Cash on Delivery অর্ডারে Online Payment প্রয়োজন নেই।" }, 422);
+  if (order.payment_status === "paid") return json({ error: "এই অর্ডারের পেমেন্ট ইতিমধ্যে সম্পন্ন হয়েছে।" }, 409);
+
+  const tranId = order.order_number + "-" + crypto.randomUUID().replace(/-/g, "").slice(0, 8);
+  const apiUrl = siteUrl() + "/.netlify/functions/api";
+  const fields = new URLSearchParams({
+    store_id: cfg.storeId,
+    store_passwd: cfg.storePassword,
+    total_amount: Number(order.grand_total).toFixed(2),
+    currency: "BDT",
+    tran_id: tranId,
+    success_url: apiUrl + "?action=payments/callback&type=success",
+    fail_url: apiUrl + "?action=payments/callback&type=fail",
+    cancel_url: apiUrl + "?action=payments/callback&type=cancel",
+    ipn_url: apiUrl + "?action=payments/ipn",
+    cus_name: order.customer_name,
+    cus_email: order.customer_email || cfg.defaultEmail,
+    cus_add1: String(order.full_address || "Dhaka").slice(0, 120),
+    cus_city: "Dhaka",
+    cus_postcode: "1212",
+    cus_country: "Bangladesh",
+    cus_phone: order.customer_phone,
+    shipping_method: "NO",
+    num_of_item: "1",
+    product_name: "EcoGrocer BD Order " + order.order_number,
+    product_category: "Grocery",
+    product_profile: "general",
+  });
+  const response = await fetch(sslBase() + "/gwprocess/v4/api.php", {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded" },
+    body: fields.toString(),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok || !data.GatewayPageURL || data.status !== "SUCCESS") {
+    console.error("SSLCOMMERZ session creation failed:", data);
+    return json({ error: "Payment Session তৈরি করা যায়নি। Merchant Settings যাচাই করে আবার চেষ্টা করুন।" }, 502);
+  }
+  await sb("payment_transactions", {
+    method: "POST",
+    headers: { Prefer: "return=minimal" },
+    body: {
+      order_id: order.id,
+      gateway: "sslcommerz",
+      gateway_transaction_id: tranId,
+      session_key: data.sessionkey || "",
+      amount: Number(order.grand_total),
+      currency: "BDT",
+      status: "initiated",
+      raw_response: { status: data.status, sessionkey: data.sessionkey || "" },
+    },
+  });
+  await sb("orders?id=eq." + encodeURIComponent(order.id), {
+    method: "PATCH",
+    headers: { Prefer: "return=minimal" },
+    body: { payment_gateway: "sslcommerz", payment_gateway_transaction_id: tranId }
+  });
+  return json({ enabled: true, paymentUrl: data.GatewayPageURL, transactionId: tranId });
+}
+
+async function readGatewayPayload(request) {
+  if (request.method === "GET") return Object.fromEntries(new URL(request.url).searchParams.entries());
+  const contentType = request.headers.get("content-type") || "";
+  if (contentType.includes("application/json")) return await request.json().catch(() => ({}));
+  const form = await request.formData().catch(() => null);
+  return form ? Object.fromEntries(form.entries()) : {};
+}
+
+async function setPaymentStatus(orderId, paymentStatus, tranId, valId, bankTranId, raw) {
+  const params = {
+    p_order_id: orderId,
+    p_payment_status: paymentStatus,
+    p_gateway: "sslcommerz",
+    p_gateway_transaction_id: tranId,
+    p_validation_id: valId || "",
+    p_bank_transaction_id: bankTranId || "",
+    p_response: raw || {},
+  };
+  const result = await sb("rpc/set_ecogrocer_payment_status", { method: "POST", body: params });
+  return result.data;
+}
+
+async function validateSslPayment(payload) {
+  const cfg = sslConfig();
+  if (!cfg.storeId || !cfg.storePassword) throw new Error("Payment Gateway is not configured.");
+  const valId = String(payload.val_id || "");
+  const tranId = String(payload.tran_id || "");
+  if (!valId || !tranId) throw new Error("Payment Validation তথ্য অসম্পূর্ণ।");
+  const attempts = await sb("payment_transactions?select=id,order_id,gateway_transaction_id,amount,currency,status&gateway_transaction_id=eq." + encodeURIComponent(tranId) + "&limit=1");
+  const attempt = (attempts.data || [])[0];
+  if (!attempt || attempt.gateway_transaction_id !== tranId) throw new Error("Payment Transaction রেকর্ড পাওয়া যায়নি।");
+
+  const validationUrl = sslBase() + "/validator/api/validationserverAPI.php?" + new URLSearchParams({
+    val_id: valId,
+    store_id: cfg.storeId,
+    store_passwd: cfg.storePassword,
+    format: "json",
+  }).toString();
+  const response = await fetch(validationUrl, { headers: { accept: "application/json" } });
+  const validation = await response.json().catch(() => ({}));
+  const status = String(validation.status || "").toUpperCase();
+  const amount = Number(validation.amount);
+  const amountMatches = Number.isFinite(amount) && Math.abs(amount - Number(attempt.amount)) < 0.01;
+  const currencyMatches = String(validation.currency || "").toUpperCase() === "BDT";
+  const transactionMatches = String(validation.tran_id || "") === tranId;
+  const valid = response.ok && ["VALID", "VALIDATED"].includes(status) && amountMatches && currencyMatches && transactionMatches;
+
+  const risk = String(validation.risk_level || "0") === "1";
+  const paymentStatus = valid ? (risk ? "pending_verification" : "paid") : "failed";
+  await setPaymentStatus(
+    attempt.order_id, paymentStatus, tranId, valId,
+    String(validation.bank_tran_id || ""), validation
+  );
+  return { valid, risk, paymentStatus, orderId: tranId.split("-").slice(0, 2).join("-"), validation };
+}
+
+function paymentResultPage(title, message, orderNumber, success = false) {
+  const safe = (value) => String(value || "").replace(/[&<>"']/g, (ch) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[ch]));
+  return new Response("<!doctype html><html lang='bn'><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>EcoGrocer BD Payment</title><body style='font-family:system-ui,sans-serif;background:#f4f8f4;color:#183329;display:grid;place-items:center;min-height:100vh;margin:0'><main style='max-width:520px;margin:24px;background:white;padding:32px;border-radius:20px;box-shadow:0 12px 40px #18332914'><h1>" + safe(title) + "</h1><p>" + safe(message) + "</p><p>Order: <strong>" + safe(orderNumber) + "</strong></p><a href='" + siteUrl() + "'>EcoGrocer BD-তে ফিরে যান</a></main></body></html>", {
+    status: 200, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" }
+  });
+}
+
+async function handlePaymentCallback(request, type) {
+  const payload = await readGatewayPayload(request);
+  const tranId = String(payload.tran_id || "");
+  if (type === "success") {
+    const result = await validateSslPayment(payload);
+    const orderNumber = tranId.split("-").slice(0, 2).join("-");
+    if (result.valid && !result.risk) {
+      return paymentResultPage("পেমেন্ট সফল হয়েছে", "আপনার পেমেন্ট যাচাই করে গ্রহণ করা হয়েছে।", orderNumber, true);
+    }
+    if (result.valid && result.risk) {
+      return paymentResultPage("পেমেন্ট যাচাই চলছে", "লেনদেনটি অতিরিক্ত যাচাইয়ের জন্য রাখা হয়েছে। EcoGrocer BD টিম নিশ্চিত করে জানাবে।", orderNumber);
+    }
+    return paymentResultPage("পেমেন্ট যাচাই হয়নি", "লেনদেনটি সফল হিসেবে নিশ্চিত করা যায়নি। অর্ডারটি নিশ্চিত করতে আমাদের টিমের সঙ্গে যোগাযোগ করুন।", orderNumber);
+  }
+
+  if (tranId) {
+    const attempts = await sb("payment_transactions?select=order_id,gateway_transaction_id&gateway_transaction_id=eq." + encodeURIComponent(tranId) + "&limit=1");
+    const attempt = (attempts.data || [])[0];
+    if (attempt) {
+      await setPaymentStatus(attempt.order_id, "failed", tranId, "", "", { callback: type });
+    }
+  }
+  return paymentResultPage(type === "cancel" ? "পেমেন্ট বাতিল হয়েছে" : "পেমেন্ট সম্পন্ন হয়নি",
+    "আপনার অর্ডারটি সংরক্ষিত আছে। প্রয়োজনে আবার চেষ্টা করুন বা Cash on Delivery বেছে নিন।",
+    tranId.split("-").slice(0, 2).join("-"));
+}
+
+async function handlePaymentIpn(request) {
+  const payload = await readGatewayPayload(request);
+  const result = await validateSslPayment(payload);
+  return new Response(result.valid ? "IPN processed" : "IPN rejected", {
+    status: result.valid ? 200 : 400,
+    headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" }
+  });
+}
+
+async function adminPaymentStatus(body) {
+  const orderId = String(body.orderId || "");
+  const status = String(body.paymentStatus || "");
+  if (!/^[0-9a-f-]{36}$/i.test(orderId) || !["paid","failed","refunded","pending_verification"].includes(status)) {
+    return json({ error: "পেমেন্ট Status বা Order ID সঠিক নয়।" }, 422);
+  }
+  const result = await sb("orders?id=eq." + encodeURIComponent(orderId), {
+    method: "PATCH", headers: { Prefer: "return=representation" },
+    body: { payment_status: status, updated_at: new Date().toISOString() }
+  });
+  await sb("admin_audit_log", {
+    method: "POST", headers: { Prefer: "return=minimal" },
+    body: { action: "manual_payment_status_changed", entity_type: "order", entity_id: orderId, details: { payment_status: status } }
+  });
+  return json({ success: true, order: (result.data || [])[0] || null });
 }
 
 async function exactCount(path) {
@@ -274,6 +516,15 @@ export default async (request) => {
       return await adminLogin(await request.json());
     }
 
+    if (action === "public-config" && method === "GET") return await publicConfig();
+    if (action === "account/orders" && method === "GET") return await customerOrders(request);
+    if (action === "payments/callback") return await handlePaymentCallback(request, url.searchParams.get("type") || "success");
+    if (action === "payments/ipn" && method === "POST") return await handlePaymentIpn(request);
+    if (action === "payments/init" && method === "POST") {
+      const body = await request.json();
+      return await initSslPayment(String(body.orderId || ""));
+    }
+
     const publicActions = action === "products" || action === "delivery-areas" || action === "orders";
     if (!publicActions && !(await requireAdmin(request))) {
       return json({ error: "Admin session expired. আবার Login করুন।" }, 401);
@@ -281,7 +532,7 @@ export default async (request) => {
 
     if (action === "products" && method === "GET") return await publicProducts();
     if (action === "delivery-areas" && method === "GET") return await publicDeliveryAreas();
-    if (action === "orders" && method === "POST") return await placeOrder(await request.json());
+    if (action === "orders" && method === "POST") return await placeOrder(await request.json(), request);
 
     if (action === "admin/dashboard" && method === "GET") return await adminDashboard();
     if (action === "admin/orders" && method === "GET") return await adminOrders(url);
@@ -293,6 +544,7 @@ export default async (request) => {
       return json({ success: true });
     }
     if (action === "admin/order-status" && method === "POST") return await updateOrderStatus(await request.json());
+    if (action === "admin/payment-status" && method === "POST") return await adminPaymentStatus(await request.json());
     if (action === "admin/coupons" && method === "GET") return await adminCoupons();
     if (action === "admin/coupons" && method === "POST") return await saveCoupon(await request.json());
     if (action === "admin/delivery-areas" && method === "GET") return await adminDeliveryAreas();
