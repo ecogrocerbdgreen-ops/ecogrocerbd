@@ -203,7 +203,27 @@
     .product-edit-input{width:88px;min-width:72px}.product-save{white-space:nowrap}.product-active{accent-color:#176b46}
     @media(max-width:850px){.admin-shell{grid-template-columns:1fr;gap:16px}.admin-sidebar{flex-direction:row;overflow:auto}.admin-nav{white-space:nowrap}.admin-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
     @media(max-width:560px){.panel-title-row{flex-direction:column}.admin-toolbar{flex-direction:column}.admin-select{width:100%}.admin-stats{gap:9px}.stat-card{padding:14px}.stat-card strong{font-size:24px}.dashboard-topline{align-items:center}}
-\n  </style>
+\n  
+    .overview-toolbar{justify-content:flex-end;align-items:center;margin:18px 0 8px}
+    .admin-stats-secondary .stat-card strong{font-size:24px}
+    .order-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .order-card{border:1px solid #e5ede7;border-radius:13px;padding:16px;background:#fff;min-width:0}
+    .order-card-top,.order-card-line{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+    .order-card-top{margin-bottom:13px}.order-card-name{font-weight:800;color:#20372b;font-size:14px}
+    .order-card-line{padding:7px 0;border-top:1px solid #f0f3f1;font-size:12px}.order-card-line span:first-child{color:#7b8980}.order-card-line strong{text-align:right;overflow-wrap:anywhere}
+    .order-card-actions{display:flex;gap:8px;margin-top:12px}.order-card-actions button{flex:1}
+    .order-modal{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:16px}
+    .order-modal-backdrop{position:absolute;inset:0;background:rgba(14,35,25,.56);backdrop-filter:blur(3px)}
+    .order-modal-card{position:relative;width:min(680px,100%);max-height:min(88vh,850px);overflow:auto;padding:22px;border-radius:18px;background:#fff;box-shadow:0 25px 80px rgba(0,0,0,.2)}
+    .order-modal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding-bottom:16px;border-bottom:1px solid #edf1ee;margin-bottom:16px}
+    .order-modal-head h2{margin:7px 0 0;font-size:21px}.modal-close{width:38px;height:38px;border:1px solid #e2eae4;border-radius:10px;background:#fff;font-size:24px;color:#53645a}
+    .detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .detail-box{padding:12px;border:1px solid #e9efeb;border-radius:10px;min-width:0}.detail-box small{display:block;color:#7b8980;font-size:10px;margin-bottom:5px}.detail-box strong{display:block;color:#20372b;font-size:13px;overflow-wrap:anywhere}
+    .detail-heading{font-size:14px;margin:20px 0 10px}.detail-items{width:100%;border-collapse:collapse;font-size:12px}.detail-items td{padding:9px 4px;border-bottom:1px solid #edf1ee}.detail-items td:last-child{text-align:right;font-weight:700}
+    .payment-note{margin-top:10px;padding:11px;border-radius:9px;background:#f4f8f5;color:#5f7066;font-size:11px;line-height:1.7}
+    @media(max-width:650px){.order-cards{grid-template-columns:1fr}.order-modal{padding:8px;align-items:end}.order-modal-card{max-height:92vh;padding:17px;border-radius:18px 18px 10px 10px}.detail-grid{grid-template-columns:1fr 1fr}.admin-table{min-width:620px}}
+    @media(max-width:380px){.detail-grid{grid-template-columns:1fr}.overview-toolbar{justify-content:space-between}}
+  </style>
   <script type="module" src="admin.js"></script>
 </head>
 <body>
@@ -255,16 +275,25 @@
     <aside class="admin-sidebar" aria-label="অ্যাডমিন মেনু">
       <button class="admin-nav active" data-panel="overview" type="button">▦ <span>ওভারভিউ</span></button>
       <button class="admin-nav" data-panel="orders" type="button">▤ <span>অর্ডার</span><b id="nav-order-count">0</b></button>
-      <button class="admin-nav" data-panel="products" type="button">▧ <span>পণ্য ও স্টক</span></button>
     </aside>
     <div class="admin-content">
       <section class="admin-panel" id="panel-overview">
         <div class="panel-title-row"><div><span class="dashboard-label">STORE OVERVIEW</span><h1 class="dashboard-heading">Welcome to Admin Panel</h1><p class="dashboard-subtitle">আপনার স্টোরের বর্তমান অবস্থা এক নজরে দেখুন।</p></div><button class="admin-refresh" id="refresh-dashboard" type="button">↻ রিফ্রেশ</button></div>
+        <div class="admin-toolbar overview-toolbar">
+          <label class="toolbar-note" for="overview-period">হিসাবের সময়</label>
+          <select id="overview-period" class="admin-select"><option value="all">সর্বমোট</option><option value="today">আজ</option><option value="7">গত ৭ দিন</option><option value="30">গত ৩০ দিন</option><option value="month">এই মাস</option></select>
+        </div>
         <div class="admin-stats">
-          <article class="stat-card"><span>মোট অর্ডার</span><strong id="stat-orders">—</strong><small>সর্বমোট</small></article>
-          <article class="stat-card"><span>নতুন অর্ডার</span><strong id="stat-pending">—</strong><small>পেন্ডিং</small></article>
-          <article class="stat-card"><span>মোট পণ্য</span><strong id="stat-products">—</strong><small>ক্যাটালগ</small></article>
-          <article class="stat-card"><span>সক্রিয় পণ্য</span><strong id="stat-active">—</strong><small>ওয়েবসাইটে দৃশ্যমান</small></article>
+          <article class="stat-card"><span>মোট অর্ডার</span><strong id="stat-orders">—</strong><small>নির্বাচিত সময়</small></article>
+          <article class="stat-card"><span>অর্ডারের মোট মূল্য</span><strong id="stat-order-value">—</strong><small>বাতিল অর্ডার বাদে</small></article>
+          <article class="stat-card"><span>পেমেন্ট নিশ্চিত</span><strong id="stat-paid">—</strong><small>Paid হিসেবে চিহ্নিত</small></article>
+          <article class="stat-card"><span>পেমেন্ট বাকি / যাচাই</span><strong id="stat-unpaid">—</strong><small>Unpaid ও verification pending</small></article>
+        </div>
+        <div class="admin-stats admin-stats-secondary">
+          <article class="stat-card"><span>নতুন / পেন্ডিং অর্ডার</span><strong id="stat-pending">—</strong><small>অর্ডার পরিচালনা</small></article>
+          <article class="stat-card"><span>সম্পন্ন অর্ডার</span><strong id="stat-delivered">—</strong><small>Delivered</small></article>
+          <article class="stat-card"><span>বাতিল অর্ডার</span><strong id="stat-cancelled">—</strong><small>Cancelled</small></article>
+          <article class="stat-card"><span>মোট অর্ডার রেকর্ড</span><strong id="stat-all-orders">—</strong><small>সর্বমোট সংরক্ষিত</small></article>
         </div>
         <div class="admin-section-card"><div class="section-card-head"><div><h2>সাম্প্রতিক অর্ডার</h2><p>সর্বশেষ ৫টি অর্ডার</p></div><button class="text-action" data-go-panel="orders" type="button">সব অর্ডার দেখুন →</button></div><div id="recent-orders" class="admin-table-wrap"><p class="admin-empty">ডেটা লোড হচ্ছে…</p></div></div>
       </section>
@@ -272,11 +301,6 @@
         <div class="panel-title-row"><div><span class="dashboard-label">ORDER MANAGEMENT</span><h1 class="dashboard-heading">অর্ডারসমূহ</h1><p class="dashboard-subtitle">গ্রাহকের অর্ডার, ডেলিভারি ও পেমেন্টের অবস্থা পরিচালনা করুন।</p></div><button class="admin-refresh" data-refresh="orders" type="button">↻ রিফ্রেশ</button></div>
         <div class="admin-toolbar"><input id="order-search" class="admin-search" type="search" placeholder="অর্ডার নম্বর / গ্রাহকের নাম / ফোন খুঁজুন"><select id="order-filter" class="admin-select"><option value="all">সব স্ট্যাটাস</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="processing">Processing</option><option value="out_for_delivery">Out for delivery</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select></div>
         <div id="orders-table" class="admin-table-wrap"><p class="admin-empty">অর্ডার লোড হচ্ছে…</p></div>
-      </section>
-      <section class="admin-panel hidden" id="panel-products">
-        <div class="panel-title-row"><div><span class="dashboard-label">CATALOGUE & INVENTORY</span><h1 class="dashboard-heading">পণ্য ও স্টক</h1><p class="dashboard-subtitle">পণ্যের দাম, স্টক এবং ওয়েবসাইটে প্রদর্শন নিয়ন্ত্রণ করুন।</p></div><button class="admin-refresh" data-refresh="products" type="button">↻ রিফ্রেশ</button></div>
-        <div class="admin-toolbar"><input id="product-search" class="admin-search" type="search" placeholder="পণ্যের নাম খুঁজুন"><span class="toolbar-note">পরিবর্তনের পর সংরক্ষণ করুন</span></div>
-        <div id="products-table" class="admin-table-wrap"><p class="admin-empty">পণ্য লোড হচ্ছে…</p></div>
       </section>
       <div class="admin-feedback" id="admin-feedback" role="status" aria-live="polite"></div>
     </div>
