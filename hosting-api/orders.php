@@ -16,6 +16,8 @@ if (!is_file($configFile)) reply(500, ['success' => false, 'message' => 'অর�
 $config = require $configFile;
 if (!is_array($config)) reply(500, ['success' => false, 'message' => 'সার্ভার কনফিগারেশন পড়া যায়নি।']);
 
+date_default_timezone_set((string)($config['timezone'] ?? 'Asia/Dhaka'));
+
 $origin = (string)($_SERVER['HTTP_ORIGIN'] ?? '');
 $allowedOrigins = is_array($config['allowed_origins'] ?? null) ? $config['allowed_origins'] : [];
 if ($origin !== '' && !in_array($origin, $allowedOrigins, true)) {
@@ -44,6 +46,42 @@ $catalog = [
 'm01'=>359,'m02'=>319,'m03'=>519,'m04'=>639,'m05'=>619,'m06'=>799,'m07'=>409,'m08'=>1249,
 'f01'=>250,'f02'=>400,'f03'=>600,'f04'=>250,'f05'=>450,'f06'=>240,'f07'=>400,'f08'=>210
 ];
+
+$productMeta = [
+'g01'=>['name'=>'মিনিকেট চাল','unit'=>'৫ কেজি'],
+'g02'=>['name'=>'সয়াবিন তেল','unit'=>'১ লিটার'],
+'g03'=>['name'=>'মসুর ডাল','unit'=>'১ কেজি'],
+'g04'=>['name'=>'চিনি','unit'=>'১ কেজি'],
+'g05'=>['name'=>'ডিম (লেয়ার)','unit'=>'১২টি'],
+'g06'=>['name'=>'আটা','unit'=>'২ কেজি'],
+'g07'=>['name'=>'আয়োডিনযুক্ত লবণ','unit'=>'১ কেজি'],
+'g08'=>['name'=>'চিনিগুঁড়া চাল','unit'=>'১ কেজি'],
+'v01'=>['name'=>'আলু','unit'=>'১ কেজি'],
+'v02'=>['name'=>'টমেটো','unit'=>'৫০০ গ্রাম'],
+'v03'=>['name'=>'ধনেপাতা','unit'=>'১০০ গ্রাম'],
+'v04'=>['name'=>'রসুন (ইমপোর্টেড)','unit'=>'৫০০ গ্রাম'],
+'v05'=>['name'=>'কাঁচা মরিচ','unit'=>'২৫০ গ্রাম'],
+'v06'=>['name'=>'দেশি শসা','unit'=>'৫০০ গ্রাম'],
+'v07'=>['name'=>'দেশি পেঁয়াজ','unit'=>'১ কেজি'],
+'v08'=>['name'=>'দেশি গাজর','unit'=>'৫০০ গ্রাম'],
+'m01'=>['name'=>'ব্রয়লার মুরগি (চামড়া ছাড়া)','unit'=>'১ কেজি'],
+'m02'=>['name'=>'ব্রয়লার মুরগি (চামড়াসহ)','unit'=>'১ কেজি'],
+'m03'=>['name'=>'চিকেন লেগ (চামড়াসহ)','unit'=>'১ কেজি'],
+'m04'=>['name'=>'দেশি মুরগি (চামড়া ছাড়া)','unit'=>'৫০০ গ্রাম'],
+'m05'=>['name'=>'গরুর মাংস (বোনলেস)','unit'=>'৫০০ গ্রাম'],
+'m06'=>['name'=>'গরুর মাংস (হাড়সহ)','unit'=>'১ কেজি'],
+'m07'=>['name'=>'গরুর কলিজা','unit'=>'৫০০ গ্রাম'],
+'m08'=>['name'=>'খাসির মাংস (হাড়সহ)','unit'=>'১ কেজি'],
+'f01'=>['name'=>'তেলাপিয়া মাছ','unit'=>'১ কেজি'],
+'f02'=>['name'=>'রুই মাছ','unit'=>'১ কেজি'],
+'f03'=>['name'=>'কাতলা মাছ','unit'=>'১ কেজি'],
+'f04'=>['name'=>'মৃগেল মাছ','unit'=>'১ কেজি'],
+'f05'=>['name'=>'শিং মাছ','unit'=>'১ কেজি'],
+'f06'=>['name'=>'পাঙ্গাস মাছ','unit'=>'১ কেজি'],
+'f07'=>['name'=>'পাবদা মাছ','unit'=>'১ কেজি'],
+'f08'=>['name'=>'কৈ মাছ (চাষের)','unit'=>'১ কেজি']
+];
+
 $areas = [
 'gulshan-1'=>['গুলশান ১',60], 'gulshan-2'=>['গুলশান ২',60], 'niketon'=>['নিকেতন',60],
 'baridhara'=>['বারিধারা ডিপ্লোম্যাটিক জোন',70], 'banani'=>['বনানী',70], 'mohakhali'=>['মহাখালী',80],
@@ -98,7 +136,7 @@ foreach ($submitted as $line) {
     $seen[$id] = true;
     $lineTotal = $catalog[$id] * $qty;
     $subtotal += $lineTotal;
-    $items[] = ['id'=>$id,'quantity'=>$qty,'unitPrice'=>$catalog[$id],'lineTotal'=>$lineTotal];
+    $items[] = ['id'=>$id,'name'=>$productMeta[$id]['name'],'unit'=>$productMeta[$id]['unit'],'quantity'=>$qty,'unitPrice'=>$catalog[$id],'lineTotal'=>$lineTotal];
 }
 
 $discount = 0;
