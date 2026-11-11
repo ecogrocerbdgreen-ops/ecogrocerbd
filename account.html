@@ -34,7 +34,7 @@
 </style>
   <script src="order-config.js" defer></script>
   <script src="script.js?v=20261111-order-flow-v1" defer></script>
-  <script src="account.js?v=20261111-account-auth-fix-v1" defer></script>
+  <script src="account.js?v=20261111-account-pages-static-v2" defer></script>
 </head>
 <body class="account-page">
   <a class="skip-link" href="#main-content">মূল কনটেন্টে যান</a>
@@ -80,7 +80,7 @@
   <main id="main-content" class="account-main"><div class="account-wrap">
     <section class="panel" id="auth-panel">
       <span class="pill">CUSTOMER ACCOUNT</span><h1>আপনার অর্ডার, আপনার হাতেই</h1>
-      <p class="muted">মোবাইল নম্বরে OTP দিয়ে Login করুন। Password মনে রাখার প্রয়োজন নেই। Guest Checkout-ও ব্যবহার করতে পারবেন।</p>
+      <p class="muted">OTP Login চালু থাকলে মোবাইল নম্বর দিয়ে অর্ডার ইতিহাস দেখা যাবে। Guest Checkout করে Login ছাড়াও অর্ডার দিতে পারবেন।</p>
       <form id="phone-form">
         <label class="field"><strong>বাংলাদেশি মোবাইল নম্বর</strong><input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX" pattern="01[3-9][0-9]{8}" maxlength="11" required></label>
         <button class="btn" id="send-otp" type="submit">OTP পাঠান</button>
