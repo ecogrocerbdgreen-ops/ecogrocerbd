@@ -16,6 +16,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const statusLabel = (s) => ({pending:"Pending",confirmed:"Confirmed",processing:"Processing",out_for_delivery:"Out for delivery",delivered:"Delivered",cancelled:"Cancelled",refunded:"Refunded"}[s] || s || "—");
   const paymentLabel = (s) => ({cod:"Cash on Delivery",bkash:"bKash",nagad:"Nagad",rocket:"Rocket"}[String(s||"").toLowerCase()] || s || "—");
+  const paymentStatusLabel = (s) => ({unpaid:"Unpaid",pending_verification:"যাচাই অপেক্ষমাণ",paid:"Paid / নিশ্চিত",failed:"Failed",refunded:"Refunded"}[String(s||"").toLowerCase()] || s || "—");
   function feedback(message, error=false) { const el=$("admin-feedback"); if(!el)return; el.textContent=message; el.classList.toggle("error",error); }
   function showView(name) {
     const isAdmin = name === "success";
@@ -94,10 +95,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
   function renderOrders() {
     const el=$("orders-table"); if(!el)return;
     const q=($("order-search")?.value||"").trim().toLowerCase(), filter=$("order-filter")?.value||"all";
-    const list=orders.filter(o=>(filter==="all"||o.status===filter)&&[o.order_number,o.customer_name,o.customer_phone,o.payer_phone,o.transaction_id].some(v=>String(v||"").toLowerCase().includes(q)));
+    const list=orders.filter(o=>(filter==="all"||o.status===filter)&&[o.order_number,o.customer_name,o.customer_phone,o.payer_phone,o.transaction_id,o.payment_gateway_transaction_id].some(v=>String(v||"").toLowerCase().includes(q)));
     el.innerHTML=list.length?'<div class="order-cards">'+list.map(o=>{
       const statusOptions=["pending","confirmed","processing","out_for_delivery","delivered","cancelled","refunded"].map(s=>'<option value="'+s+'" '+(o.status===s?"selected":"")+'>'+statusLabel(s)+'</option>').join("");
-      return orderCard(o).replace('<div class="order-card-actions">','<div class="order-card-actions"><select class="admin-select order-status-select" data-status-id="'+esc(o.id)+'">'+statusOptions+'</select><button class="row-action save-order-status" data-save-order="'+esc(o.id)+'" type="button">স্ট্যাটাস সংরক্ষণ</button>');
+      const payOptions=["unpaid","pending_verification","paid","failed","refunded"].map(s=>'<option value="'+s+'" '+((o.payment_status||"unpaid")===s?"selected":"")+'>'+paymentStatusLabel(s)+'</option>').join("");
+      return orderCard(o).replace('<div class="order-card-actions">','<div class="order-card-actions order-card-controls"><label class="control-label">অর্ডার <select class="admin-select order-status-select" data-status-id="'+esc(o.id)+'">'+statusOptions+'</select></label><label class="control-label">পেমেন্ট <select class="admin-select payment-status-select" data-payment-id="'+esc(o.id)+'">'+payOptions+'</select></label><button class="row-action save-order-status" data-save-order="'+esc(o.id)+'" type="button">আপডেট</button>');
     }).join("")+'</div>':'<p class="admin-empty">এই অনুসন্ধানে কোনো অর্ডার পাওয়া যায়নি।</p>';
   }
   function openOrderDetails(id) {
@@ -121,14 +123,18 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
     $("order-modal").classList.remove("hidden");
   }
   async function saveOrder(id) {
-    const select=document.querySelector('[data-status-id="'+CSS.escape(id)+'"]'); if(!select)return;
+    const statusSelect=document.querySelector('[data-status-id="'+CSS.escape(id)+'"]');
+    const paymentSelect=document.querySelector('[data-payment-id="'+CSS.escape(id)+'"]');
+    if(!statusSelect||!paymentSelect)return;
     const button=document.querySelector('[data-save-order="'+CSS.escape(id)+'"]'); button.disabled=true;
     try {
-      const {error}=await supabase.from("orders").update({status:select.value,updated_at:new Date().toISOString()}).eq("id",id);
+      const update={status:statusSelect.value,payment_status:paymentSelect.value,updated_at:new Date().toISOString()};
+      const {data,error}=await supabase.from("orders").update(update).eq("id",id).select("id,status,payment_status").single();
       if(error)throw error;
-      const order=orders.find(o=>o.id===id); if(order)order.status=select.value;
-      renderOverview(); renderOrders(); feedback("অর্ডারের স্ট্যাটাস আপডেট হয়েছে।");
-    } catch(e) { feedback("অর্ডার আপডেট হয়নি: "+e.message,true); button.disabled=false; }
+      const order=orders.find(o=>o.id===id);
+      if(order){order.status=data.status;order.payment_status=data.payment_status;order.updated_at=new Date().toISOString();}
+      renderOverview(); renderOrders(); feedback("অর্ডার ও পেমেন্টের অবস্থা সংরক্ষণ হয়েছে।");
+    } catch(e) { feedback("আপডেট করা যায়নি: "+e.message,true); button.disabled=false; }
   }
   function switchPanel(name) {
     document.querySelectorAll(".admin-panel").forEach(p=>p.classList.toggle("hidden",p.id!=="panel-"+name));
