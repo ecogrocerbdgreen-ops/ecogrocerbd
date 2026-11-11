@@ -142,6 +142,17 @@
       padding: 18px 20px; text-align: center; color: #8a9990;
       font-size: 10px; letter-spacing: .3px;
     }
+    .layout.admin-mode { display: block; width: min(1200px, calc(100% - 40px)); padding: 38px 0; }
+    .admin-dashboard { min-height: 430px; padding: clamp(24px, 5vw, 48px); border: 1px solid #e8ece9; border-radius: 18px; background: #fff; box-shadow: 0 12px 36px rgba(24, 51, 41, .05); }
+    .dashboard-heading { margin: 0; color: #183329; font-size: clamp(27px, 4vw, 38px); line-height: 1.25; letter-spacing: -.8px; }
+    .dashboard-subtitle { margin: 12px 0 0; color: #718078; font-size: 14px; line-height: 1.8; }
+    .dashboard-topline { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 34px; padding-bottom: 20px; border-bottom: 1px solid #edf1ee; }
+    .dashboard-label { color: #176b46; font-size: 11px; font-weight: 800; letter-spacing: 1.5px; }
+    .dashboard-welcome { max-width: 760px; padding: 34px 0; }
+    .dashboard-status { display: inline-flex; align-items: center; gap: 8px; margin-top: 26px; padding: 9px 13px; border-radius: 999px; background: #eff8f1; color: #176b46; font-size: 12px; font-weight: 700; }
+    .dashboard-status-dot { width: 7px; height: 7px; border-radius: 50%; background: #35a264; }
+    .dashboard-logout { width: auto; min-width: 100px; margin: 0; padding: 10px 16px; }
+    @media (max-width: 600px) { .layout.admin-mode { width: calc(100% - 28px); padding: 24px 0; } .dashboard-topline { align-items: flex-start; } .dashboard-logout { min-width: auto; } }
     .success-box {
       margin-top: 17px; padding: 18px; border: 1px solid #d7ebdc;
       border-radius: 14px; background: #f5fbf6; text-align: center;
@@ -185,7 +196,7 @@
     </header>
 
     <main class="layout">
-      <section class="intro" aria-label="Admin portal introduction">
+      <section class="intro" id="login-intro" aria-label="Admin portal introduction">
         <span class="eyebrow"><span class="eyebrow-dot"></span> SECURE ADMIN PORTAL</span>
         <h1>আপনার স্টোর, আপনার নিয়ন্ত্রণে।</h1>
         <p>EcoGrocer BD-এর প্রশাসনিক অংশে প্রবেশ করতে অনুমোদিত Gmail ও পাসওয়ার্ড ব্যবহার করুন। এই প্রবেশাধিকার একটি নির্দিষ্ট অ্যাকাউন্টের জন্য সংরক্ষিত।</p>
@@ -214,17 +225,17 @@
         </div>
       </section>
 
-<section class="card hidden" id="success-view">
-        <div class="card-icon" aria-hidden="true">✓</div>
-        <div class="success-box">
-          <div class="success-mark">✓</div>
-          <h3>অ্যাডমিন অ্যাক্সেস সফল</h3>
-          <p>আপনি EcoGrocer BD অ্যাডমিন প্যানেলে নিরাপদভাবে প্রবেশ করেছেন। অ্যাডমিনের অন্যান্য ফিচার পরবর্তী ধাপে যোগ করা হবে।</p>
+<section class="admin-dashboard hidden" id="success-view" aria-label="Admin dashboard">
+        <div class="dashboard-topline">
+          <div>
+            <div class="dashboard-label">ECOGROCER BD · ADMIN</div>
+          </div>
+          <button class="secondary dashboard-logout" id="logout-button" type="button">লগআউট</button>
         </div>
-        <button class="secondary" id="logout-button" type="button">লগআউট</button>
-        <div class="security-line">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.7 3.1 7.8 7.5 9.5 4.4-1.7 7.5-4.8 7.5-9.5V6L12 3Z"/><path d="m9 12 2 2 4-4"/></svg>
-          SIGNED IN AS ecogrocerbdgreen@gmail.com
+        <div class="dashboard-welcome">
+          <h1 class="dashboard-heading">Welcome to Admin Panel</h1>
+          <p class="dashboard-subtitle">আপনি সফলভাবে EcoGrocer BD-এর অ্যাডমিন প্যানেলে প্রবেশ করেছেন।</p>
+          <div class="dashboard-status"><span class="dashboard-status-dot"></span> Admin access active</div>
         </div>
       </section>
     </main>
