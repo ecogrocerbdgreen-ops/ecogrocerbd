@@ -608,14 +608,39 @@ renderProducts();
 renderCart();
 
 async function loadLiveCatalogue() {
-  const apiUrl = window.ECOGROCER_CONFIG && window.ECOGROCER_CONFIG.apiUrl;
-  if (!apiUrl) return;
+  const config = window.ECOGROCER_CONFIG || {};
+  const productsUrl = String(config.productsUrl || '').trim();
+  const categoriesUrl = String(config.categoriesUrl || '').trim();
+  const publishableKey = String(config.supabasePublishableKey || '').trim();
+  if (!productsUrl || !publishableKey) return;
+
+  const headers = { apikey: publishableKey, Accept: 'application/json' };
   try {
-    const response = await fetch(apiUrl + '?action=products', { headers: { Accept: 'application/json' } });
-    if (!response.ok) return; // Static catalogue remains available during database setup.
+    const response = await fetch(productsUrl, { headers, cache: 'no-store' });
+    if (!response.ok) throw new Error('Supabase catalogue request failed (' + response.status + ').');
     const data = await response.json();
-    if (!Array.isArray(data.products) || !data.products.length) return;
-    const liveProducts = data.products.map(item => ({
+    if (!Array.isArray(data) || !data.length) return;
+
+    // Category labels are also database-managed; retain the local fallback if unavailable.
+    if (categoriesUrl) {
+      try {
+        const categoryResponse = await fetch(categoriesUrl, { headers, cache: 'no-store' });
+        if (categoryResponse.ok) {
+          const categoryRows = await categoryResponse.json();
+          if (Array.isArray(categoryRows) && categoryRows.length) {
+            CATEGORIES.splice(0, CATEGORIES.length, ...categoryRows.map(item => ({
+              id: item.id,
+              title: item.name || item.id,
+              bangla: item.name_bn || item.name || item.id
+            })));
+          }
+        }
+      } catch (categoryError) {
+        console.warn('Supabase categories are unavailable; using the local category labels.', categoryError);
+      }
+    }
+
+    const liveProducts = data.map(item => ({
       ...item,
       category: item.category_id || item.category,
       en: item.english_name || item.en || '',
@@ -624,7 +649,9 @@ async function loadLiveCatalogue() {
       aliases: Array.isArray(item.aliases) ? item.aliases : [],
       track_inventory: Boolean(item.track_inventory),
       stock_quantity: Number(item.stock_quantity || 0)
-    }));
+    })).filter(item => item.id && item.name && Number.isFinite(item.price));
+
+    if (!liveProducts.length) return;
     PRODUCTS.splice(0, PRODUCTS.length, ...liveProducts);
     liveProducts.forEach(item => {
       if (item.image_url) PRODUCT_IMAGES[item.id] = item.image_url;
