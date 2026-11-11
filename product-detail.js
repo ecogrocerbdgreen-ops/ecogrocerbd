@@ -4,8 +4,11 @@
   const config = window.ECOGROCER_CONFIG || {};
   const shopWhatsApp = String(config.whatsappNumber || window.ECOGROCER_WHATSAPP_NUMBER || '').replace(/\D/g, '');
   const shopPhone = String(config.phoneNumber || window.ECOGROCER_PHONE_NUMBER || '').replace(/\D/g, '');
+  const isProductPage = document.body.classList.contains('product-page-mode');
   const detailScrim = document.getElementById('product-detail-scrim');
-  const detailContent = document.getElementById('product-detail-content');
+  const detailContent = isProductPage
+    ? document.getElementById('product-page-content')
+    : document.getElementById('product-detail-content');
   const lightbox = document.getElementById('product-lightbox');
   let activeProductId = '';
   let lastFocusedElement = null;
@@ -65,10 +68,14 @@
     return descriptions[product.id] || 'পণ্যের প্যাক সাইজ ও তালিকাভুক্ত মূল্য দেখে কার্টে যোগ করুন।';
   }
   function updateBodyLock() {
-    var locked = !detailScrim.hidden || !lightbox.hidden ||
-      !document.getElementById('checkout-scrim').hidden ||
-      document.getElementById('cart-drawer').classList.contains('open') ||
-      document.getElementById('site-drawer').classList.contains('open');
+    var checkout = document.getElementById('checkout-scrim');
+    var cartDrawer = document.getElementById('cart-drawer');
+    var siteDrawer = document.getElementById('site-drawer');
+    var locked = Boolean((detailScrim && !detailScrim.hidden) ||
+      (lightbox && !lightbox.hidden) ||
+      (checkout && !checkout.hidden) ||
+      (cartDrawer && cartDrawer.classList.contains('open')) ||
+      (siteDrawer && siteDrawer.classList.contains('open')));
     document.body.classList.toggle('no-scroll', locked);
   }
 
@@ -90,10 +97,10 @@
 
   function recommendationCard(product) {
     return '<article class="recommended-product">' +
-      '<button type="button" class="recommended-product-open" data-recommend-open="' + product.id + '" aria-label="' + escapeHTML(product.name) + ' বিস্তারিত দেখুন">' +
-        '<span class="recommended-product-image"><img src="' + imageFor(product) + '" alt="" loading="lazy" onerror="this.hidden=true"></span>' +
+      '<a class="recommended-product-open" href="' + productPageUrl(product) + '" aria-label="' + escapeHTML(product.name) + ' বিস্তারিত দেখুন">' +
+        '<span class="recommended-product-image"><img src="' + imageFor(product) + '" alt="' + escapeHTML(product.name) + '" loading="lazy" onerror="this.hidden=true"></span>' +
         '<span class="recommended-product-copy"><strong>' + escapeHTML(product.name) + '</strong><small>' + escapeHTML(product.unit) + '</small><b>' + money(product.price) + '</b></span>' +
-      '</button>' +
+      '</a>' +
       '<div class="recommended-cart-control" data-recommend-control="' + product.id + '">' + recommendationCartControl(product) + '</div>' +
     '</article>';
   }
@@ -107,7 +114,10 @@
     }).slice(0, 4);
     var markup =
       '<div class="product-detail-breadcrumb">' +
-        '<button type="button" data-detail-close>হোম</button><span>›</span><span>' + escapeHTML(category ? category.title : 'Products') + '</span><span>›</span><strong>' + escapeHTML(product.name) + '</strong>' +
+        (isProductPage ? '<a href="index.html#home">হোম</a>' : '<button type="button" data-detail-close>হোম</button>') +
+        '<span>›</span>' +
+        (isProductPage && category ? '<a href="category.html?category=' + encodeURIComponent(category.id) + '">' + escapeHTML(category.title) + '</a>' : '<span>' + escapeHTML(category ? category.title : 'Products') + '</span>') +
+        '<span>›</span><strong>' + escapeHTML(product.name) + '</strong>' +
       '</div>' +
       '<section class="product-detail-main">' +
         '<div class="product-detail-gallery">' +
@@ -151,7 +161,8 @@
         '<div class="detail-section-heading"><span>YOU MAY ALSO LIKE</span><h2>সাজেস্টেড প্রোডাক্ট</h2></div>' +
         '<div class="recommended-grid">' + related.map(recommendationCard).join('') + '</div>' +
       '</section>' +
-      '<footer class="product-detail-footer"><span>EcoGrocer BD</span><span>Fresh · Daily · Local</span></footer>';
+      (isProductPage ? '' : '<footer class="product-detail-footer"><span>EcoGrocer BD</span><span>Fresh · Daily · Local</span></footer>');
+    if (!detailContent) return;
     detailContent.innerHTML = markup;
     activeProductId = product.id;
   }
@@ -176,7 +187,7 @@
   }
 
   function openImageLightbox(product) {
-    if (!product || !imageFor(product)) {
+    if (!lightbox || !product || !imageFor(product)) {
       showToast('এই পণ্যের ছবি পাওয়া যাচ্ছে না');
       return;
     }
@@ -188,6 +199,7 @@
   }
 
   function closeImageLightbox() {
+    if (!lightbox) return;
     lightbox.hidden = true;
     document.getElementById('product-lightbox-image').src = '';
     updateBodyLock();
@@ -201,7 +213,7 @@
 
   function updateRecommendationCartControl(id) {
     var product = findProduct(id);
-    var control = detailContent.querySelector('[data-recommend-control="' + id + '"]');
+    var control = detailContent && detailContent.querySelector('[data-recommend-control="' + id + '"]');
     if (!product || !control) return;
     control.innerHTML = recommendationCartControl(product);
   }
@@ -223,6 +235,35 @@
       return;
     }
     window.location.href = 'tel:+' + shopPhone;
+  }
+
+  function renderStandaloneProductPage() {
+    if (!detailContent) return;
+    var params = new URLSearchParams(window.location.search);
+    var slug = params.get('slug') || '';
+    var requestedId = params.get('product') || '';
+    var product = PRODUCTS.find(function (item) {
+      return (requestedId && item.id === requestedId) ||
+        (slug && productSlug(item) === slug);
+    });
+
+    if (!product) {
+      document.title = 'পণ্য পাওয়া যায়নি | EcoGrocer BD';
+      detailContent.innerHTML = '<section class="product-page-not-found"><span>🧺</span><h1>পণ্যটি পাওয়া যায়নি</h1><p>পণ্যটি সরানো হয়েছে অথবা ঠিকানা পরিবর্তিত হয়েছে।</p><a class="button button-primary" href="index.html#products">সব পণ্য দেখুন</a></section>';
+      return;
+    }
+
+    renderProduct(product);
+    document.title = product.name + ' | EcoGrocer BD';
+    var descriptionMeta = document.querySelector('meta[name="description"]');
+    if (descriptionMeta) descriptionMeta.setAttribute('content', product.name + ' — ' + product.unit + ', ' + money(product.price) + '. EcoGrocer BD থেকে অর্ডার করুন।');
+    var canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) canonical.href = window.location.href;
+  }
+
+  if (isProductPage) {
+    renderStandaloneProductPage();
+    document.addEventListener('ecogrocer:catalogue-updated', renderStandaloneProductPage);
   }
 
   document.addEventListener('click', function (event) {
@@ -292,12 +333,6 @@
       return;
     }
 
-    var recommendOpen = event.target.closest('[data-recommend-open]');
-    if (recommendOpen) {
-      openProductDetail(recommendOpen.dataset.recommendOpen);
-      return;
-    }
-
     if (event.target.closest('[data-detail-close]')) {
       closeProductDetail();
       return;
@@ -321,12 +356,14 @@
     }
   });
 
-  document.getElementById('product-detail-close').addEventListener('click', closeProductDetail);
-  detailScrim.addEventListener('click', function (event) {
+  var detailClose = document.getElementById('product-detail-close');
+  if (detailClose) detailClose.addEventListener('click', closeProductDetail);
+  if (detailScrim) detailScrim.addEventListener('click', function (event) {
     if (event.target === detailScrim) closeProductDetail();
   });
-  document.getElementById('product-lightbox-close').addEventListener('click', closeImageLightbox);
-  lightbox.addEventListener('click', function (event) {
+  var lightboxClose = document.getElementById('product-lightbox-close');
+  if (lightboxClose) lightboxClose.addEventListener('click', closeImageLightbox);
+  if (lightbox) lightbox.addEventListener('click', function (event) {
     if (event.target === lightbox) closeImageLightbox();
   });
 
