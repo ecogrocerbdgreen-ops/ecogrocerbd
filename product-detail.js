@@ -351,8 +351,8 @@
       openProductDetail(productName.dataset.productOpen);
     }
     if (event.key === 'Escape') {
-      if (!lightbox.hidden) closeImageLightbox();
-      else if (!detailScrim.hidden) closeProductDetail();
+      if (lightbox && !lightbox.hidden) closeImageLightbox();
+      else if (detailScrim && !detailScrim.hidden) closeProductDetail();
     }
   });
 
