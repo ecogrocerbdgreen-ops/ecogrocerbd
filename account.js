@@ -97,5 +97,15 @@
     clearSession(); $("account-panel").classList.add("hidden"); $("auth-panel").classList.remove("hidden");
   });
   $("refresh-orders").addEventListener("click", () => loadOrders().catch(error => show($("account-status"), error.message, "error")));
-  loadOrders().catch(error => show($("auth-status"), error.message, "error"));
+  if (window.location.hostname.toLowerCase().endsWith(".github.io")) {
+    $("phone-form").classList.add("hidden");
+    $("otp-form").classList.add("hidden");
+    show(
+      $("auth-status"),
+      "এই সাইটটি GitHub Pages-এ চলছে, তাই এখান থেকে Account OTP ও অর্ডার ইতিহাসের সার্ভার চালানো যায় না। Guest Checkout ব্যবহার করে অর্ডার দিতে পারবেন। Account চালু করতে Supabase Auth, SMS provider এবং Netlify backend configuration সম্পন্ন করতে হবে।",
+      "info"
+    );
+  } else {
+    loadOrders().catch(error => show($("auth-status"), error.message, "error"));
+  }
 })();
