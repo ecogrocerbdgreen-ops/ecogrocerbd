@@ -939,3 +939,207 @@ section[id], div[id] { scroll-margin-top: 90px; }
     min-height: 27px;
   }
 }
+
+
+/* Editable product list in checkout */
+.checkout-items-preview {
+  display: grid;
+  gap: 11px;
+}
+.checkout-product-line {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) minmax(100px, auto);
+  align-items: center;
+  gap: 14px;
+  padding: 13px;
+  border: 1px solid #e3ece4;
+  border-radius: 15px;
+  background: #fcfefc;
+}
+.checkout-product-art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #f0f5f0;
+}
+.checkout-product-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.checkout-product-image-fallback {
+  color: #8b9b8e;
+  font-size: 9px;
+}
+.checkout-product-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+.checkout-product-info > strong {
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.checkout-product-info > small {
+  color: var(--ink-soft);
+  font-size: 10px;
+}
+.checkout-unit-price {
+  color: #526b58;
+  font-size: 10px;
+}
+.checkout-quantity-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+.checkout-quantity-label {
+  margin-right: 2px;
+  color: var(--ink-soft);
+  font-size: 10px;
+}
+.checkout-quantity-control button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 29px;
+  height: 29px;
+  padding: 0;
+  border: 1px solid #cfe2d2;
+  border-radius: 8px;
+  color: #26713b;
+  background: #f0f8f1;
+  font: 800 18px/1 Arial, sans-serif;
+  cursor: pointer;
+}
+.checkout-quantity-control button:hover {
+  background: #e2f1e4;
+}
+.checkout-quantity-control button:focus-visible,
+.checkout-remove-product:focus-visible {
+  outline: 3px solid rgba(42,145,77,.3);
+  outline-offset: 2px;
+}
+.checkout-quantity-control strong {
+  min-width: 18px;
+  color: var(--ink);
+  font-size: 12px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.checkout-product-pricing {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-self: end;
+  gap: 6px;
+  min-width: 0;
+}
+.checkout-product-pricing > span {
+  color: var(--ink-soft);
+  font-size: 9px;
+}
+.checkout-product-pricing > strong {
+  color: var(--green-dark);
+  font-size: 13px;
+  white-space: nowrap;
+}
+.checkout-remove-product {
+  min-height: 29px;
+  margin-top: 4px;
+  padding: 4px 9px;
+  border: 1px solid #f0d6d1;
+  border-radius: 8px;
+  color: #b4493a;
+  background: #fff8f6;
+  font: 700 10px 'Noto Sans Bengali', sans-serif;
+  cursor: pointer;
+}
+.checkout-remove-product:hover {
+  border-color: #e8b9b1;
+  background: #fff0ed;
+}
+.checkout-items-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 22px 12px;
+  text-align: center;
+}
+.checkout-items-empty > span {
+  font-size: 28px;
+}
+.checkout-items-empty strong {
+  color: var(--ink);
+  font-size: 13px;
+}
+.checkout-items-empty p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 10px;
+}
+.checkout-empty-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 35px;
+  margin-top: 5px;
+  padding: 0 14px;
+  border-radius: 9px;
+  color: #fff;
+  background: var(--green);
+  font-size: 10px;
+  font-weight: 700;
+  text-decoration: none;
+}
+@media (max-width: 600px) {
+  .checkout-product-line {
+    grid-template-columns: 64px minmax(0, 1fr);
+    align-items: start;
+    gap: 10px;
+    padding: 10px;
+  }
+  .checkout-product-art {
+    width: 64px;
+    height: 64px;
+  }
+  .checkout-product-info {
+    gap: 4px;
+  }
+  .checkout-product-info > strong {
+    font-size: 12px;
+  }
+  .checkout-product-pricing {
+    grid-column: 2;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    justify-self: stretch;
+    gap: 5px 9px;
+    padding-top: 8px;
+    border-top: 1px solid #edf2ed;
+  }
+  .checkout-product-pricing > span {
+    grid-column: 1;
+  }
+  .checkout-product-pricing > strong {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    font-size: 12px;
+  }
+  .checkout-remove-product {
+    grid-column: 1;
+    justify-self: start;
+    min-height: 27px;
+  }
+}
