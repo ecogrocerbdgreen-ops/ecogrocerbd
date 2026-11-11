@@ -115,8 +115,10 @@
     if (document.body.classList.contains('checkout-page-mode') && byId('checkout-empty-page')) {
       byId('checkout-empty-page').hidden = true;
     }
-    closeDrawer();
-    closeCart();
+    if (!document.body.classList.contains('checkout-page-mode')) {
+      closeDrawer();
+      closeCart();
+    }
     appliedCoupon = '';
     byId('checkout-coupon').value = '';
     byId('checkout-coupon-feedback').textContent = 'ডেমো কুপন: ECO10 অথবা FRESH50';
@@ -330,10 +332,20 @@
   byId('eco-checkout-form').addEventListener('submit', submitOrder);
 
   // A dedicated checkout page is used for Order Now so customers get a full page rather than a small overlay.
+  // Standalone checkout is visible from the initial HTML; JS only enriches it.
   window.openEcoCheckout = openCheckout;
   if (document.body.classList.contains('checkout-page-mode')) {
+    byId('checkout-scrim').hidden = false;
+    document.body.classList.remove('no-scroll');
     const params = new URLSearchParams(window.location.search);
     const selectedProduct = params.get('product') || '';
-    openCheckout(selectedProduct);
+    try {
+      openCheckout(selectedProduct);
+    } catch (error) {
+      // Never leave customers on a blank/loading screen if enhancement code encounters an error.
+      byId('checkout-scrim').hidden = false;
+      document.body.classList.remove('no-scroll');
+      console.error('EcoGrocer checkout enhancement failed:', error);
+    }
   }
 })();
