@@ -119,6 +119,19 @@ function escapeHTML(value) {
   })[char]);
 }
 
+function productSlug(product) {
+  const namePart = String(product && (product.en || product.name) || 'product')
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'product';
+  return namePart + '-' + String(product && product.id || '').toLowerCase();
+}
+
+function productPageUrl(product) {
+  return 'product.html?slug=' + encodeURIComponent(productSlug(product));
+}
+
 function normalizeSearch(value) {
   return String(value || '')
     .toLocaleLowerCase('bn-BD')
@@ -139,23 +152,26 @@ function productCard(product) {
       ? `<div class="qty-stepper" aria-label="${escapeHTML(product.name)} পরিমাণ"><button type="button" data-cart-action="decrease" data-id="${product.id}" aria-label="একটি কমান">−</button><span>${qty}</span><button type="button" data-cart-action="increase" data-id="${product.id}" aria-label="একটি বাড়ান">+</button></div>`
       : `<button class="add-button" type="button" data-cart-action="increase" data-id="${product.id}" aria-label="${escapeHTML(product.name)} কার্টে যোগ করুন">Add to Cart</button>`;
 
+  const productUrl = productPageUrl(product);
   return `
     <article class="product-card" data-product-id="${product.id}" data-product-detail="${product.id}" data-search="${escapeHTML(`${product.name} ${product.en} ${product.unit} ${(product.aliases || []).join(' ')} ${CATEGORIES.find(c => c.id === product.category)?.bangla || ''}`.toLowerCase())}">
-      <div class="product-media"><button class="product-image-trigger" type="button" data-product-image-open="${product.id}" aria-label="${escapeHTML(product.name)}-এর ছবি বড় করে দেখুন">
+      <div class="product-media"><a class="product-image-trigger" href="${productUrl}" aria-label="${escapeHTML(product.name)}-এর বিস্তারিত দেখুন">
         <img class="product-image" src="${imageUrl}" alt="${escapeHTML(product.name)}" loading="lazy" decoding="async" draggable="false" referrerpolicy="no-referrer" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
         <span class="product-placeholder" hidden><span aria-hidden="true">▧</span><small>ছবি পাওয়া যায়নি</small></span>
-      </button></div>
-      <h3 class="product-name" data-product-open="${product.id}" role="button" tabindex="0">${escapeHTML(product.name)}<span class="product-unit">${escapeHTML(product.unit)}</span></h3>
+      </a></div>
+      <h3 class="product-name"><a href="${productUrl}" aria-label="${escapeHTML(product.name)}-এর বিস্তারিত দেখুন">${escapeHTML(product.name)}</a><span class="product-unit">${escapeHTML(product.unit)}</span></h3>
       <div class="product-buy-row"><strong class="product-price">${formatPrice(product.price)}</strong>${addControl}</div>
     </article>`;
 }
 
 function renderProducts() {
   const featured = PRODUCTS.filter(product => product.featured).slice(0, 8);
-  document.getElementById('featured-grid').innerHTML = featured.map(productCard).join('');
+  const featuredGrid = document.getElementById('featured-grid');
+  if (featuredGrid) featuredGrid.innerHTML = featured.map(productCard).join('');
 
   CATEGORIES.forEach(category => {
     const target = document.querySelector(`[data-product-grid="${category.id}"]`);
+    if (!target) return;
     const items = PRODUCTS.filter(product => product.category === category.id);
     target.innerHTML = items.map(productCard).join('');
   });
@@ -172,12 +188,18 @@ function cartSubtotal() {
 
 function updateCartBadges() {
   const count = cartCount();
-  document.getElementById('header-cart-count').textContent = count;
-  document.getElementById('bottom-cart-count').textContent = count;
+  const headerCount = document.getElementById('header-cart-count');
+  const bottomCount = document.getElementById('bottom-cart-count');
+  if (headerCount) headerCount.textContent = count;
+  if (bottomCount) bottomCount.textContent = count;
 }
 
 function renderCart() {
   const container = document.getElementById('cart-items');
+  if (!container) {
+    updateCartBadges();
+    return;
+  }
   const lines = PRODUCTS.filter(product => Number(cart[product.id]) > 0);
   if (!lines.length) {
     container.innerHTML = '<div class="cart-empty"><span>🧺</span><strong>আপনার কার্ট এখনো খালি</strong><p>পছন্দের পণ্য কার্টে যোগ করুন।</p></div>';
@@ -191,7 +213,8 @@ function renderCart() {
         <span class="cart-line-total">${formatPrice(product.price * cart[product.id])}</span>
       </div>`).join('');
   }
-  document.getElementById('cart-subtotal').textContent = formatPrice(cartSubtotal());
+  const subtotalNode = document.getElementById('cart-subtotal');
+  if (subtotalNode) subtotalNode.textContent = formatPrice(cartSubtotal());
   updateCartBadges();
 }
 
@@ -230,58 +253,85 @@ function showToast(message) {
 }
 
 function openDrawer() {
-  document.getElementById('site-drawer').classList.add('open');
-  document.getElementById('site-drawer').setAttribute('aria-hidden', 'false');
-  document.getElementById('drawer-scrim').hidden = false;
-  document.getElementById('menu-open').setAttribute('aria-expanded', 'true');
+  const drawer = document.getElementById('site-drawer');
+  const scrim = document.getElementById('drawer-scrim');
+  const trigger = document.getElementById('menu-open');
+  if (!drawer || !scrim) return;
+  drawer.classList.add('open');
+  drawer.setAttribute('aria-hidden', 'false');
+  scrim.hidden = false;
+  if (trigger) trigger.setAttribute('aria-expanded', 'true');
   document.body.classList.add('no-scroll');
 }
 
 function syncScrollLock() {
-  const drawerOpen = document.getElementById('site-drawer').classList.contains('open');
-  const cartOpen = document.getElementById('cart-drawer').classList.contains('open');
-  const loginOpen = !document.getElementById('login-scrim').hidden;
+  const drawer = document.getElementById('site-drawer');
+  const cart = document.getElementById('cart-drawer');
+  const login = document.getElementById('login-scrim');
+  const drawerOpen = Boolean(drawer && drawer.classList.contains('open'));
+  const cartOpen = Boolean(cart && cart.classList.contains('open'));
+  const loginOpen = Boolean(login && !login.hidden);
   document.body.classList.toggle('no-scroll', drawerOpen || cartOpen || loginOpen);
 }
 
 function closeDrawer() {
-  document.getElementById('site-drawer').classList.remove('open');
-  document.getElementById('site-drawer').setAttribute('aria-hidden', 'true');
-  document.getElementById('drawer-scrim').hidden = true;
-  document.getElementById('menu-open').setAttribute('aria-expanded', 'false');
+  const drawer = document.getElementById('site-drawer');
+  const scrim = document.getElementById('drawer-scrim');
+  const trigger = document.getElementById('menu-open');
+  if (drawer) {
+    drawer.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true');
+  }
+  if (scrim) scrim.hidden = true;
+  if (trigger) trigger.setAttribute('aria-expanded', 'false');
   syncScrollLock();
 }
 
 function openCart() {
+  const drawer = document.getElementById('cart-drawer');
+  const scrim = document.getElementById('panel-scrim');
+  if (!drawer || !scrim) {
+    window.location.href = 'checkout.html';
+    return;
+  }
   closeDrawer();
   renderCart();
-  document.getElementById('cart-drawer').classList.add('open');
-  document.getElementById('cart-drawer').setAttribute('aria-hidden', 'false');
-  document.getElementById('panel-scrim').hidden = false;
+  drawer.classList.add('open');
+  drawer.setAttribute('aria-hidden', 'false');
+  scrim.hidden = false;
   syncScrollLock();
 }
 
 function closeCart() {
-  document.getElementById('cart-drawer').classList.remove('open');
-  document.getElementById('cart-drawer').setAttribute('aria-hidden', 'true');
-  document.getElementById('panel-scrim').hidden = true;
+  const drawer = document.getElementById('cart-drawer');
+  const scrim = document.getElementById('panel-scrim');
+  if (drawer) {
+    drawer.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true');
+  }
+  if (scrim) scrim.hidden = true;
   syncScrollLock();
 }
 
 function openLogin() {
   closeDrawer();
   closeCart();
-  document.getElementById('login-scrim').hidden = false;
+  const login = document.getElementById('login-scrim');
+  if (login) login.hidden = false;
+  else window.location.href = 'account.html';
   syncScrollLock();
 }
 
 function closeLogin() {
-  document.getElementById('login-scrim').hidden = true;
+  const login = document.getElementById('login-scrim');
+  if (login) login.hidden = true;
   syncScrollLock();
 }
 
 function refreshSearch() {
-  const query = normalizeSearch(document.getElementById('product-search').value);
+  const searchInput = document.getElementById('product-search');
+  if (!searchInput) return;
+  const query = normalizeSearch(searchInput.value);
   let totalMatches = 0;
   const activeCategory = document.body.classList.contains('category-page')
     ? document.body.dataset.categoryPage
@@ -299,15 +349,18 @@ function refreshSearch() {
     totalMatches += sectionMatches;
   });
   const featuredSection = document.querySelector('.featured-section');
-  featuredSection.hidden = Boolean(query);
-  document.querySelector('.price-notice').hidden = Boolean(query);
+  const priceNotice = document.querySelector('.price-notice');
+  if (featuredSection) featuredSection.hidden = Boolean(query);
+  if (priceNotice) priceNotice.hidden = Boolean(query);
+  const categorySections = document.getElementById('category-sections');
+  if (!categorySections) return;
   let empty = document.getElementById('search-empty-state');
   if (!empty) {
     empty = document.createElement('div');
     empty.id = 'search-empty-state';
     empty.className = 'no-results section-wrap';
     empty.textContent = 'দুঃখিত, এই নামে কোনো পণ্য পাওয়া যায়নি। অন্য নামে খুঁজে দেখুন।';
-    document.getElementById('category-sections').appendChild(empty);
+    categorySections.appendChild(empty);
   }
   empty.hidden = !query || totalMatches > 0;
 }
@@ -315,14 +368,20 @@ function refreshSearch() {
 function runSearch() {
   refreshSearch();
   const target = document.getElementById('category-sections');
-  target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function focusSearch() {
   closeDrawer();
   closeCart();
-  document.getElementById('search-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
-  window.setTimeout(() => document.getElementById('product-search').focus(), 350);
+  const section = document.getElementById('search-section');
+  const input = document.getElementById('product-search');
+  if (!section || !input) {
+    window.location.href = 'index.html#search-section';
+    return;
+  }
+  section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  window.setTimeout(() => input.focus(), 350);
 }
 
 function setActiveBottomLink(href) {
@@ -365,19 +424,30 @@ document.addEventListener('click', event => {
   if (event.target.closest('.bottom-link[href="#search-section"]')) setActiveBottomLink('#search-section');
 });
 
-document.getElementById('menu-open').addEventListener('click', openDrawer);
-document.getElementById('menu-close').addEventListener('click', closeDrawer);
-document.getElementById('drawer-scrim').addEventListener('click', closeDrawer);
-document.getElementById('cart-open').addEventListener('click', openCart);
-document.getElementById('bottom-cart-open').addEventListener('click', openCart);
-document.getElementById('cart-close').addEventListener('click', closeCart);
-document.getElementById('panel-scrim').addEventListener('click', closeCart);
-document.getElementById('login-close').addEventListener('click', closeLogin);
-document.getElementById('login-scrim').addEventListener('click', event => { if (event.target.id === 'login-scrim') closeLogin(); });
-document.getElementById('product-search-form').addEventListener('submit', event => { event.preventDefault(); runSearch(); });
-document.getElementById('product-search').addEventListener('input', refreshSearch);
-document.getElementById('checkout-placeholder').addEventListener('click', () => { if (typeof window.openEcoCheckout === 'function') window.openEcoCheckout(); else showToast('অর্ডার ফর্ম প্রস্তুত হচ্ছে'); });
-document.getElementById('market-request-button').addEventListener('click', () => showToast('Market Request ফিচার পরবর্তী ধাপে যুক্ত হবে'));
+function bindClick(id, handler) {
+  const node = document.getElementById(id);
+  if (node) node.addEventListener('click', handler);
+}
+function bindInput(id, eventName, handler) {
+  const node = document.getElementById(id);
+  if (node) node.addEventListener(eventName, handler);
+}
+bindClick('menu-open', openDrawer);
+bindClick('menu-close', closeDrawer);
+bindClick('drawer-scrim', closeDrawer);
+bindClick('cart-open', openCart);
+bindClick('bottom-cart-open', openCart);
+bindClick('cart-close', closeCart);
+bindClick('panel-scrim', closeCart);
+bindClick('login-close', closeLogin);
+bindClick('login-scrim', event => { if (event.target.id === 'login-scrim') closeLogin(); });
+bindInput('product-search-form', 'submit', event => { event.preventDefault(); runSearch(); });
+bindInput('product-search', 'input', refreshSearch);
+bindClick('checkout-placeholder', () => {
+  if (typeof window.openEcoCheckout === 'function') window.openEcoCheckout();
+  else window.location.href = 'checkout.html';
+});
+bindClick('market-request-button', () => showToast('Market Request ফিচার পরবর্তী ধাপে যুক্ত হবে'));
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape') { closeDrawer(); closeCart(); closeLogin(); }
 });
@@ -425,7 +495,8 @@ function initHeroSlider() {
   restart();
 }
 
-document.getElementById('current-year').textContent = new Date().getFullYear();
+const currentYear = document.getElementById('current-year');
+if (currentYear) currentYear.textContent = new Date().getFullYear();
 initHeroSlider();
 
 renderProducts();
@@ -455,6 +526,7 @@ async function loadLiveCatalogue() {
     });
     renderProducts();
     renderCart();
+    document.dispatchEvent(new CustomEvent('ecogrocer:catalogue-updated'));
   } catch (error) {
     console.warn('EcoGrocer live catalogue is unavailable; using the local catalogue.', error);
   }
@@ -464,8 +536,9 @@ loadLiveCatalogue();
 // Keep direct links such as index.html?q=rice useful for product searches.
 try {
   const initialQuery = new URLSearchParams(window.location.search).get('q');
-  if (initialQuery) {
-    document.getElementById('product-search').value = initialQuery;
+  const searchInput = document.getElementById('product-search');
+  if (initialQuery && searchInput) {
+    searchInput.value = initialQuery;
     runSearch();
   }
 } catch (_) { /* The homepage remains usable if URL parsing is unavailable. */ }
