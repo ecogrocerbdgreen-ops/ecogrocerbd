@@ -296,15 +296,21 @@ async function validateSslPayment(payload) {
   const amountMatches = Number.isFinite(amount) && Math.abs(amount - Number(attempt.amount)) < 0.01;
   const currencyMatches = String(validation.currency || "").toUpperCase() === "BDT";
   const transactionMatches = String(validation.tran_id || "") === tranId;
-  const valid = response.ok && ["VALID", "VALIDATED"].includes(status) && amountMatches && currencyMatches && transactionMatches;
+  const validationMatches = response.ok && amountMatches && currencyMatches && transactionMatches;
+  const isPaid = validationMatches && ["VALID", "VALIDATED"].includes(status);
+  const isFailed = validationMatches && ["FAILED", "CANCELLED"].includes(status);
+  if (!isPaid && !isFailed) {
+    // Unmatched, invalid or forged callbacks must never change order state.
+    return { valid: false, risk: false, paymentStatus: "pending_verification", orderId: tranId.split("-").slice(0, 2).join("-"), validation };
+  }
 
-  const risk = String(validation.risk_level || "0") === "1";
-  const paymentStatus = valid ? (risk ? "pending_verification" : "paid") : "failed";
+  const risk = isPaid && String(validation.risk_level || "0") === "1";
+  const paymentStatus = isPaid ? (risk ? "pending_verification" : "paid") : "failed";
   await setPaymentStatus(
     attempt.order_id, paymentStatus, tranId, valId,
     String(validation.bank_tran_id || ""), validation
   );
-  return { valid, risk, paymentStatus, orderId: tranId.split("-").slice(0, 2).join("-"), validation };
+  return { valid: true, risk, paymentStatus, orderId: tranId.split("-").slice(0, 2).join("-"), validation };
 }
 
 function paymentResultPage(title, message, orderNumber, success = false) {
