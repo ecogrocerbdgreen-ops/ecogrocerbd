@@ -712,7 +712,7 @@ section[id], div[id] { scroll-margin-top: 90px; }
   .checkout-page-mode .checkout-header { padding: 12px 15px; }
   .checkout-page-mode .checkout-header h2 { font-size: 20px; }
   .checkout-page-mode .checkout-header p { font-size: 9px; }
-  .checkout-page-mode .checkout-body { padding: 14px 12px calc(38px + env(safe-area-inset-bottom)); }
+  .checkout-page-mode .checkout-body { padding: 14px 12px calc(88px + env(safe-area-inset-bottom)); }
   .checkout-page-mode .checkout-grid { grid-template-columns: minmax(0,1fr); gap: 12px; }
   .checkout-page-mode .checkout-summary { position: static; }
   .checkout-back-button { min-height: 36px; padding: 0 9px; font-size: 9px; white-space: nowrap; }
