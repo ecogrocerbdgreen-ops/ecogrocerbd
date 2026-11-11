@@ -214,11 +214,22 @@
         </form>
         <button class="forgot" id="forgot-button" type="button">পাসওয়ার্ড ভুলে গেছেন?</button>
         <div class="status" id="login-status" role="status" aria-live="polite"></div>
-        <p class="note">প্রথমবার প্রবেশের জন্য পাসওয়ার্ড আগে থেকে তৈরি করার প্রয়োজন নেই। “পাসওয়ার্ড ভুলে গেছেন?” নির্বাচন করে ইমেইলে পাঠানো নিরাপদ লিংক অনুসরণ করুন।</p>
+        <p class="note">প্রথমবার পাসওয়ার্ড তৈরি বা পরে পরিবর্তন করতে “পাসওয়ার্ড ভুলে গেছেন?” নির্বাচন করুন। ইমেইলের লিংক যাচাই করার পর নতুন পাসওয়ার্ড দুবার লিখুন।</p>
         <div class="security-line">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.7 3.1 7.8 7.5 9.5 4.4-1.7 7.5-4.8 7.5-9.5V6L12 3Z"/><path d="m9 12 2 2 4-4"/></svg>
           ENCRYPTED AUTHENTICATION BY SUPABASE
         </div>
+      </section>
+
+
+
+      <section class="card hidden" id="recovery-verify-view">
+        <div class="card-icon" aria-hidden="true">✉</div>
+        <h2>ইমেইল যাচাই করুন</h2>
+        <p class="card-copy">আপনার পাসওয়ার্ড রিসেটের অনুরোধটি নিশ্চিত করতে নিচের বাটনে ক্লিক করুন। এরপর নতুন পাসওয়ার্ড ও নিশ্চিতকরণ দেওয়ার ঘর আসবে।</p>
+        <button class="primary" id="verify-recovery-button" type="button">পাসওয়ার্ড রিসেট চালিয়ে যান</button>
+        <div class="status" id="recovery-verify-status" role="status" aria-live="polite"></div>
+        <p class="note">এই ধাপে অ্যাডমিন লগইন সম্পন্ন হবে না। শুধু পাসওয়ার্ড পরিবর্তনের অনুমতি যাচাই করা হবে।</p>
       </section>
 
       <section class="card hidden" id="password-view">
