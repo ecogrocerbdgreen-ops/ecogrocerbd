@@ -111,6 +111,19 @@
     '</article>';
   }
 
+  function detailCartControl(product) {
+    var qty = Number(cart[product.id] || 0);
+    var stockCap = product.track_inventory ? Math.max(0, Number(product.stock_quantity) || 0) : 99;
+    if (qty > 0) {
+      return '<div class="detail-cart-stepper" role="group" aria-label="' + escapeHTML(product.name) + ' পরিমাণ">' +
+        '<button type="button" data-detail-cart-action="decrease" data-detail-cart-id="' + product.id + '" aria-label="' + escapeHTML(product.name) + ' একটি কমান">−</button>' +
+        '<span aria-live="polite">' + qty + '</span>' +
+        '<button type="button" data-detail-cart-action="increase" data-detail-cart-id="' + product.id + '" aria-label="' + escapeHTML(product.name) + ' একটি বাড়ান"' + (qty >= stockCap ? ' disabled' : '') + '>+</button>' +
+      '</div>';
+    }
+    return '<button type="button" class="detail-action-cart" data-detail-add="' + product.id + '"' + (stockCap <= 0 ? ' disabled' : '') + '><svg class="detail-action-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.2 11h11.1l2-8H6.1"/><circle cx="9.5" cy="19" r="1.2"/><circle cx="17.5" cy="19" r="1.2"/><path d="M14.5 6v5m-2.5-2.5h5"/></svg><span class="detail-action-copy"><span class="detail-action-label">Add to Cart</span></span></button>';
+  }
+
   function renderProduct(product) {
     var category = CATEGORIES.find(function (item) { return item.id === product.category; });
     var qty = Number(cart[product.id] || 0);
@@ -145,7 +158,7 @@
           '<div class="product-detail-cart-state" id="detail-cart-state">' + (qty > 0 ? 'আপনার কার্টে এই পণ্যটি ' + qty + ' টি আছে' : 'এই পণ্যটি এখনো কার্টে যোগ করা হয়নি') + '</div>' +
           '<div class="product-detail-actions">' +
             '<button type="button" class="detail-action-order" data-detail-order="' + product.id + '"' + (outOfStock ? ' disabled' : '') + '><svg class="detail-action-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l1 13H5L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/><path d="m9.5 14 2 2 3.5-3.5"/></svg><span class="detail-action-copy"><span class="detail-action-label">Order Now</span></span></button>' +
-            '<button type="button" class="detail-action-cart" data-detail-add="' + product.id + '"' + (outOfStock ? ' disabled' : '') + '><svg class="detail-action-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.2 11h11.1l2-8H6.1"/><circle cx="9.5" cy="19" r="1.2"/><circle cx="17.5" cy="19" r="1.2"/><path d="M14.5 6v5m-2.5-2.5h5"/></svg><span class="detail-action-copy"><span class="detail-action-label">Add to Cart</span></span></button>' +
+            '<div class="detail-cart-control" data-detail-cart-control="' + product.id + '">' + detailCartControl(product) + '</div>' +
             '<button type="button" class="detail-action-whatsapp" data-detail-whatsapp="' + product.id + '"><svg class="detail-action-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.2 11.5a8.2 8.2 0 0 1-12.1 7.2L4 20l1.2-4A8.2 8.2 0 1 1 20.2 11.5Z"/><path d="M9 8.7c.2-.4.4-.5.7-.5h.5c.2 0 .3.1.4.3l.8 1.7c.1.2.1.4 0 .5l-.6.7c-.1.2-.2.3 0 .5.5.9 1.2 1.5 2.1 1.9.2.1.3.1.5-.1l.7-.8c.1-.2.3-.2.5-.1l1.7.8c.2.1.3.2.3.4 0 .3-.2 1-.6 1.3-.4.4-1 .6-1.6.5-1-.1-2.3-.7-3.5-1.8-1.3-1.2-2.1-2.7-2.2-3.6-.1-.7.1-1.3.5-1.7Z"/></svg><span class="detail-action-copy"><span class="detail-action-label">WhatsApp</span><small>Quick message</small></span></button>' +
             '<button type="button" class="detail-action-call" data-detail-call><svg class="detail-action-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 11.2 19a19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7l.5 2.7a2 2 0 0 1-.6 1.8L7.7 9.5a16 16 0 0 0 6.8 6.8l1.3-1.3a2 2 0 0 1 1.8-.6l2.7.5a2 2 0 0 1 1.7 2Z"/></svg><span class="detail-action-copy"><span class="detail-action-label">Call Now</span></span></button>' +
           '</div>' +
@@ -215,6 +228,14 @@
     if (activeProductId !== id) return;
     var state = document.getElementById('detail-cart-state');
     if (state) state.textContent = 'আপনার কার্টে এই পণ্যটি ' + Number(cart[id] || 0) + ' টি আছে';
+  }
+
+  function updateDetailCartControl(id) {
+    if (activeProductId !== id) return;
+    var product = findProduct(id);
+    var control = detailContent && detailContent.querySelector('[data-detail-cart-control="' + id + '"]');
+    if (!product || !control) return;
+    control.innerHTML = detailCartControl(product);
   }
 
   function updateRecommendationCartControl(id) {
@@ -299,12 +320,22 @@
       return;
     }
 
+    var detailCartAction = event.target.closest('[data-detail-cart-action]');
+    if (detailCartAction) {
+      var controlId = detailCartAction.dataset.detailCartId;
+      var controlDelta = detailCartAction.dataset.detailCartAction === 'decrease' ? -1 : 1;
+      changeCart(controlId, controlDelta);
+      updateDetailCartState(controlId);
+      updateDetailCartControl(controlId);
+      return;
+    }
+
     var detailAdd = event.target.closest('[data-detail-add]');
     if (detailAdd) {
       var addId = detailAdd.dataset.detailAdd;
       changeCart(addId, 1);
       updateDetailCartState(addId);
-      detailAdd.innerHTML = '<span>✓</span> Added to Cart';
+      updateDetailCartControl(addId);
       return;
     }
 
