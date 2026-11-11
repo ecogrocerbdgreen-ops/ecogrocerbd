@@ -1404,3 +1404,6 @@ section[id], div[id] { scroll-margin-top: 90px; }
 .order-success-modal .order-success-payment { margin: 0 0 17px; color: #68776d; font-size: 11px; }
 @keyframes orderSuccessEnter { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
 @media (max-width: 480px) { .order-success-modal { padding: 31px 19px 21px; border-radius: 21px; } .order-success-modal h2 { font-size: 22px; } .order-success-details { padding-inline: 12px; } }
+
+.order-success-whatsapp { display: block; margin: 0 0 12px; padding: 11px 14px; border: 1px solid #cfe5d4; border-radius: 11px; color: #176d38; font-size: 12px; font-weight: 700; text-decoration: none; }
+.order-success-whatsapp[hidden] { display: none !important; }
