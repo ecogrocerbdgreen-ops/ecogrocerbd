@@ -2,7 +2,6 @@
 
 (function () {
   const CONFIG = window.ECOGROCER_CONFIG || {};
-  const ORDER_API_URL = String(CONFIG.orderApiUrl || window.ECOGROCER_ORDER_API_URL || '').trim();
   const WHATSAPP_NUMBER = String(CONFIG.whatsappNumber || window.ECOGROCER_WHATSAPP_NUMBER || '').replace(/\D/g, '');
 
   // Area delivery fees are provisional display values until EcoGrocer confirms its final tariff.
@@ -212,6 +211,12 @@
     return 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(text);
   }
 
+  function createOrderId() {
+    const timePart = new Date().toISOString().replace(/\\D/g, '').slice(0, 12);
+    const randomPart = Math.random().toString(36).slice(2, 7).toUpperCase();
+    return 'EG' + timePart + randomPart;
+  }
+
   async function submitOrder(event) {
     event.preventDefault();
     if (requestInProgress) return;
@@ -222,33 +227,51 @@
     }
     if (!form.reportValidity()) return;
 
-    if (!ORDER_API_URL) {
-      setStatus('অর্ডার সার্ভার এখনো সংযুক্ত হয়নি। এই মুহূর্তে অর্ডার জমা হয়নি। আপনার নিজস্ব হোস্টিংয়ের API ঠিকানা যুক্ত হলে অর্ডার গ্রহণ চালু হবে।', 'error');
-      return;
-    }
-
     const payload = buildOrderPayload(form);
+    const orderId = createOrderId();
+    const subtotal = getSubtotal();
+    const deliveryFee = getDeliveryFee();
+    const discount = getDiscount();
+    const grandTotal = Math.max(0, subtotal + deliveryFee - discount);
+    const orderLines = getLines().map(product => ({
+      id: product.id,
+      name: product.name,
+      unit: product.unit,
+      quantity: Number(cart[product.id]),
+      unitPrice: product.price,
+      lineTotal: product.price * Number(cart[product.id])
+    }));
+
+    byId('checkout-order-id').value = orderId;
+    byId('checkout-order-items').value = JSON.stringify(orderLines);
+    byId('checkout-order-subtotal').value = String(subtotal);
+    byId('checkout-order-delivery').value = String(deliveryFee);
+    byId('checkout-order-discount').value = String(discount);
+    byId('checkout-order-grand-total').value = String(grandTotal);
+    byId('checkout-order-area-name').value = payload.delivery.areaName;
+    byId('checkout-order-coupon').value = appliedCoupon;
+    byId('checkout-order-status').value = 'pending';
+    byId('checkout-order-date').value = new Date().toLocaleString('en-GB', { timeZone: 'Asia/Dhaka', hour12: false });
+    form.querySelector('input[name="subject"]').value = 'New EcoGrocer order — ' + orderId;
+
     requestInProgress = true;
     byId('checkout-submit').disabled = true;
-    byId('checkout-submit').textContent = 'অর্ডার জমা হচ্ছে…';
+    byId('checkout-submit').textContent = 'অর্ডার সার্ভারে জমা হচ্ছে…';
     clearStatus();
 
     try {
-      const response = await fetch(ORDER_API_URL, {
+      const formData = new FormData(form);
+      formData.set('form-name', 'ecogrocer-orders');
+      const response = await fetch('/', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify(payload),
-        mode: 'cors',
-        credentials: 'omit'
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(formData).toString()
       });
-      const result = await response.json().catch(() => ({}));
-      if (!response.ok || result.success !== true) {
-        throw new Error(result.message || 'অর্ডার সার্ভার অনুরোধটি গ্রহণ করতে পারেনি।');
+      if (!response.ok) {
+        throw new Error('সার্ভার অর্ডারটি গ্রহণ করেনি। অনুগ্রহ করে আবার চেষ্টা করুন। (HTTP ' + response.status + ')');
       }
 
-      const finalTotal = Number(result.grandTotal || (getSubtotal() + getDeliveryFee() - getDiscount()));
-      const orderId = result.orderId || result.order_id || 'প্রাপ্ত';
-      const whatsappUrl = whatsappOrderLink(orderId, payload, finalTotal);
+      const whatsappUrl = whatsappOrderLink(orderId, payload, grandTotal);
       cart = {};
       saveCart();
       renderProducts();
@@ -256,7 +279,7 @@
       form.reset();
       appliedCoupon = '';
       renderCheckoutItems();
-      setStatus('অর্ডার সফলভাবে জমা হয়েছে। অর্ডার নম্বর: ' + orderId + (whatsappUrl ? ' — WhatsApp-এ সামারি পাঠানোর লিংক তৈরি হয়েছে।' : ''), 'success');
+      setStatus('অর্ডার সফলভাবে সার্ভারে জমা হয়েছে। আপনার অর্ডার নম্বর: ' + orderId + '। EcoGrocer BD টিম অর্ডারটি যাচাই করে যোগাযোগ করবে।', 'success');
       if (whatsappUrl) {
         const link = document.createElement('a');
         link.href = whatsappUrl;
