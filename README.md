@@ -1,20 +1,22 @@
 # EcoGrocer BD — E-commerce storefront and backend
 
-EcoGrocer BD is a static storefront on Netlify with a same-origin Netlify Functions API and a Supabase PostgreSQL database. It supports Guest Checkout and phone-OTP customer accounts. Online payments use the SSLCOMMERZ hosted checkout flow when merchant credentials are configured; otherwise manual payment verification and Cash on Delivery remain available.
+EcoGrocer BD is a static storefront on GitHub Pages. Customer orders are submitted to a Supabase Edge Function and stored in Supabase PostgreSQL. Netlify Functions remain in the repository for the separate Admin and payment integrations. Guest Checkout is the currently supported order flow; phone-OTP accounts require Auth/SMS setup.
 
 ## Main application
 
 - Storefront: `index.html`, `style.css`, `script.js`, `product-detail.js`
 - Checkout: `checkout.html`, `checkout.js`
 - Customer account: `account.html`, `account.js`
-- Backend: `netlify/functions/api.mjs`
+- Order API: `supabase/functions/place-order/index.ts` (deployed as the `place-order` Supabase Edge Function)
 - Database schema and seed: `supabase/migrations/20261111090000_ecommerce_core.sql`
+- Order API rate limiting: `supabase/migrations/20261111090714_order_api_rate_limit.sql`
+- Remaining Netlify backend: `netlify/functions/api.mjs` (Admin and optional payment processing)
 - Admin dashboard: `admin.html`, `admin.js`
 - Legacy optional PHP/MySQL receiver: `hosting-api/` (not used by the current Netlify API)
 
 ## Database setup (one-time)
 
-The database is Supabase PostgreSQL. Run the migration `supabase/migrations/20261111090000_ecommerce_core.sql` in the connected Supabase project's SQL Editor. It creates:
+The production database is the Supabase project `ecogrocerbd-orders` (`ucwaoytakqldicdtoran`, Mumbai region). The migrations in `supabase/migrations/` have been applied to that project. The core migration creates:
 - Categories and the current 32-product starter catalogue
 - Product stock tracking and transactional stock reservation
 - Delivery areas and editable delivery slots
@@ -23,20 +25,20 @@ The database is Supabase PostgreSQL. Run the migration `supabase/migrations/2026
 - Restricted server-side functions for order placement, cancellation stock restoration and verified payment updates
 - Row Level Security and service-role-only database access
 
-The migration is self-contained. Do not expose the Supabase service-role key in browser code.
+The order Edge Function is deployed at `https://ucwaoytakqldicdtoran.supabase.co/functions/v1/place-order`. It accepts the website's public Supabase Publishable Key, rate-limits by a server-HMACed client IP (5 attempts per 10 minutes), and calls the server-only `place_ecogrocer_order` database function. The database function ignores browser-sent prices, recalculates prices, discounts and delivery charges, and writes the order and order items in one transaction. RLS is enabled on all order tables; direct `anon`/`authenticated` writes are revoked. Never expose the Supabase secret/service-role key in browser code.
 
 ## Netlify environment variables
 
 Set these at **Project configuration → Environment variables**, with **Functions** scope, then redeploy:
 
-### Required for the live database and store admin
+### Required only if the remaining Netlify Admin/API routes are used
 - `SUPABASE_URL` — Supabase project URL
-- `SUPABASE_ANON_KEY` — public/anon key, used only for Supabase Auth client flows
+- `SUPABASE_ANON_KEY` — legacy public key for compatibility with the existing Netlify API
 - `SUPABASE_SERVICE_ROLE_KEY` — private service-role key; server-side only
 - `ADMIN_USERNAME` — Admin username (default: `admin`)
 - `ADMIN_PASSWORD` — strong private Admin password
 - `ADMIN_SESSION_SECRET` — long random secret used to sign 8-hour Admin sessions
-- `SITE_URL` — public website origin, e.g. `https://ecogrocerbd.netlify.app`
+- `SITE_URL` — public website origin, e.g. `https://ecogrocerbdgreen-ops.github.io/ecogrocerbd`
 
 ### Optional for SSLCOMMERZ hosted checkout
 - `SSLCOMMERZ_STORE_ID`
@@ -82,17 +84,15 @@ Open `/admin.html`. It provides:
 - Delivery area fees and active/inactive delivery slots
 - Coupon setup and usage limits
 
-Admin API routes require an 8-hour HMAC-signed session. During database setup, the previous Netlify Forms inbox remains linked from the Admin login panel.
+Admin API routes still use the Netlify Function and require an 8-hour HMAC-signed session plus the Netlify environment variables above. The public order intake no longer uses Netlify Forms.
 
-## Graceful transition
+## Current deployment state
 
-Until Supabase credentials and migration are in place:
-- The storefront uses the local catalogue fallback.
-- Checkout falls back to the registered `ecogrocer-orders` Netlify Form when the database reports it is not configured.
-- Customer OTP and Payment Gateway remain unavailable until their respective provider configuration is complete.
-- The old Netlify Forms inbox remains accessible.
-
-When the database is connected, the storefront automatically loads live products, checkout writes transactional orders, and Admin reads/writes the same database.
+- The live GitHub Pages Checkout posts directly to the Supabase `place-order` Edge Function.
+- Supabase stores order headers and line items; the order RPC recalculates totals and checks delivery areas, slots and coupons.
+- The legacy `ecogrocer-orders` Netlify Form is no longer used by the live Checkout.
+- The Admin dashboard's Netlify API routes have not yet been moved to Supabase Edge Functions.
+- Phone OTP requires a configured Supabase SMS provider; Guest Checkout does not require customer login.
 
 ## Not enabled without merchant/provider credentials
 
