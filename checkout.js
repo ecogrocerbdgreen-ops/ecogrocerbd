@@ -313,6 +313,10 @@
         });
         const paymentData = await paymentResponse.json().catch(() => ({}));
         if (paymentResponse.ok && paymentData.enabled && paymentData.paymentUrl) {
+          cart = {};
+          saveCart();
+          renderProducts();
+          renderCart();
           window.location.assign(paymentData.paymentUrl);
           return;
         }
