@@ -296,10 +296,10 @@
                   </select>
                   <small>এলাকা ও ডেলিভারি চার্জের তথ্য সরাসরি Supabase ডেটাবেজ থেকে আপডেট হয়।</small>
                 </label>
-                <label class="checkout-field"><span>Block <b>*</b></span><input name="block" type="text" placeholder="যেমন: Block C" maxlength="40" required></label>
-                <label class="checkout-field"><span>Road <b>*</b></span><input name="road" type="text" placeholder="যেমন: Road 12" maxlength="40" required></label>
-                <label class="checkout-field checkout-field-wide"><span>House / Flat Number <b>*</b></span><input name="house" type="text" placeholder="বাড়ি / ফ্ল্যাট নম্বর" maxlength="60" required></label>
-                <label class="checkout-field checkout-field-wide"><span>সম্পূর্ণ ঠিকানা <b>*</b></span><textarea name="fullAddress" rows="3" placeholder="বাড়ির নাম, ল্যান্ডমার্ক, গেট বা প্রবেশের নির্দেশনা লিখুন" minlength="8" maxlength="500" required></textarea></label>
+                <label class="checkout-field"><span>Block <small>(ঐচ্ছিক)</small></span><input name="block" type="text" placeholder="যেমন: C বা Block C" maxlength="80" autocomplete="address-line2"></label>
+                <label class="checkout-field"><span>Road <small>(ঐচ্ছিক)</small></span><input name="road" type="text" placeholder="যেমন: 12 বা Road 12" maxlength="80"></label>
+                <label class="checkout-field checkout-field-wide"><span>House / Flat Number <small>(ঐচ্ছিক)</small></span><input name="house" type="text" placeholder="বাড়ি / ফ্ল্যাট নম্বর (যেভাবে সুবিধা)" maxlength="100"></label>
+                <label class="checkout-field checkout-field-wide"><span>সম্পূর্ণ ঠিকানা <b>*</b></span><textarea name="fullAddress" rows="3" placeholder="আপনার সুবিধামতো সম্পূর্ণ ঠিকানা, বাড়ির নাম বা ল্যান্ডমার্ক লিখুন" maxlength="500" required></textarea></label>
               </div>
             </section>
 
