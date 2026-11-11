@@ -1195,3 +1195,174 @@ section[id], div[id] { scroll-margin-top: 90px; }
   .site-header { transition: none; }
 }
 
+
+/* Dedicated cart, help and delivery information pages */
+.cart-page-main,
+.info-page-main {
+  width: min(100% - 32px, 1120px);
+  margin: 0 auto;
+  padding: 34px 0 54px;
+}
+.cart-page-heading,
+.info-page-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+.cart-page-heading h1,
+.info-page-heading h1 {
+  margin: 4px 0 3px;
+  color: var(--green-dark);
+  font: 800 clamp(26px, 4vw, 38px)/1.2 'Baloo Da 2','Noto Sans Bengali',sans-serif;
+}
+.cart-page-heading p,
+.info-page-heading p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+.cart-page-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(260px, .75fr);
+  align-items: start;
+  gap: 18px;
+}
+.cart-page-card,
+.cart-page-summary,
+.help-card,
+.info-panel,
+.info-note {
+  border: 1px solid #e5eee6;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 7px 24px rgba(24,69,37,.045);
+}
+.cart-page-card { padding: 18px; }
+.cart-page-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid #edf2ed;
+}
+.cart-page-card-head h2,
+.cart-page-summary h2,
+.info-panel h2,
+.info-note h2 {
+  margin: 0;
+  color: var(--green-dark);
+  font: 800 19px 'Baloo Da 2','Noto Sans Bengali',sans-serif;
+}
+.cart-page-card-head > span { color: var(--ink-soft); font-size: 11px; }
+.cart-page-lines { display: grid; }
+.cart-page-line {
+  display: grid;
+  grid-template-columns: 92px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 13px;
+  padding: 14px 0;
+  border-bottom: 1px solid #edf2ed;
+}
+.cart-page-line:last-child { border-bottom: 0; }
+.cart-page-image {
+  display: block;
+  width: 92px;
+  height: 88px;
+  overflow: hidden;
+  border-radius: 13px;
+  background: #f3f7f3;
+}
+.cart-page-image img { width: 100%; height: 100%; object-fit: cover; }
+.cart-page-product { display: grid; gap: 5px; min-width: 0; }
+.cart-page-product > a { color: var(--ink); text-decoration: none; }
+.cart-page-product > a:hover { color: var(--green); }
+.cart-page-product > small { color: var(--ink-soft); font-size: 10px; }
+.cart-page-line-total { display: grid; justify-items: end; gap: 10px; color: var(--green-dark); font-size: 13px; }
+.cart-page-remove {
+  padding: 4px 8px;
+  border: 1px solid #f0dede;
+  border-radius: 8px;
+  color: #a44a42;
+  background: #fffafa;
+  font: 700 10px 'Noto Sans Bengali',sans-serif;
+  cursor: pointer;
+}
+.cart-page-empty {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 46px 16px;
+  text-align: center;
+}
+.cart-page-empty > span { font-size: 42px; }
+.cart-page-empty h2 { margin: 0; color: var(--green-dark); font: 800 21px 'Baloo Da 2','Noto Sans Bengali',sans-serif; }
+.cart-page-empty p { margin: 0 0 8px; color: var(--ink-soft); font-size: 11px; }
+.cart-page-summary { position: sticky; top: 18px; padding: 19px; }
+.cart-page-summary h2 { margin: 4px 0 17px; }
+.cart-page-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid #edf2ed;
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+.cart-page-summary-row strong { color: var(--green-dark); font-size: 17px; }
+.cart-page-summary p,
+.cart-page-summary small { display: block; color: var(--ink-soft); font-size: 10px; line-height: 1.7; }
+.cart-page-summary .button { margin: 12px 0 9px; }
+.cart-page-summary .button:disabled { opacity: .48; cursor: not-allowed; }
+.cart-page-continue { display: block; color: var(--green); text-align: center; font-size: 11px; font-weight: 700; text-decoration: none; }
+.cart-page-continue:hover { text-decoration: underline; }
+.cart-full-link { display: block; margin: 3px 0 8px; color: var(--green); font-size: 10px; font-weight: 800; text-decoration: none; }
+.cart-full-link:hover { text-decoration: underline; }
+
+.info-page-heading { display: block; max-width: 760px; margin-bottom: 25px; }
+.help-card-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
+.help-card { padding: 19px; }
+.help-card > span { color: #77a783; font: 800 12px 'Baloo Da 2',sans-serif; }
+.help-card h2 { margin: 7px 0 8px; color: var(--green-dark); font: 800 19px 'Baloo Da 2','Noto Sans Bengali',sans-serif; }
+.help-card p,
+.info-panel p,
+.info-note p,
+.info-panel li { color: var(--ink-soft); font-size: 12px; line-height: 1.85; }
+.help-card p { min-height: 62px; margin: 0 0 11px; }
+.help-card a { color: var(--green); font-size: 11px; font-weight: 800; text-decoration: none; }
+.help-card a:hover { text-decoration: underline; }
+.info-panel,
+.info-note { padding: 21px; margin: 0 0 15px; }
+.info-panel h2,
+.info-note h2 { margin-bottom: 10px; }
+.info-panel p,
+.info-note p { margin: 8px 0; }
+.info-muted { color: #8a968d !important; font-size: 10px !important; }
+.info-list { display: grid; gap: 7px; margin: 10px 0; padding-left: 20px; }
+.delivery-table-wrap { overflow-x: auto; }
+.delivery-table { width: 100%; border-collapse: collapse; min-width: 330px; font-size: 11px; }
+.delivery-table th,
+.delivery-table td { padding: 10px 12px; border-bottom: 1px solid #edf2ed; text-align: left; }
+.delivery-table th { color: var(--green-dark); background: #f5faf5; font-weight: 800; }
+.info-note { border-color: #f0e8d8; background: #fffcf5; }
+.info-note h2 { color: #835e22; }
+.info-note p { color: #806f53; }
+
+@media (max-width: 760px) {
+  .cart-page-main,
+  .info-page-main { width: min(100% - 24px, 1120px); padding: 23px 0 calc(96px + env(safe-area-inset-bottom)); }
+  .cart-page-heading { align-items: flex-start; flex-direction: column; gap: 9px; }
+  .cart-page-layout { grid-template-columns: minmax(0,1fr); gap: 12px; }
+  .cart-page-summary { position: static; }
+  .cart-page-line { grid-template-columns: 70px minmax(0,1fr); gap: 10px; }
+  .cart-page-image { width: 70px; height: 70px; }
+  .cart-page-line-total { grid-column: 2; display: flex; justify-content: space-between; justify-self: stretch; align-items: center; padding-top: 8px; border-top: 1px solid #edf2ed; }
+  .cart-page-product .cart-line-controls { margin-top: 2px; }
+  .help-card-grid { grid-template-columns: minmax(0,1fr); gap: 10px; }
+  .help-card p { min-height: 0; }
+  .info-panel,
+  .info-note { padding: 16px; border-radius: 15px; }
+}
