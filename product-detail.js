@@ -230,8 +230,8 @@
     var detailOrder = event.target.closest('[data-detail-order]');
     if (detailOrder) {
       var orderId = detailOrder.dataset.detailOrder;
-      closeProductDetail();
-      window.openEcoCheckout(orderId);
+      // Navigate to a dedicated checkout page; the product ID is added to the existing cart on load.
+      window.location.assign('checkout.html?product=' + encodeURIComponent(orderId));
       return;
     }
 

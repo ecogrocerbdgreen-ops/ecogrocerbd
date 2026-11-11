@@ -102,8 +102,17 @@
   function openCheckout(productId) {
     if (productId && !cart[productId]) changeCart(productId, 1);
     if (!getLines().length) {
-      showToast('অর্ডার করতে আগে পণ্য কার্টে যোগ করুন');
+      if (document.body.classList.contains('checkout-page-mode')) {
+        byId('checkout-scrim').hidden = true;
+        byId('checkout-empty-page').hidden = false;
+        document.body.classList.remove('no-scroll');
+      } else {
+        showToast('অর্ডার করতে আগে পণ্য কার্টে যোগ করুন');
+      }
       return;
+    }
+    if (document.body.classList.contains('checkout-page-mode') && byId('checkout-empty-page')) {
+      byId('checkout-empty-page').hidden = true;
     }
     closeDrawer();
     closeCart();
@@ -271,7 +280,13 @@
     if (event.key === 'Escape' && !byId('checkout-scrim').hidden) closeCheckout();
   });
 
-  byId('checkout-close').addEventListener('click', closeCheckout);
+  byId('checkout-close').addEventListener('click', function () {
+    if (document.body.classList.contains('checkout-page-mode')) {
+      window.location.href = './';
+      return;
+    }
+    closeCheckout();
+  });
   byId('checkout-scrim').addEventListener('click', event => {
     if (event.target.id === 'checkout-scrim') closeCheckout();
   });
@@ -288,6 +303,11 @@
   });
   byId('eco-checkout-form').addEventListener('submit', submitOrder);
 
-  // The product cards are rendered by script.js before this file runs.
+  // A dedicated checkout page is used for Order Now so customers get a full page rather than a small overlay.
   window.openEcoCheckout = openCheckout;
+  if (document.body.classList.contains('checkout-page-mode')) {
+    const params = new URLSearchParams(window.location.search);
+    const selectedProduct = params.get('product') || '';
+    openCheckout(selectedProduct);
+  }
 })();

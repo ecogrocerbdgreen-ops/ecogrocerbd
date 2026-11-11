@@ -658,3 +658,59 @@ section[id], div[id] { scroll-margin-top: 90px; }
   .recommended-product-open { align-items: flex-start; }
   .recommended-product-image { width: 48px; height: 48px; flex-basis: 48px; }
 }
+
+
+/* Dedicated, shareable checkout page */
+.checkout-back-button { display: inline-flex; align-items: center; justify-content: center; min-height: 38px; flex: 0 0 auto; padding: 0 13px; border: 1px solid #dce9de; border-radius: 10px; color: #286d3b; background: #f5faf5; font: 700 10px 'Noto Sans Bengali',sans-serif; cursor: pointer; }
+.checkout-page-mode { min-height: 100vh; padding-bottom: 0 !important; background: #f5f8f5; overflow: auto !important; }
+.checkout-page-mode .site-header,
+.checkout-page-mode .delivery-strip,
+.checkout-page-mode main,
+.checkout-page-mode .site-footer,
+.checkout-page-mode .drawer-scrim,
+.checkout-page-mode .site-drawer,
+.checkout-page-mode .panel-scrim,
+.checkout-page-mode .cart-drawer,
+.checkout-page-mode .modal-scrim,
+.checkout-page-mode .mobile-bottom-nav,
+.checkout-page-mode .toast,
+.checkout-page-mode .product-detail-scrim,
+.checkout-page-mode .product-lightbox { display: none !important; }
+.checkout-page-mode .checkout-scrim { position: static; inset: auto; z-index: auto; display: block; min-height: 100vh; padding: 0; background: transparent; backdrop-filter: none; }
+.checkout-page-mode .checkout-scrim[hidden] { display: none !important; }
+.checkout-page-mode .checkout-modal { display: flex; width: 100%; min-height: 100vh; max-height: none; overflow: visible; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.checkout-page-mode .checkout-header { position: sticky; top: 0; z-index: 8; align-items: center; gap: 16px; padding: 16px max(20px,calc((100vw - 1160px)/2)); border-bottom: 1px solid #e5ece5; background: rgba(255,255,255,.97); box-shadow: 0 4px 18px rgba(28,68,34,.045); backdrop-filter: blur(12px); }
+.checkout-page-mode .checkout-header h2 { font-size: 25px; }
+.checkout-page-mode .checkout-header > div { flex: 1; }
+.checkout-page-mode .checkout-body { width: min(100%,1200px); min-height: 0; margin: 0 auto; padding: 24px 24px 55px; overflow: visible; }
+.checkout-page-mode .checkout-grid { grid-template-columns: minmax(0,1.5fr) minmax(300px,.8fr); gap: 23px; }
+.checkout-page-mode .checkout-section { padding: 19px; margin-bottom: 17px; }
+.checkout-page-mode .checkout-summary { position: sticky; top: 112px; }
+.checkout-page-mode .summary-card { padding: 22px; }
+.checkout-page-mode.no-scroll { overflow: auto !important; }
+.checkout-page-mode .checkout-status { scroll-margin-top: 100px; }
+
+@media (max-width: 760px) {
+  .checkout-page-mode .checkout-header { padding: 12px 15px; }
+  .checkout-page-mode .checkout-header h2 { font-size: 20px; }
+  .checkout-page-mode .checkout-header p { font-size: 9px; }
+  .checkout-page-mode .checkout-body { padding: 14px 12px calc(38px + env(safe-area-inset-bottom)); }
+  .checkout-page-mode .checkout-grid { grid-template-columns: minmax(0,1fr); gap: 12px; }
+  .checkout-page-mode .checkout-summary { position: static; }
+  .checkout-back-button { min-height: 36px; padding: 0 9px; font-size: 9px; white-space: nowrap; }
+}
+@media (max-width: 390px) {
+  .checkout-page-mode .checkout-header { gap: 8px; padding-inline: 10px; }
+  .checkout-page-mode .checkout-header h2 { font-size: 18px; }
+  .checkout-back-button { padding-inline: 7px; font-size: 8px; }
+}
+
+
+.checkout-empty-page { min-height: 100vh; display: grid; place-items: center; padding: 25px; background: #f5f8f5; }
+.checkout-empty-page-card { display: flex; flex-direction: column; align-items: center; width: min(430px,100%); padding: 38px 25px; border: 1px solid #e3ece4; border-radius: 22px; background: #fff; box-shadow: 0 12px 45px rgba(25,70,35,.07); text-align: center; }
+.checkout-empty-icon { display: grid; place-items: center; width: 72px; height: 72px; margin-bottom: 13px; border-radius: 24px; background: #edf7ef; font-size: 35px; }
+.checkout-empty-page-card h1 { margin: 0; color: #1c5730; font: 800 23px 'Baloo Da 2','Noto Sans Bengali',sans-serif; }
+.checkout-empty-page-card p { margin: 8px 0 20px; color: #748177; font-size: 11px; }
+.checkout-page-mode .checkout-empty-page[hidden] { display: none !important; }
+.checkout-page-mode .checkout-empty-page:not([hidden]) { display: grid; }
+
