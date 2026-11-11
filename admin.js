@@ -18,11 +18,10 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
   });
 
   const $ = (id) => document.getElementById(id);
-  const query = new URLSearchParams(window.location.search);
   const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
   const hashType = hash.get("type") || "";
-  let flowMode = query.get("flow") || (hashType === "recovery" ? "recovery" :
-    (hashType === "magiclink" || hashType === "email" ? "setup" : ""));
+  let flowMode = hashType === "recovery" ? "recovery" :
+    (hashType === "magiclink" || hashType === "email" ? "setup" : "");
 
   function showView(name) {
     $("login-view").classList.toggle("hidden", name !== "login");
@@ -43,10 +42,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
     button.textContent = busy ? label : button.dataset.originalLabel;
   }
 
-  function callbackUrl(flow) {
-    const url = new URL(window.location.pathname, window.location.origin);
-    url.searchParams.set("flow", flow);
-    return url.toString();
+  function callbackUrl() {
+    return new URL(window.location.pathname, window.location.origin).toString();
   }
 
   function clearCallbackUrl() {
@@ -122,7 +119,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
     try {
       if (localStorage.getItem(SETUP_COMPLETE_KEY) === "1") {
         const { error } = await supabase.auth.resetPasswordForEmail(ADMIN_EMAIL, {
-          redirectTo: callbackUrl("recovery")
+          redirectTo: callbackUrl()
         });
         if (error) throw error;
         showStatus("login-status", "পাসওয়ার্ড রিসেট লিংক আপনার Gmail-এ পাঠানো হয়েছে। Inbox ও Spam ফোল্ডার দেখুন।", "success");
@@ -131,7 +128,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
           email: ADMIN_EMAIL,
           options: {
             shouldCreateUser: true,
-            emailRedirectTo: callbackUrl("setup")
+            emailRedirectTo: callbackUrl()
           }
         });
         if (error) throw error;
