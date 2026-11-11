@@ -230,8 +230,13 @@
     var detailOrder = event.target.closest('[data-detail-order]');
     if (detailOrder) {
       var orderId = detailOrder.dataset.detailOrder;
-      // Navigate to a dedicated checkout page; the product ID is added to the existing cart on load.
-      window.location.assign('checkout.html?product=' + encodeURIComponent(orderId));
+      // Persist the selected product before navigation so checkout always has an item to render.
+      if (!PRODUCTS.some(function (product) { return product.id === orderId; })) {
+        showToast('এই পণ্যটি পাওয়া যায়নি। আবার পণ্য নির্বাচন করুন।');
+        return;
+      }
+      if (!cart[orderId]) changeCart(orderId, 1);
+      window.location.assign('checkout.html');
       return;
     }
 
