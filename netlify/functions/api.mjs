@@ -326,11 +326,14 @@ async function handlePaymentCallback(request, type) {
   if (type === "success") {
     const result = await validateSslPayment(payload);
     const orderNumber = tranId.split("-").slice(0, 2).join("-");
-    if (result.valid && !result.risk) {
+    if (result.valid && result.paymentStatus === "paid") {
       return paymentResultPage("পেমেন্ট সফল হয়েছে", "আপনার পেমেন্ট যাচাই করে গ্রহণ করা হয়েছে।", orderNumber, true);
     }
     if (result.valid && result.risk) {
       return paymentResultPage("পেমেন্ট যাচাই চলছে", "লেনদেনটি অতিরিক্ত যাচাইয়ের জন্য রাখা হয়েছে। EcoGrocer BD টিম নিশ্চিত করে জানাবে।", orderNumber);
+    }
+    if (result.valid && result.paymentStatus === "failed") {
+      return paymentResultPage("পেমেন্ট সফল হয়নি", "Gateway লেনদেনটি ব্যর্থ হিসেবে নিশ্চিত করেছে। অর্ডারটি প্রয়োজন হলে আবার পেমেন্ট করুন।", orderNumber);
     }
     return paymentResultPage("পেমেন্ট যাচাই হয়নি", "লেনদেনটি সফল হিসেবে নিশ্চিত করা যায়নি। অর্ডারটি নিশ্চিত করতে আমাদের টিমের সঙ্গে যোগাযোগ করুন।", orderNumber);
   }
