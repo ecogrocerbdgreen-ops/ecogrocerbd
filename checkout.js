@@ -102,8 +102,17 @@
   function openCheckout(productId) {
     if (productId && !cart[productId]) changeCart(productId, 1);
     if (!getLines().length) {
-      showToast('অর্ডার করতে আগে পণ্য কার্টে যোগ করুন');
+      if (document.body.classList.contains('checkout-page-mode')) {
+        byId('checkout-scrim').hidden = true;
+        byId('checkout-empty-page').hidden = false;
+        document.body.classList.remove('no-scroll');
+      } else {
+        showToast('অর্ডার করতে আগে পণ্য কার্টে যোগ করুন');
+      }
       return;
+    }
+    if (document.body.classList.contains('checkout-page-mode') && byId('checkout-empty-page')) {
+      byId('checkout-empty-page').hidden = true;
     }
     closeDrawer();
     closeCart();
