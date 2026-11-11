@@ -302,8 +302,35 @@
   .order-card-actions>*{min-height:38px}
 }
 
+
+/* Address editor and print-ready order sheet */
+.address-editor{margin:16px 0;padding:15px;border:1px solid #dfeae2;border-radius:13px;background:#fbfdfb}
+.address-editor-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.address-editor-head h3{margin:0;color:#20372b;font-size:15px}.address-editor-head p{margin:4px 0 0;color:#77857c;font-size:11px;line-height:1.5}
+.address-current{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.address-current>div{padding:9px 10px;background:#fff;border:1px solid #e9efeb;border-radius:9px;min-width:0}
+.address-current small{display:block;color:#7b8980;font-size:10px;margin-bottom:4px}.address-current strong{display:block;color:#20372b;font-size:12px;overflow-wrap:anywhere}
+.address-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid #e4ece6}
+.address-form label{display:flex;flex-direction:column;gap:5px;color:#596b60;font-size:11px;font-weight:700}
+.address-form input{width:100%;min-width:0;padding:10px;border:1px solid #dce7df;border-radius:8px;font:inherit;color:#20372b;background:#fff}
+.address-form-actions{grid-column:1/-1;display:flex;gap:8px}.address-save{background:#176b46!important;color:#fff!important;border-color:#176b46!important}.address-cancel{background:#fff!important}
+.order-modal-tools{display:flex;align-items:center;gap:8px;flex-shrink:0}.print-order-button{white-space:nowrap}
+@media(max-width:520px){.address-current,.address-form{grid-template-columns:1fr}.address-editor{padding:11px}.address-editor-head{align-items:flex-start}.address-editor-head .row-action{font-size:10px;padding:8px;white-space:nowrap}.order-modal-tools{gap:5px}.print-order-button{font-size:10px;padding:8px}}
+@media print{
+  @page{size:A4;margin:14mm}
+  body.print-order-mode *{visibility:hidden!important}
+  body.print-order-mode #order-modal,body.print-order-mode #order-modal *{visibility:visible!important}
+  body.print-order-mode #order-modal{position:static!important;display:block!important;inset:auto!important;height:auto!important;padding:0!important;background:#fff!important}
+  body.print-order-mode .order-modal-backdrop,body.print-order-mode .modal-close,body.print-order-mode .print-order-button,body.print-order-mode .address-editor-head button,body.print-order-mode .address-form{display:none!important}
+  body.print-order-mode .order-modal-card{position:static!important;width:100%!important;max-width:none!important;max-height:none!important;height:auto!important;overflow:visible!important;padding:0!important;border:0!important;box-shadow:none!important;border-radius:0!important}
+  body.print-order-mode .order-modal-head{position:static!important;border-bottom:1px solid #ccd8cf;margin-bottom:14px;padding-bottom:10px}
+  body.print-order-mode #order-modal-body{overflow:visible!important;max-height:none!important}
+  body.print-order-mode .address-editor,body.print-order-mode .detail-box,body.print-order-mode .address-current>div{break-inside:avoid}
+  body.print-order-mode .address-editor{background:#fff!important}
+  body.print-order-mode .payment-note{color:#333!important;background:#f5f5f5!important}
+}
 </style>
-  <script type="module" src="admin.js?v=20261111-mobile-orders-6"></script>
+  <script type="module" src="admin.js?v=20261111-address-edit-print-1"></script>
 </head>
 <body>
   <div class="page">
@@ -388,7 +415,7 @@
     <div class="order-modal hidden" id="order-modal" role="dialog" aria-modal="true" aria-labelledby="order-modal-title">
       <div class="order-modal-backdrop" data-close-modal></div>
       <div class="order-modal-card">
-        <div class="order-modal-head"><div><span class="dashboard-label">ORDER DETAILS</span><h2 id="order-modal-title">অর্ডারের বিস্তারিত</h2></div><button class="modal-close" type="button" data-close-modal aria-label="বন্ধ করুন">×</button></div>
+        <div class="order-modal-head"><div><span class="dashboard-label">ORDER DETAILS</span><h2 id="order-modal-title">অর্ডারের বিস্তারিত</h2></div><div class="order-modal-tools"><button class="row-action print-order-button" type="button" data-print-order>⎙ প্রিন্ট / PDF</button><button class="modal-close" type="button" data-close-modal aria-label="বন্ধ করুন">×</button></div></div>
         <div id="order-modal-body"></div>
       </div>
     </div>
