@@ -264,7 +264,20 @@
       </header>
       <div class="checkout-body">
         <div class="checkout-grid">
-          <form class="checkout-form" id="eco-checkout-form" novalidate>
+          <form class="checkout-form" id="eco-checkout-form" name="ecogrocer-orders" method="POST" data-netlify="true" netlify-honeypot="bot-field" novalidate>
+            <input type="hidden" name="form-name" value="ecogrocer-orders">
+            <input type="hidden" name="subject" value="New EcoGrocer order">
+            <div hidden><label>Leave this field empty<input type="text" name="bot-field" tabindex="-1" autocomplete="off"></label></div>
+            <input type="hidden" name="orderId" id="checkout-order-id">
+            <input type="hidden" name="orderItems" id="checkout-order-items">
+            <input type="hidden" name="orderSubtotal" id="checkout-order-subtotal">
+            <input type="hidden" name="deliveryCharge" id="checkout-order-delivery">
+            <input type="hidden" name="couponDiscount" id="checkout-order-discount">
+            <input type="hidden" name="grandTotal" id="checkout-order-grand-total">
+            <input type="hidden" name="deliveryAreaName" id="checkout-order-area-name">
+            <input type="hidden" name="couponCode" id="checkout-order-coupon">
+            <input type="hidden" name="orderStatus" id="checkout-order-status" value="pending">
+            <input type="hidden" name="orderDate" id="checkout-order-date">
             <section class="checkout-section">
               <div class="checkout-section-title"><span class="checkout-step">01</span><div><h3>আপনার কার্ট</h3><p>অর্ডারে থাকা পণ্যগুলো যাচাই করুন</p></div></div>
               <div class="checkout-items-preview" id="checkout-items-preview"></div>
@@ -337,11 +350,11 @@
 
             <section class="checkout-section">
               <div class="checkout-section-title"><span class="checkout-step">05</span><div><h3>কুপন কোড</h3><p>প্রযোজ্য কুপন ব্যবহার করে ছাড় নিন</p></div></div>
-              <div class="coupon-row"><input id="checkout-coupon" type="text" placeholder="কুপন কোড লিখুন" maxlength="30" autocomplete="off"><button id="checkout-coupon-apply" type="button">Apply</button></div>
+              <div class="coupon-row"><input id="checkout-coupon" name="couponInput" type="text" placeholder="কুপন কোড লিখুন" maxlength="30" autocomplete="off"><button id="checkout-coupon-apply" type="button">Apply</button></div>
               <p class="coupon-feedback" id="checkout-coupon-feedback" aria-live="polite">ডেমো কুপন: ECO10 অথবা FRESH50</p>
             </section>
 
-            <label class="checkout-field checkout-consent"><input type="checkbox" id="checkout-confirm-info" required><span>আমি নিশ্চিত করছি যে আমার দেওয়া নাম, ফোন নম্বর ও ডেলিভারি ঠিকানা সঠিক। <b>*</b></span></label>
+            <label class="checkout-field checkout-consent"><input type="checkbox" id="checkout-confirm-info" name="customerConsent" value="yes" required><span>আমি নিশ্চিত করছি যে আমার দেওয়া নাম, ফোন নম্বর ও ডেলিভারি ঠিকানা সঠিক। <b>*</b></span></label>
             <div class="checkout-status" id="checkout-status" role="status" aria-live="polite" hidden></div>
           </form>
 
@@ -356,7 +369,7 @@
               <div class="summary-row summary-discount"><span>Coupon Discount</span><strong id="checkout-discount">−৳০</strong></div>
               <div class="summary-divider"></div>
               <div class="summary-total"><span>Grand Total</span><strong id="checkout-grand-total">৳০</strong></div>
-              <p class="summary-disclaimer">এলাকা নির্বাচন ও কুপন প্রয়োগের সঙ্গে সঙ্গে মোট মূল্য আপডেট হবে। অর্ডারটি সার্ভারে জমা না হওয়া পর্যন্ত নিশ্চিত বলে গণ্য হবে না।</p>
+              <p class="summary-disclaimer">এলাকা নির্বাচন ও কুপন প্রয়োগের সঙ্গে সঙ্গে মোট মূল্য আপডেট হবে। Order Confirm চাপলে অর্ডারের তথ্য EcoGrocer BD-এর সুরক্ষিত Netlify Forms ইনবক্সে জমা হবে।</p>
               <button class="button button-primary button-block checkout-submit" id="checkout-submit" type="submit" form="eco-checkout-form">✅ Order Confirm করুন</button>
               <p class="checkout-security-note">🔒 আপনার তথ্য শুধু অর্ডার প্রসেস করার জন্য ব্যবহার করা হবে।</p>
             </div>
