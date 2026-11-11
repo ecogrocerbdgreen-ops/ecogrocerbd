@@ -1165,13 +1165,20 @@ section[id], div[id] { scroll-margin-top: 90px; }
   .product-page-mode .product-detail-content { padding-inline: 3px; }
 }
 
-/* Final mobile navigation behavior: the header must scroll with the page. */
+/* Mobile header follows scroll direction; bottom navigation remains pinned. */
 @media (max-width: 760px) {
   .site-header {
-    position: static !important;
-    top: auto !important;
-    z-index: auto !important;
-    backdrop-filter: none !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 75 !important;
+    transform: translate3d(0, 0, 0);
+    transition: transform .22s ease;
+    will-change: transform;
+  }
+
+  .site-header.is-scroll-hidden {
+    transform: translate3d(0, -110%, 0);
+    pointer-events: none;
   }
 
   .mobile-bottom-nav {
@@ -1183,3 +1190,8 @@ section[id], div[id] { scroll-margin-top: 90px; }
     z-index: 70 !important;
   }
 }
+
+@media (max-width: 760px) and (prefers-reduced-motion: reduce) {
+  .site-header { transition: none; }
+}
+
