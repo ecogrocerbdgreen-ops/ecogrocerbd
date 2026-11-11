@@ -18,7 +18,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
   const statusLabel = (s) => ({pending:"Pending",confirmed:"Confirmed",processing:"Processing",out_for_delivery:"Out for delivery",delivered:"Delivered",cancelled:"Cancelled",refunded:"Refunded"}[s] || s || "—");
   const paymentLabel = (s) => ({cod:"Cash on Delivery",bkash:"bKash",nagad:"Nagad",rocket:"Rocket"}[String(s||"").toLowerCase()] || s || "—");
   const paymentStatusLabel = (s) => ({unpaid:"Unpaid",pending_verification:"Pending verification",paid:"Paid / verified",failed:"Failed",refunded:"Refunded"}[String(s||"").toLowerCase()] || s || "—");
-  const phoneHref = (v) => { const s=String(v||"").trim(); return s ? "tel:"+s.replace(/[^0-9+]/g,"") : ""; };
+  const phoneHref = (v) => { const raw=String(v||"").trim(); if(!raw)return ""; const digits=raw.replace(/\D/g,""); if(!digits)return ""; return "tel:"+(raw.startsWith("+")?"+":"")+digits; };
   const phoneLink = (v) => { const href=phoneHref(v); return href ? '<a class="call-link" href="'+esc(href)+'">'+esc(v)+'</a>' : esc(v||"—"); };
 
   function feedback(message, error=false) { const el=$("admin-feedback"); if(!el)return; el.textContent=message; el.classList.toggle("error",error); }
@@ -97,7 +97,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
   }
   function renderRecentOrders() {
     const el=$("recent-orders"); if(!el)return;
-    el.innerHTML=orders.length?'<div class="order-cards">'+orders.slice(0,5).map(orderCard).join("")+'</div>':'<p class="admin-empty">এখনো কোনো অর্ডার পাওয়া যায়নি।</p>';
+    el.innerHTML=orders.length?'<div class="order-cards">'+orders.slice(0,6).map(orderCard).join("")+'</div>':'<p class="admin-empty">এখনো কোনো অর্ডার পাওয়া যায়নি।</p>';
   }
   function renderOrders() {
     const el=$("orders-table"); if(!el)return;
@@ -122,7 +122,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
       ["Payer phone",payer],["Transaction ID",txn],["Gateway",o.payment_gateway||latest.gateway],["Gateway reference",latest.validation_id||"—"]
     ];
     $("order-modal-title").textContent=(o.order_number||"অর্ডার")+" · "+money(o.grand_total);
-    $("order-modal-body").innerHTML='<div class="detail-grid">'+boxes.map(([label,value])=>'<div class="detail-box"><small>'+esc(label)+'</small><strong>'+esc(value||"—")+'</strong></div>').join("")+'</div>'+
+    $("order-modal-body").innerHTML='<div class="detail-grid">'+boxes.map(([label,value])=>'<div class="detail-box"><small>'+esc(label)+'</small><strong>'+(label==="Customer phone"?(value||"—"):esc(value||"—"))+'</strong></div>').join("")+'</div>'+
       '<h3 class="detail-heading">Order items</h3><table class="detail-items">'+items+'</table>'+
       '<h3 class="detail-heading">হিসাব</h3><div class="detail-grid">'+[["Subtotal",money(o.subtotal)],["Discount",money(o.discount)],["Delivery fee",money(o.delivery_fee)],["Grand total",money(o.grand_total)]].map(([a,b])=>'<div class="detail-box"><small>'+a+'</small><strong>'+b+'</strong></div>').join("")+'</div>'+
       '<div class="payment-note">পেমেন্ট নম্বর ও Transaction ID দেখানো হবে। PIN, OTP বা কোনো গোপন ভেরিফিকেশন কোড এই প্যানেলে সংগ্রহ বা সংরক্ষণ করা হবে না.</div>'+
