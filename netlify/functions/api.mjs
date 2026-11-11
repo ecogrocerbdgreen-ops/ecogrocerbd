@@ -514,6 +514,24 @@ async function adminDeliveryAreas() {
   return json({ areas: result.data || [] });
 }
 
+async function adminDeliverySlots() {
+  const result = await sb("delivery_slots?select=*&order=sort_order.asc");
+  return json({ slots: result.data || [] });
+}
+
+async function saveDeliverySlot(body) {
+  const id = String(body.id || "").trim();
+  const label = String(body.label || "").trim();
+  if (!/^[0-9A-Za-z_-]{2,40}$/.test(id) || !label) return json({ error: "Delivery Slot-এর ID ও Label সঠিকভাবে দিন।" }, 422);
+  const slot = { id, label, is_active: body.is_active !== false };
+  const result = await sb("delivery_slots?on_conflict=id", {
+    method: "POST",
+    headers: { Prefer: "resolution=merge-duplicates,return=representation" },
+    body: slot,
+  });
+  return json({ success: true, slot: (result.data || [])[0] || slot });
+}
+
 export default async (request) => {
   const url = new URL(request.url);
   const action = url.searchParams.get("action") || "";
@@ -559,6 +577,8 @@ export default async (request) => {
     if (action === "admin/coupons" && method === "POST") return await saveCoupon(await request.json());
     if (action === "admin/delivery-areas" && method === "GET") return await adminDeliveryAreas();
     if (action === "admin/delivery-areas" && method === "POST") return await saveDeliveryArea(await request.json());
+    if (action === "admin/delivery-slots" && method === "GET") return await adminDeliverySlots();
+    if (action === "admin/delivery-slots" && method === "POST") return await saveDeliverySlot(await request.json());
 
     return json({ error: "API route not found." }, 404);
   } catch (error) {
