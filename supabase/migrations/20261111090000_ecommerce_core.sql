@@ -224,7 +224,7 @@ declare
   v_payment_method text := coalesce(v_payment->>'method','cod');
   v_subtotal numeric(10,2) := 0;
   v_discount numeric(10,2) := 0;
-  v_delivery numeric(10,2) := 0;
+  v_delivery_fee numeric(10,2) := 0;
   v_total numeric(10,2) := 0;
   v_order_id uuid;
   v_order_number text;
@@ -308,8 +308,8 @@ begin
     update public.coupons set usage_count = usage_count + 1 where code = v_code;
   end if;
 
-  v_delivery := v_area.fee;
-  v_total := greatest(0,v_subtotal + v_delivery - v_discount);
+  v_delivery_fee := v_area.fee;
+  v_total := greatest(0,v_subtotal + v_delivery_fee - v_discount);
   if v_payment_method <> 'cod' then v_payment_status := 'pending_verification'; end if;
 
   v_order_number := 'EG' || to_char(now() at time zone 'Asia/Dhaka','YYMMDD') || '-' || upper(substr(replace(gen_random_uuid()::text,'-',''),1,6));
@@ -320,7 +320,7 @@ begin
     subtotal,discount,grand_total
   ) values (
     v_order_number,'pending',v_payment_method,v_payment_status,p_customer_user_id,v_name,
-    trim(coalesce(v_customer->>'email','')),v_phone,v_area.id,v_area.name,v_delivery,trim(v_delivery->>'block'),trim(v_delivery->>'road'),
+    trim(coalesce(v_customer->>'email','')),v_phone,v_area.id,v_area.name,v_delivery_fee,trim(v_delivery->>'block'),trim(v_delivery->>'road'),
     trim(v_delivery->>'house'),trim(v_delivery->>'fullAddress'),v_slot.id,
     coalesce(trim(v_delivery->>'notes'),''),regexp_replace(coalesce(v_payment->>'payerPhone',''),'\s','','g'),
     trim(coalesce(v_payment->>'transactionId','')),nullif(v_code,''),v_subtotal,v_discount,v_total
@@ -337,7 +337,7 @@ begin
 
   return jsonb_build_object(
     'success',true,'orderId',v_order_number,'subtotal',v_subtotal,
-    'deliveryCharge',v_delivery,'discount',v_discount,'grandTotal',v_total,
+    'deliveryCharge',v_delivery_fee,'discount',v_discount,'grandTotal',v_total,
     'paymentStatus',v_payment_status
   );
 end;
