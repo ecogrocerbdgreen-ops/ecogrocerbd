@@ -1,55 +1,56 @@
-# EcoGrocer BD — homepage and checkout
+# EcoGrocer BD — E-commerce storefront and backend
 
-A standalone, mobile-first EcoGrocer BD storefront built with HTML, CSS and vanilla JavaScript. The site is published on Netlify, and customer checkout submissions are stored with Netlify Forms for review in the authenticated site dashboard.
+EcoGrocer BD is a static storefront on Netlify with a same-origin Netlify Functions API and a Supabase PostgreSQL database. The storefront keeps its static catalogue as a graceful fallback until the database connection is configured.
 
-## Main files
+## Current architecture
 
-- index.html — storefront, navigation, category/product sections, cart drawer and checkout form.
-- style.css — responsive storefront, product cards, cart and checkout styling.
-- script.js — 32 sample catalogue products, search, local cart and product interactions.
-- checkout.js — product-to-checkout flow, delivery-area search, running totals, sample coupons and Netlify Forms order submission.
-- order-config.js — legacy PHP endpoint placeholder and WhatsApp business number setting.
-- admin.html — secure shortcut to the Netlify Forms order inbox (Netlify team login required).
-- hosting-api/orders.php — PHP order receiver with server-side price/coupon/delivery recalculation.
-- hosting-api/schema.sql — MySQL table for order records.
-- hosting-api/config.example.php — template for private DB/CORS configuration; never put real credentials in GitHub.
-- PRODUCT-PRICE-SOURCES.md and IMAGE-CREDITS.md — catalogue reference notes and photo credits.
+- Storefront: `index.html`, `style.css`, `script.js`, `product-detail.js`
+- Checkout: `checkout.js` posts orders to `/.netlify/functions/api?action=orders`
+- Backend: `netlify/functions/api.mjs`
+- Database migration: `supabase/migrations/20261111090000_ecommerce_core.sql`
+- Admin dashboard: `admin.html` and `admin.js`
+- Legacy optional PHP/MySQL receiver: `hosting-api/` (not used by the new API)
 
-## Checkout flow included
+## First-time database connection
 
-- Clicking a product image or product name opens the order form and places one unit in the cart if it is not already there.
-- Product cards use an explicit Add to Cart button; quantity controls appear after adding.
-- Checkout includes customer name and mobile number, searchable Gulshan-area selection, Block, Road, House/Flat, full address, delivery time, optional notes, COD/bKash/Nagad/Rocket method selection, coupon entry and a live order summary.
-- Sample delivery fees update when the area changes. Sample coupons: ECO10 and FRESH50.
-- Order Confirm submits the customer details, item list, pricing snapshot, delivery data and pending status to the site's Netlify Forms inbox.
+The database is Supabase PostgreSQL. Apply the migration in `supabase/migrations/` to the connected Supabase project. The migration creates categories, the 32-product starter catalogue, delivery areas, delivery slots, coupons, orders, order items, stock reservation logic, cancellation stock restoration, and audit logging.
 
-## Important before accepting real orders
+Set these environment variables on the Netlify site (Functions scope required):
 
-Netlify Forms is enabled for the site. After the updated deployment is published, accepted checkout submissions are stored on Netlify and appear in Site Dashboard → Forms → `ecogrocer-orders`. Use the `admin.html` shortcut to open the authenticated order inbox. No cPanel database or public API URL is required for this flow.
+- `SUPABASE_URL` — Supabase project URL
+- `SUPABASE_SERVICE_ROLE_KEY` — service-role secret; never expose it in browser code
+- `ADMIN_USERNAME` — Admin login name (defaults to `admin`)
+- `ADMIN_PASSWORD` — strong, private Admin password
+- `ADMIN_SESSION_SECRET` — long random secret used to sign 8-hour Admin sessions
 
-The existing `hosting-api/` PHP/MySQL files are an optional alternative for a separately managed PHP host; they are not used by the current Netlify Forms checkout.
+After changing environment variables, trigger a new Netlify deploy so the Functions receive the new values.
 
-Delivery fees and the ECO10 / FRESH50 coupon rules are sample values; confirm the final rates and offers before launch. bKash, Nagad and Rocket are currently method selections with optional payer details, not automatic payment-gateway integrations. A WhatsApp summary link appears only after an actual order is accepted and a business WhatsApp number has been configured.
+## Order processing and stock
 
-## Catalogue and pricing
+The database function `place_ecogrocer_order` ignores browser-submitted prices, re-reads each product price, validates the area/slot/coupon, calculates all totals and reserves tracked stock inside one database transaction. A stock shortage or invalid product rejects the order. Cancelling an order restores its reserved stock.
 
-The 32 products are editable in the PRODUCTS array in script.js. Values are prototype reference prices, not guaranteed EcoGrocer retail prices or live supplier stock. Submitted totals are a catalogue snapshot from the checkout page and must be checked by the admin before confirming an order.
+Products with inventory tracking disabled remain available as untracked catalogue products until the operator enters real stock figures and enables tracking in Admin.
 
-## Run locally
+## Admin dashboard
 
-Open index.html in a modern browser, or serve this folder with a local static server. No build command or package installation is required for the storefront.
+Open `/admin.html`. It supports:
+- Dashboard totals and recent orders
+- Order status updates (Pending, Confirmed, Processing, Out for Delivery, Delivered, Cancelled, Refunded)
+- Product create/edit/visibility and stock tracking
+- Delivery area fee and activation management
+- Coupon create/edit and expiry/usage limits
 
+The Admin API requires a short-lived HMAC-signed session. Database service credentials remain server-side in Netlify Functions. The old Netlify Forms Inbox remains linked from the Admin login panel during cutover.
 
-## Product detail experience
+## Graceful transition
 
-- Clicking the product card or product name opens a full-screen product details view.
-- Clicking the product photo opens a separate enlarged image lightbox.
-- Product detail content includes the product description, unit/pack size, listed price and availability note.
-- Actions are separated: Order Now opens checkout for that product; Add to Cart only adds it to the cart; WhatsApp and Call use shop contact numbers from order-config.js.
-- Related products from the same category appear beneath the product description.
-- Configure order-config.js with the actual shop WhatsApp number and telephone number. Contact actions intentionally show a message until real contact details are supplied.
+Before the Supabase connection is ready:
+- The storefront continues to use its local 32-product catalogue.
+- Checkout temporarily falls back to the already registered `ecogrocer-orders` Netlify Form.
+- The Admin page keeps the old Netlify Forms Inbox link.
 
+Once `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are set and the SQL migration is applied, the storefront switches to live database products and the checkout writes to PostgreSQL automatically.
 
-## Dedicated checkout page
+## Not activated yet
 
-Product detail's **Order Now** action navigates to checkout.html?product=<product-id>. The dedicated page restores the browser cart from localStorage, adds the selected product if needed, and opens the full-page order form. If the cart is empty, it shows a clear link back to product browsing. The cart drawer checkout button remains available on the homepage.
+A real bKash/Nagad/Rocket payment gateway needs merchant onboarding credentials and server-side callback/IPN configuration. The current payment method selections are still marked for manual verification, not automatic money transfer. Customer OTP accounts and customer order history are the next delivery after the core store backend is connected. Do not accept online-payment selections as proof of payment until a gateway is configured.
