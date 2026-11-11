@@ -283,99 +283,36 @@
     clearStatus();
 
     try {
-      // GitHub Pages is a static host and cannot run Netlify Functions.
-      // Forward its order form as a native POST to the already-registered Netlify Form.
-      if (window.location.hostname.toLowerCase().endsWith('.github.io')) {
-        const netlifyForm = document.createElement('form');
-        netlifyForm.method = 'POST';
-        netlifyForm.action = 'https://ecogrocerbd.netlify.app/';
-        netlifyForm.enctype = 'application/x-www-form-urlencoded';
-        netlifyForm.hidden = true;
-        const submission = new FormData(form);
-        submission.set('form-name', 'ecogrocer-orders');
-        submission.set('subject', 'New EcoGrocer order — ' + orderId);
-        submission.forEach((value, name) => {
-          const field = document.createElement('input');
-          field.type = 'hidden';
-          field.name = name;
-          field.value = String(value);
-          netlifyForm.appendChild(field);
-        });
-        document.body.appendChild(netlifyForm);
-
-        // The submitted form now owns a complete copy of the order values.
-        // Clear the browser cart before leaving the storefront to prevent duplicate re-submission.
-        cart = {};
-        saveCart();
-        renderProducts();
-        renderCart();
-
-        netlifyForm.submit();
-        return;
-      }
-
       const configUrl = String(CONFIG.orderApiUrl || '').trim();
-      let backendUnavailable = !configUrl;
-      if (configUrl) {
-        const storedSession = (() => {
-          try { return JSON.parse(localStorage.getItem('ecogrocer-customer-session') || 'null'); }
-          catch (_) { return null; }
-        })();
-        const apiHeaders = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
-        if (storedSession && storedSession.access_token) apiHeaders.Authorization = 'Bearer ' + storedSession.access_token;
-        const apiResponse = await fetch(configUrl, {
-          method: 'POST',
-          headers: apiHeaders,
-          body: JSON.stringify(payload)
-        });
-        const apiData = await apiResponse.json().catch(() => ({}));
-        if (apiResponse.ok) {
-          orderId = apiData.orderId || orderId;
-        } else if (apiResponse.status === 503 && /Database connection is not configured yet/i.test(apiData.error || '')) {
-          backendUnavailable = true;
-        } else {
-          throw new Error(apiData.error || 'অর্ডার সার্ভার অর্ডারটি গ্রহণ করেনি।');
-        }
+      const publishableKey = String(CONFIG.supabasePublishableKey || '').trim();
+      if (!configUrl || !publishableKey) {
+        throw new Error('Supabase order server-এর সংযোগ সেটিং পাওয়া যায়নি।');
       }
 
-      // Temporary compatibility fallback while the external database credentials
-      // are being connected. Once Supabase is configured, orders go to PostgreSQL.
-      if (backendUnavailable) {
-        const formData = new FormData(form);
-        formData.set('form-name', 'ecogrocer-orders');
-        const response = await fetch('/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams(formData).toString()
-        });
-        if (!response.ok) {
-          throw new Error('অর্ডার সার্ভার অর্ডারটি গ্রহণ করেনি। অনুগ্রহ করে আবার চেষ্টা করুন। (HTTP ' + response.status + ')');
-        }
+      const apiResponse = await fetch(configUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'apikey': publishableKey
+        },
+        body: JSON.stringify(payload)
+      });
+      const apiData = await apiResponse.json().catch(() => ({}));
+      if (!apiResponse.ok) {
+        throw new Error(apiData.error || 'Supabase অর্ডার গ্রহণ করেনি। আবার চেষ্টা করুন।');
+      }
+      if (apiData.success !== true || !apiData.orderId) {
+        throw new Error('Supabase থেকে অর্ডার নিশ্চিতকরণ পাওয়া যায়নি।');
       }
 
-      if (!backendUnavailable && payload.payment.method !== 'cod') {
-        const paymentResponse = await fetch('/.netlify/functions/api?action=payments/init', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify({ orderId })
-        });
-        const paymentData = await paymentResponse.json().catch(() => ({}));
-        if (paymentResponse.ok && paymentData.enabled && paymentData.paymentUrl) {
-          cart = {};
-          saveCart();
-          renderProducts();
-          renderCart();
-          window.location.assign(paymentData.paymentUrl);
-          return;
-        }
-        if (paymentData.message) {
-          setStatus(paymentData.message + ' আপনার Order ID: ' + orderId + '।', 'info');
-        } else if (!paymentResponse.ok) {
-          throw new Error(paymentData.error || 'Payment Session শুরু করা যায়নি।');
-        }
-      }
+      orderId = apiData.orderId;
+      const confirmedTotal = Number(apiData.grandTotal || grandTotal);
+      const paymentMessage = payload.payment.method === 'cod'
+        ? ' পেমেন্ট পণ্য হাতে পাওয়ার সময় Cash on Delivery হিসেবে হবে।'
+        : ' আপনার পেমেন্টের তথ্য গ্রহণ করা হয়েছে; পেমেন্ট এখনো যাচাইয়ের অপেক্ষায় আছে।';
 
-      const whatsappUrl = whatsappOrderLink(orderId, payload, grandTotal);
+      const whatsappUrl = whatsappOrderLink(orderId, payload, confirmedTotal);
       cart = {};
       saveCart();
       renderProducts();
@@ -383,7 +320,12 @@
       form.reset();
       appliedCoupon = '';
       renderCheckoutItems();
-      setStatus('অর্ডার সফলভাবে সার্ভারে জমা হয়েছে। আপনার অর্ডার নম্বর: ' + orderId + '। EcoGrocer BD টিম অর্ডারটি যাচাই করে যোগাযোগ করবে।', 'success');
+      setStatus(
+        'অর্ডার সফলভাবে Supabase database-এ জমা হয়েছে। আপনার অর্ডার নম্বর: ' +
+          orderId + '। সার্ভার-নির্ধারিত মোট: ' + formatMoney(confirmedTotal) +
+          '।' + paymentMessage,
+        'success'
+      );
       if (whatsappUrl) {
         const link = document.createElement('a');
         link.href = whatsappUrl;
