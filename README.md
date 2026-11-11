@@ -1,14 +1,15 @@
 # EcoGrocer BD — homepage and checkout
 
-A standalone, mobile-first EcoGrocer BD storefront built with HTML, CSS and vanilla JavaScript. The site is published as a static Netlify site; the optional PHP/MySQL order API is intended for the separate hosting account.
+A standalone, mobile-first EcoGrocer BD storefront built with HTML, CSS and vanilla JavaScript. The site is published on Netlify, and customer checkout submissions are stored with Netlify Forms for review in the authenticated site dashboard.
 
 ## Main files
 
 - index.html — storefront, navigation, category/product sections, cart drawer and checkout form.
 - style.css — responsive storefront, product cards, cart and checkout styling.
 - script.js — 32 sample catalogue products, search, local cart and product interactions.
-- checkout.js — product-to-checkout flow, delivery-area search, running totals, sample coupons and order API client.
-- order-config.js — safe placeholders for the PHP order API URL and WhatsApp business number.
+- checkout.js — product-to-checkout flow, delivery-area search, running totals, sample coupons and Netlify Forms order submission.
+- order-config.js — legacy PHP endpoint placeholder and WhatsApp business number setting.
+- admin.html — secure shortcut to the Netlify Forms order inbox (Netlify team login required).
 - hosting-api/orders.php — PHP order receiver with server-side price/coupon/delivery recalculation.
 - hosting-api/schema.sql — MySQL table for order records.
 - hosting-api/config.example.php — template for private DB/CORS configuration; never put real credentials in GitHub.
@@ -20,19 +21,19 @@ A standalone, mobile-first EcoGrocer BD storefront built with HTML, CSS and vani
 - Product cards use an explicit Add to Cart button; quantity controls appear after adding.
 - Checkout includes customer name and mobile number, searchable Gulshan-area selection, Block, Road, House/Flat, full address, delivery time, optional notes, COD/bKash/Nagad/Rocket method selection, coupon entry and a live order summary.
 - Sample delivery fees update when the area changes. Sample coupons: ECO10 and FRESH50.
-- The PHP API validates the cart and recalculates all prices on the server before saving an order to MySQL.
+- Order Confirm submits the customer details, item list, pricing snapshot, delivery data and pending status to the site's Netlify Forms inbox.
 
 ## Important before accepting real orders
 
-The current Netlify website is static. It does not run PHP or write orders to your separate hosting server by itself. The checkout UI is in place, but order submission stays safely disabled until the PHP API is installed and its HTTPS URL is added to order-config.js.
+Netlify Forms is enabled for the site. After the updated deployment is published, accepted checkout submissions are stored on Netlify and appear in Site Dashboard → Forms → `ecogrocer-orders`. Use the `admin.html` shortcut to open the authenticated order inbox. No cPanel database or public API URL is required for this flow.
 
-Follow hosting-api/README.md to install the PHP endpoint and MySQL table on cPanel/PHP hosting. Do not share database passwords in chat or commit them to GitHub.
+The existing `hosting-api/` PHP/MySQL files are an optional alternative for a separately managed PHP host; they are not used by the current Netlify Forms checkout.
 
 Delivery fees and the ECO10 / FRESH50 coupon rules are sample values; confirm the final rates and offers before launch. bKash, Nagad and Rocket are currently method selections with optional payer details, not automatic payment-gateway integrations. A WhatsApp summary link appears only after an actual order is accepted and a business WhatsApp number has been configured.
 
 ## Catalogue and pricing
 
-The 32 products are editable in the PRODUCTS array in script.js. Values are prototype reference prices, not guaranteed EcoGrocer retail prices or live supplier stock. The PHP product-price allowlist in hosting-api/orders.php must be kept in sync with script.js when prices or pack sizes change.
+The 32 products are editable in the PRODUCTS array in script.js. Values are prototype reference prices, not guaranteed EcoGrocer retail prices or live supplier stock. Submitted totals are a catalogue snapshot from the checkout page and must be checked by the admin before confirming an order.
 
 ## Run locally
 
