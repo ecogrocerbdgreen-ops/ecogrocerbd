@@ -13,11 +13,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
   let loaded = false;
   let loading = false;
   const money = (n) => "৳ " + Number(n || 0).toLocaleString("en-BD", { maximumFractionDigits: 2 });
-  const dateText = (v) => v ? new Date(v).toLocaleString("bn-BD", { dateStyle: "medium", timeStyle: "short" }) : "—";
+  const dateText = (v) => v ? new Date(v).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" }) : "—";
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const statusLabel = (s) => ({pending:"Pending",confirmed:"Confirmed",processing:"Processing",out_for_delivery:"Out for delivery",delivered:"Delivered",cancelled:"Cancelled",refunded:"Refunded"}[s] || s || "—");
   const paymentLabel = (s) => ({cod:"Cash on Delivery",bkash:"bKash",nagad:"Nagad",rocket:"Rocket"}[String(s||"").toLowerCase()] || s || "—");
-  const paymentStatusLabel = (s) => ({unpaid:"Unpaid",pending_verification:"যাচাই অপেক্ষমাণ",paid:"Paid / নিশ্চিত",failed:"Failed",refunded:"Refunded"}[String(s||"").toLowerCase()] || s || "—");
+  const paymentStatusLabel = (s) => ({unpaid:"Unpaid",pending_verification:"Pending verification",paid:"Paid / verified",failed:"Failed",refunded:"Refunded"}[String(s||"").toLowerCase()] || s || "—");
   function feedback(message, error=false) { const el=$("admin-feedback"); if(!el)return; el.textContent=message; el.classList.toggle("error",error); }
   function showView(name) {
     const isAdmin = name === "success";
