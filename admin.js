@@ -6,12 +6,10 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
   const SUPABASE_URL = "https://ucwaoytakqldicdtoran.supabase.co";
   const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_wpp9kVHNg5pZeGRY0Eoxaw_iyyQez9Q";
   const ADMIN_EMAIL = "ecogrocerbdgreen@gmail.com";
-  const SETUP_COMPLETE_KEY = "ecogrocer-admin-password-initialized-v1";
-
   const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     auth: {
       autoRefreshToken: true,
-      persistSession: true,
+      persistSession: false,
       detectSessionInUrl: true,
       flowType: "implicit"
     }
@@ -21,7 +19,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
   const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
   const hashType = hash.get("type") || "";
   let flowMode = hashType === "recovery" ? "recovery" :
-    (hashType === "magiclink" || hashType === "email" ? "setup" : "");
+    (hashType === "magiclink" || hashType === "email" || hashType === "signup" ? "setup" : "");
 
   function showView(name) {
     $("login-view").classList.toggle("hidden", name !== "login");
@@ -77,12 +75,18 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
       return;
     }
 
+    // Email links only verify account ownership / allow password recovery.
+    // They must never grant the normal admin-login success screen.
     if (event === "PASSWORD_RECOVERY" || flowMode === "recovery" || flowMode === "setup") {
       showPasswordForm(flowMode === "setup");
       return;
     }
 
-    showView("success");
+    if (event === "INITIAL_SESSION") {
+      await supabase.auth.signOut();
+      showView("login");
+      showStatus("login-status", "নিরাপত্তার জন্য আগের সেশন বন্ধ করা হয়েছে। অ্যাডমিনে ঢুকতে পাসওয়ার্ড দিয়ে লগইন করুন।", "success");
+    }
   }
 
   $("login-form").addEventListener("submit", async (event) => {
@@ -117,28 +121,13 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
     showStatus("login-status", "");
 
     try {
-      if (localStorage.getItem(SETUP_COMPLETE_KEY) === "1") {
-        const { error } = await supabase.auth.resetPasswordForEmail(ADMIN_EMAIL, {
-          redirectTo: callbackUrl()
-        });
-        if (error) throw error;
-        showStatus("login-status", "পাসওয়ার্ড রিসেট লিংক আপনার Gmail-এ পাঠানো হয়েছে। Inbox ও Spam ফোল্ডার দেখুন।", "success");
-      } else {
-        const { data, error } = await supabase.auth.signInWithOtp({
-          email: ADMIN_EMAIL,
-          options: {
-            shouldCreateUser: true,
-            emailRedirectTo: callbackUrl()
-          }
-        });
-        if (error) throw error;
-
-        if (data?.session && isAuthorizedUser(data.user)) {
-          showPasswordForm(true);
-        } else {
-          showStatus("login-status", "প্রথমবারের অ্যাকাউন্ট যাচাইয়ের নিরাপদ লিংক আপনার Gmail-এ পাঠানো হয়েছে। ইমেইলের লিংকে ক্লিক করে পাসওয়ার্ড তৈরি করুন।", "success");
-        }
-      }
+      // The account already exists in Supabase Auth. Always send a password
+      // recovery link; do not use passwordless sign-in as an admin login.
+      const { error } = await supabase.auth.resetPasswordForEmail(ADMIN_EMAIL, {
+        redirectTo: callbackUrl()
+      });
+      if (error) throw error;
+      showStatus("login-status", "পাসওয়ার্ড রিসেট লিংক আপনার Gmail-এ পাঠানো হয়েছে। ইমেইলের লিংকটি খুলে নতুন পাসওয়ার্ড সেট করুন। Inbox ও Spam ফোল্ডার দেখুন।", "success");
     } catch (error) {
       showStatus("login-status", error.message || "ইমেইল পাঠানো যায়নি। Supabase Auth-এর URL ও Email সেটিংস পরীক্ষা করুন।", "error");
     } finally {
@@ -167,7 +156,6 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
 
-      localStorage.setItem(SETUP_COMPLETE_KEY, "1");
       $("password-form").reset();
 
       const { error: signOutError } = await supabase.auth.signOut();
