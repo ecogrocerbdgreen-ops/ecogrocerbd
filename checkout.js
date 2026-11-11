@@ -175,7 +175,8 @@
     return {
       customer: {
         name: String(values.get('customerName') || '').trim(),
-        phone: String(values.get('phone') || '').trim()
+        phone: String(values.get('phone') || '').trim(),
+        email: String(values.get('customerEmail') || '').trim()
       },
       delivery: {
         areaId: areaId,
@@ -268,9 +269,15 @@
       const configUrl = String(CONFIG.orderApiUrl || '').trim();
       let backendUnavailable = !configUrl;
       if (configUrl) {
+        const storedSession = (() => {
+          try { return JSON.parse(localStorage.getItem('ecogrocer-customer-session') || 'null'); }
+          catch (_) { return null; }
+        })();
+        const apiHeaders = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
+        if (storedSession && storedSession.access_token) apiHeaders.Authorization = 'Bearer ' + storedSession.access_token;
         const apiResponse = await fetch(configUrl, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          headers: apiHeaders,
           body: JSON.stringify(payload)
         });
         const apiData = await apiResponse.json().catch(() => ({}));
@@ -295,6 +302,24 @@
         });
         if (!response.ok) {
           throw new Error('অর্ডার সার্ভার অর্ডারটি গ্রহণ করেনি। অনুগ্রহ করে আবার চেষ্টা করুন। (HTTP ' + response.status + ')');
+        }
+      }
+
+      if (!backendUnavailable && payload.payment.method !== 'cod') {
+        const paymentResponse = await fetch('/.netlify/functions/api?action=payments/init', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ orderId })
+        });
+        const paymentData = await paymentResponse.json().catch(() => ({}));
+        if (paymentResponse.ok && paymentData.enabled && paymentData.paymentUrl) {
+          window.location.assign(paymentData.paymentUrl);
+          return;
+        }
+        if (paymentData.message) {
+          setStatus(paymentData.message + ' আপনার Order ID: ' + orderId + '।', 'info');
+        } else if (!paymentResponse.ok) {
+          throw new Error(paymentData.error || 'Payment Session শুরু করা যায়নি।');
         }
       }
 
