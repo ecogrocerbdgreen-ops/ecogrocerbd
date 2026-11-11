@@ -95,7 +95,8 @@ create table if not exists public.order_items (
   unit text not null,
   quantity integer not null check (quantity between 1 and 99),
   unit_price numeric(10,2) not null,
-  line_total numeric(10,2) not null
+  line_total numeric(10,2) not null,
+  inventory_reserved boolean not null default false
 );
 
 create table if not exists public.admin_audit_log (
@@ -302,8 +303,8 @@ begin
     v_qty := (v_item->>'quantity')::integer;
     select * into v_product from public.products where id = v_item->>'id';
     v_line := v_product.price * v_qty;
-    insert into public.order_items(order_id,product_id,product_name,unit,quantity,unit_price,line_total)
-    values(v_order_id,v_product.id,v_product.name,v_product.unit,v_qty,v_product.price,v_line);
+    insert into public.order_items(order_id,product_id,product_name,unit,quantity,unit_price,line_total,inventory_reserved)
+    values(v_order_id,v_product.id,v_product.name,v_product.unit,v_qty,v_product.price,v_line,v_product.track_inventory);
   end loop;
 
   return jsonb_build_object(
@@ -332,9 +333,9 @@ begin
 
   if p_status = 'cancelled' and v_order.status <> 'cancelled' then
     for v_item in
-      select product_id,quantity from public.order_items where order_id = v_order.id
+      select product_id,quantity,inventory_reserved from public.order_items where order_id = v_order.id
     loop
-      if v_item.product_id is not null then
+      if v_item.product_id is not null and v_item.inventory_reserved then
         update public.products
         set stock_quantity = stock_quantity + v_item.quantity, updated_at = now()
         where id = v_item.product_id;
