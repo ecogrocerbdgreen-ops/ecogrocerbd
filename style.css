@@ -1447,3 +1447,77 @@ section[id], div[id] { scroll-margin-top: 90px; }
   }
 }
 
+/* Product detail cart control: same footprint before and after adding. */
+.detail-cart-control {
+  width: 100%;
+  min-width: 0;
+  min-height: 58px;
+}
+.detail-cart-control > .detail-action-cart {
+  width: 100%;
+  min-width: 0;
+  min-height: 58px;
+  box-sizing: border-box;
+}
+.detail-cart-stepper {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  height: 58px;
+  min-height: 58px;
+  box-sizing: border-box;
+  padding: 5px;
+  border: 1px solid #b8d9bd;
+  border-radius: 13px;
+  color: #236d3b;
+  background: #eef8ef;
+}
+.detail-cart-stepper button {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  color: #236d3b;
+  background: #dff0e2;
+  font: 800 25px/1 Arial,sans-serif;
+  cursor: pointer;
+}
+.detail-cart-stepper button:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+.detail-cart-stepper span {
+  min-width: 24px;
+  color: #1d5730;
+  font: 800 16px/1 'Noto Sans Bengali',sans-serif;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 760px) {
+  .detail-cart-control,
+  .detail-cart-control > .detail-action-cart {
+    min-height: 56px;
+  }
+  .detail-cart-stepper {
+    height: 56px;
+    min-height: 56px;
+    gap: 6px;
+    padding: 4px;
+  }
+  .detail-cart-stepper button {
+    min-height: 44px;
+    font-size: 24px;
+  }
+  .detail-cart-stepper span {
+    font-size: 15px;
+  }
+}
+
