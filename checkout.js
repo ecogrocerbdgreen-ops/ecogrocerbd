@@ -1,0 +1,307 @@
+'use strict';
+
+(function () {
+  const CONFIG = window.ECOGROCER_CONFIG || {};
+  const ORDER_API_URL = String(CONFIG.orderApiUrl || window.ECOGROCER_ORDER_API_URL || '').trim();
+  const WHATSAPP_NUMBER = String(CONFIG.whatsappNumber || window.ECOGROCER_WHATSAPP_NUMBER || '').replace(/\D/g, '');
+
+  // Area delivery fees are provisional display values until EcoGrocer confirms its final tariff.
+  const DELIVERY_AREAS = {
+    'gulshan-1': { name: 'গুলশান ১', fee: 60 },
+    'gulshan-2': { name: 'গুলশান ২', fee: 60 },
+    'niketon': { name: 'নিকেতন', fee: 60 },
+    'baridhara': { name: 'বারিধারা ডিপ্লোম্যাটিক জোন', fee: 70 },
+    'banani': { name: 'বনানী', fee: 70 },
+    'mohakhali': { name: 'মহাখালী', fee: 80 },
+    'baridhara-dohs': { name: 'বারিধারা DOHS', fee: 90 },
+    'banani-dohs': { name: 'বনানী DOHS', fee: 90 },
+    'mohakhali-dohs': { name: 'মহাখালী DOHS', fee: 90 },
+    'badda': { name: 'বাড্ডা', fee: 100 },
+    'shahjadpur': { name: 'শাহজাদপুর', fee: 100 },
+    'notun-bazar': { name: 'নতুন বাজার', fee: 100 }
+  };
+
+  // Sample coupons for the first checkout preview. Confirm campaign rules before launch.
+  const COUPONS = {
+    'ECO10': { type: 'percent', value: 10, cap: 100, minimum: 200, label: '১০% ছাড় (সর্বোচ্চ ৳১০০)' },
+    'FRESH50': { type: 'fixed', value: 50, minimum: 500, label: '৳৫০ ছাড়' }
+  };
+
+  let appliedCoupon = '';
+  let requestInProgress = false;
+
+  const byId = id => document.getElementById(id);
+  const formatMoney = value => '৳' + Math.max(0, Math.round(Number(value) || 0)).toLocaleString('en-US');
+  const getLines = () => PRODUCTS.filter(product => Number(cart[product.id]) > 0);
+  const getSubtotal = () => getLines().reduce((sum, product) => sum + product.price * Number(cart[product.id]), 0);
+  const getArea = () => DELIVERY_AREAS[byId('checkout-area').value] || null;
+  const getDeliveryFee = () => { const area = getArea(); return area ? area.fee : 0; };
+
+  function getDiscount() {
+    const rule = COUPONS[appliedCoupon];
+    const subtotal = getSubtotal();
+    if (!rule || subtotal < rule.minimum) return 0;
+    if (rule.type === 'fixed') return Math.min(subtotal, rule.value);
+    return Math.min(Math.round(subtotal * rule.value / 100), rule.cap || subtotal);
+  }
+
+  function updateTotals() {
+    const subtotal = getSubtotal();
+    const delivery = getDeliveryFee();
+    const discount = getDiscount();
+    byId('checkout-subtotal').textContent = formatMoney(subtotal);
+    byId('checkout-delivery').textContent = getArea() ? formatMoney(delivery) : 'এলাকা বাছুন';
+    byId('checkout-discount').textContent = '−' + formatMoney(discount);
+    byId('checkout-grand-total').textContent = formatMoney(subtotal + delivery - discount);
+    byId('checkout-submit').disabled = subtotal <= 0 || requestInProgress;
+  }
+
+  function renderCheckoutItems() {
+    const lines = getLines();
+    const preview = byId('checkout-items-preview');
+    const summary = byId('checkout-summary-items');
+    if (!lines.length) {
+      preview.innerHTML = '<p class="checkout-empty">কার্টে কোনো পণ্য নেই। আগে পণ্য যোগ করুন।</p>';
+      summary.innerHTML = '<p class="checkout-empty">কার্ট খালি</p>';
+    } else {
+      preview.innerHTML = lines.map(product =>
+        '<div class="checkout-product-line"><img src="' + escapeHTML(PRODUCT_IMAGES[product.id]) + '" alt="" loading="lazy"><div><strong>' + escapeHTML(product.name) + '</strong><small>' + escapeHTML(product.unit) + ' × ' + Number(cart[product.id]) + '</small></div><b>' + formatMoney(product.price * Number(cart[product.id])) + '</b></div>'
+      ).join('');
+      summary.innerHTML = lines.map(product =>
+        '<div class="summary-item"><span>' + escapeHTML(product.name) + ' × ' + Number(cart[product.id]) + '</span><strong>' + formatMoney(product.price * Number(cart[product.id])) + '</strong></div>'
+      ).join('');
+    }
+    updateTotals();
+  }
+
+  function filterAreas() {
+    const query = normalizeSearch(byId('checkout-area-search').value);
+    const select = byId('checkout-area');
+    Array.from(select.options).forEach(option => {
+      if (!option.value) return;
+      option.hidden = Boolean(query) && !normalizeSearch(option.textContent).includes(query);
+    });
+    Array.from(select.querySelectorAll('optgroup')).forEach(group => {
+      group.hidden = Array.from(group.options).every(option => option.hidden);
+    });
+  }
+
+  function setStatus(message, type) {
+    const status = byId('checkout-status');
+    status.hidden = false;
+    status.className = 'checkout-status ' + (type || 'info');
+    status.textContent = message;
+  }
+
+  function clearStatus() {
+    const status = byId('checkout-status');
+    status.hidden = true;
+    status.textContent = '';
+  }
+
+  function openCheckout(productId) {
+    if (productId && !cart[productId]) changeCart(productId, 1);
+    if (!getLines().length) {
+      showToast('অর্ডার করতে আগে পণ্য কার্টে যোগ করুন');
+      return;
+    }
+    closeDrawer();
+    closeCart();
+    appliedCoupon = '';
+    byId('checkout-coupon').value = '';
+    byId('checkout-coupon-feedback').textContent = 'ডেমো কুপন: ECO10 অথবা FRESH50';
+    byId('checkout-coupon-feedback').className = 'coupon-feedback';
+    byId('checkout-area-search').value = '';
+    byId('checkout-area').value = '';
+    filterAreas();
+    clearStatus();
+    renderCheckoutItems();
+    byId('checkout-scrim').hidden = false;
+    document.body.classList.add('no-scroll');
+    byId('checkout-close').focus();
+  }
+
+  function closeCheckout() {
+    byId('checkout-scrim').hidden = true;
+    document.body.classList.remove('no-scroll');
+  }
+
+  function applyCoupon() {
+    const code = byId('checkout-coupon').value.trim().toUpperCase();
+    const rule = COUPONS[code];
+    const feedback = byId('checkout-coupon-feedback');
+    if (!code) {
+      appliedCoupon = '';
+      feedback.textContent = 'কুপন কোড লিখুন।';
+      feedback.className = 'coupon-feedback error';
+    } else if (!rule) {
+      appliedCoupon = '';
+      feedback.textContent = 'এই কুপন কোডটি সঠিক নয়।';
+      feedback.className = 'coupon-feedback error';
+    } else if (getSubtotal() < rule.minimum) {
+      appliedCoupon = '';
+      feedback.textContent = 'এই কুপন ব্যবহারে ন্যূনতম ' + formatMoney(rule.minimum) + ' কেনাকাটা করতে হবে।';
+      feedback.className = 'coupon-feedback error';
+    } else {
+      appliedCoupon = code;
+      feedback.textContent = '✓ ' + code + ' প্রয়োগ হয়েছে — ' + rule.label;
+      feedback.className = 'coupon-feedback success';
+    }
+    updateTotals();
+  }
+
+  function selectedPayment() {
+    const chosen = document.querySelector('input[name="paymentMethod"]:checked');
+    return chosen ? chosen.value : 'cod';
+  }
+
+  function buildOrderPayload(form) {
+    const values = new FormData(form);
+    const areaId = values.get('deliveryArea');
+    const area = DELIVERY_AREAS[areaId];
+    return {
+      customer: {
+        name: String(values.get('customerName') || '').trim(),
+        phone: String(values.get('phone') || '').trim()
+      },
+      delivery: {
+        areaId: areaId,
+        areaName: area ? area.name : '',
+        block: String(values.get('block') || '').trim(),
+        road: String(values.get('road') || '').trim(),
+        house: String(values.get('house') || '').trim(),
+        fullAddress: String(values.get('fullAddress') || '').trim(),
+        slot: String(values.get('deliverySlot') || ''),
+        notes: String(values.get('notes') || '').trim()
+      },
+      payment: {
+        method: selectedPayment(),
+        payerPhone: String(values.get('payerPhone') || '').trim(),
+        transactionId: String(values.get('transactionId') || '').trim()
+      },
+      couponCode: appliedCoupon,
+      items: getLines().map(product => ({ id: product.id, quantity: Number(cart[product.id]) }))
+    };
+  }
+
+  function whatsappOrderLink(orderId, payload, total) {
+    if (!WHATSAPP_NUMBER) return '';
+    const lines = getLines().map(product => product.name + ' × ' + cart[product.id] + ' = ' + formatMoney(product.price * cart[product.id]));
+    const text = [
+      'EcoGrocer BD — নতুন অর্ডার',
+      'Order ID: ' + orderId,
+      'নাম: ' + payload.customer.name,
+      'মোবাইল: ' + payload.customer.phone,
+      'এলাকা: ' + payload.delivery.areaName,
+      'ঠিকানা: ' + payload.delivery.block + ', ' + payload.delivery.road + ', ' + payload.delivery.house + ', ' + payload.delivery.fullAddress,
+      'ডেলিভারি সময়: ' + payload.delivery.slot,
+      'পেমেন্ট: ' + payload.payment.method,
+      'পণ্য:',
+      lines.join('\n'),
+      'মোট: ' + formatMoney(total)
+    ].join('\n');
+    return 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(text);
+  }
+
+  async function submitOrder(event) {
+    event.preventDefault();
+    if (requestInProgress) return;
+    const form = byId('eco-checkout-form');
+    if (!getLines().length) {
+      setStatus('কার্টে কোনো পণ্য নেই। পণ্য যোগ করে আবার চেষ্টা করুন।', 'error');
+      return;
+    }
+    if (!form.reportValidity()) return;
+
+    if (!ORDER_API_URL) {
+      setStatus('অর্ডার সার্ভার এখনো সংযুক্ত হয়নি। এই মুহূর্তে অর্ডার জমা হয়নি। আপনার নিজস্ব হোস্টিংয়ের API ঠিকানা যুক্ত হলে অর্ডার গ্রহণ চালু হবে।', 'error');
+      return;
+    }
+
+    const payload = buildOrderPayload(form);
+    requestInProgress = true;
+    byId('checkout-submit').disabled = true;
+    byId('checkout-submit').textContent = 'অর্ডার জমা হচ্ছে…';
+    clearStatus();
+
+    try {
+      const response = await fetch(ORDER_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload),
+        mode: 'cors',
+        credentials: 'omit'
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || result.success !== true) {
+        throw new Error(result.message || 'অর্ডার সার্ভার অনুরোধটি গ্রহণ করতে পারেনি।');
+      }
+
+      const finalTotal = Number(result.grandTotal || (getSubtotal() + getDeliveryFee() - getDiscount()));
+      const orderId = result.orderId || result.order_id || 'প্রাপ্ত';
+      const whatsappUrl = whatsappOrderLink(orderId, payload, finalTotal);
+      cart = {};
+      saveCart();
+      renderProducts();
+      renderCart();
+      form.reset();
+      appliedCoupon = '';
+      renderCheckoutItems();
+      setStatus('অর্ডার সফলভাবে জমা হয়েছে। অর্ডার নম্বর: ' + orderId + (whatsappUrl ? ' — WhatsApp-এ সামারি পাঠানোর লিংক তৈরি হয়েছে।' : ''), 'success');
+      if (whatsappUrl) {
+        const link = document.createElement('a');
+        link.href = whatsappUrl;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.className = 'checkout-whatsapp-link';
+        link.textContent = 'WhatsApp-এ অর্ডার সামারি খুলুন';
+        byId('checkout-status').appendChild(document.createTextNode(' '));
+        byId('checkout-status').appendChild(link);
+      }
+    } catch (error) {
+      setStatus(error && error.message ? error.message : 'অর্ডার জমা দেওয়া যায়নি। আবার চেষ্টা করুন।', 'error');
+    } finally {
+      requestInProgress = false;
+      byId('checkout-submit').disabled = getLines().length === 0;
+      byId('checkout-submit').textContent = '✅ Order Confirm করুন';
+    }
+  }
+
+  document.addEventListener('click', function (event) {
+    const productTrigger = event.target.closest('[data-product-open]');
+    if (productTrigger) {
+      event.preventDefault();
+      openCheckout(productTrigger.dataset.productOpen);
+      return;
+    }
+  });
+
+  document.addEventListener('keydown', function (event) {
+    const productTrigger = event.target.closest && event.target.closest('[data-product-open]');
+    if (productTrigger && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault();
+      openCheckout(productTrigger.dataset.productOpen);
+    }
+    if (event.key === 'Escape' && !byId('checkout-scrim').hidden) closeCheckout();
+  });
+
+  byId('checkout-close').addEventListener('click', closeCheckout);
+  byId('checkout-scrim').addEventListener('click', event => {
+    if (event.target.id === 'checkout-scrim') closeCheckout();
+  });
+  byId('checkout-area-search').addEventListener('input', filterAreas);
+  byId('checkout-area').addEventListener('change', updateTotals);
+  byId('checkout-coupon-apply').addEventListener('click', applyCoupon);
+  byId('checkout-coupon').addEventListener('keydown', event => {
+    if (event.key === 'Enter') { event.preventDefault(); applyCoupon(); }
+  });
+  document.querySelectorAll('input[name="paymentMethod"]').forEach(input => {
+    input.addEventListener('change', () => {
+      byId('payment-reference-fields').hidden = selectedPayment() === 'cod';
+    });
+  });
+  byId('eco-checkout-form').addEventListener('submit', submitOrder);
+
+  // The product cards are rendered by script.js before this file runs.
+  window.openEcoCheckout = openCheckout;
+})();
