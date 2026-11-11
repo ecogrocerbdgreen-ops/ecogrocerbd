@@ -335,15 +335,18 @@ async function handlePaymentCallback(request, type) {
     return paymentResultPage("পেমেন্ট যাচাই হয়নি", "লেনদেনটি সফল হিসেবে নিশ্চিত করা যায়নি। অর্ডারটি নিশ্চিত করতে আমাদের টিমের সঙ্গে যোগাযোগ করুন।", orderNumber);
   }
 
-  if (tranId) {
-    const attempts = await sb("payment_transactions?select=order_id,gateway_transaction_id&gateway_transaction_id=eq." + encodeURIComponent(tranId) + "&limit=1");
-    const attempt = (attempts.data || [])[0];
-    if (attempt) {
-      await setPaymentStatus(attempt.order_id, "failed", tranId, "", "", { callback: type });
+  // A browser redirect alone is not proof of failure or cancellation.
+  // Keep the order awaiting verification unless the gateway's validation API confirms it.
+  if (tranId && payload.val_id) {
+    const result = await validateSslPayment(payload);
+    const orderNumber = tranId.split("-").slice(0, 2).join("-");
+    if (result.valid && result.paymentStatus === "failed") {
+      return paymentResultPage(type === "cancel" ? "পেমেন্ট বাতিল হয়েছে" : "পেমেন্ট সম্পন্ন হয়নি",
+        "Gateway-এর Validation API লেনদেনটি ব্যর্থ/বাতিল হিসেবে নিশ্চিত করেছে।", orderNumber);
     }
   }
-  return paymentResultPage(type === "cancel" ? "পেমেন্ট বাতিল হয়েছে" : "পেমেন্ট সম্পন্ন হয়নি",
-    "আপনার অর্ডারটি সংরক্ষিত আছে। প্রয়োজনে আবার চেষ্টা করুন বা Cash on Delivery বেছে নিন।",
+  return paymentResultPage(type === "cancel" ? "পেমেন্ট বাতিলের অনুরোধ পাওয়া গেছে" : "পেমেন্ট সম্পন্ন হয়নি",
+    "অর্ডারটি সংরক্ষিত আছে এবং পেমেন্ট এখনো যাচাই হয়নি। প্রয়োজনে আবার চেষ্টা করুন বা Cash on Delivery বেছে নিন।",
     tranId.split("-").slice(0, 2).join("-"));
 }
 
