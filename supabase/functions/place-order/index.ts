@@ -77,7 +77,7 @@ async function callDatabaseRpc(
   }
 
   const response = await fetch(
-    supabaseUrl.replace(/\\/$/, "") + "/rest/v1/rpc/" + encodeURIComponent(functionName),
+    (supabaseUrl.endsWith("/") ? supabaseUrl.slice(0, -1) : supabaseUrl) + "/rest/v1/rpc/" + encodeURIComponent(functionName),
     { method: "POST", headers, body: JSON.stringify(args) },
   );
   const text = await response.text();
