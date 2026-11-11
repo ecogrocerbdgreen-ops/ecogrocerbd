@@ -194,28 +194,72 @@ function updateCartBadges() {
   if (bottomCount) bottomCount.textContent = count;
 }
 
-function renderCart() {
-  const container = document.getElementById('cart-items');
-  if (!container) {
-    updateCartBadges();
+function renderCartPage() {
+  const container = document.getElementById('cart-page-items');
+  if (!container) return;
+  const lines = PRODUCTS.filter(product => Number(cart[product.id]) > 0);
+  const countNode = document.getElementById('cart-page-count');
+  const subtotalNode = document.getElementById('cart-page-subtotal');
+  const checkoutButton = document.getElementById('cart-page-checkout');
+
+  if (!lines.length) {
+    container.innerHTML = '<div class="cart-page-empty"><span aria-hidden="true">🧺</span><h2>আপনার কার্ট এখনো খালি</h2><p>পছন্দের পণ্য যোগ করলে এখানে দেখা যাবে।</p><a class="button button-primary" href="index.html#products">পণ্য বেছে নিন</a></div>';
+  } else {
+    container.innerHTML = lines.map(product => {
+      const quantity = Number(cart[product.id]);
+      return `<article class="cart-page-line">
+        <a class="cart-page-image" href="${productPageUrl(product)}"><img src="${PRODUCT_IMAGES[product.id]}" alt="${escapeHTML(product.name)}" loading="lazy" onerror="this.hidden=true"></a>
+        <div class="cart-page-product"><a href="${productPageUrl(product)}"><strong>${escapeHTML(product.name)}</strong></a><small>${escapeHTML(product.unit)} · ${formatPrice(product.price)} / প্যাক</small>
+          <div class="cart-line-controls"><button type="button" data-cart-action="decrease" data-id="${product.id}" aria-label="একটি কমান">−</button><span>${quantity}</span><button type="button" data-cart-action="increase" data-id="${product.id}" aria-label="একটি বাড়ান">+</button></div>
+        </div>
+        <div class="cart-page-line-total"><strong>${formatPrice(product.price * quantity)}</strong><button type="button" class="cart-page-remove" data-cart-remove="${product.id}">সরিয়ে দিন</button></div>
+      </article>`;
+    }).join('');
+  }
+
+  if (countNode) countNode.textContent = String(cartCount());
+  if (subtotalNode) subtotalNode.textContent = formatPrice(cartSubtotal());
+  if (checkoutButton) checkoutButton.disabled = !lines.length;
+}
+
+function goToCheckoutPage() {
+  const snapshot = {};
+  PRODUCTS.forEach(product => {
+    const quantity = Math.floor(Number(cart[product.id]) || 0);
+    if (quantity > 0) snapshot[product.id] = Math.min(99, quantity);
+  });
+  if (!Object.keys(snapshot).length) {
+    showToast('অর্ডার করতে আগে পণ্য কার্টে যোগ করুন');
     return;
   }
+
+  try { saveCart(); } catch (_) { /* The checkout URL also carries a cart snapshot. */ }
+  const destination = new URL('checkout.html', window.location.href);
+  destination.searchParams.set('cart', JSON.stringify(snapshot));
+  window.location.assign(destination.toString());
+}
+
+function renderCart() {
+  const container = document.getElementById('cart-items');
   const lines = PRODUCTS.filter(product => Number(cart[product.id]) > 0);
-  if (!lines.length) {
-    container.innerHTML = '<div class="cart-empty"><span>🧺</span><strong>আপনার কার্ট এখনো খালি</strong><p>পছন্দের পণ্য কার্টে যোগ করুন।</p></div>';
-  } else {
-    container.innerHTML = lines.map(product => `
-      <div class="cart-line">
-        <div class="cart-line-art" aria-hidden="true"><img src="${PRODUCT_IMAGES[product.id]}" alt="" loading="lazy" decoding="async" draggable="false" referrerpolicy="no-referrer" onerror="this.hidden=true"></div>
-        <div><strong>${escapeHTML(product.name)}</strong><small>${escapeHTML(product.unit)} · ${formatPrice(product.price)}</small>
-          <div class="cart-line-controls"><button type="button" data-cart-action="decrease" data-id="${product.id}" aria-label="একটি কমান">−</button><span>${cart[product.id]}</span><button type="button" data-cart-action="increase" data-id="${product.id}" aria-label="একটি বাড়ান">+</button></div>
-        </div>
-        <span class="cart-line-total">${formatPrice(product.price * cart[product.id])}</span>
-      </div>`).join('');
+  if (container) {
+    if (!lines.length) {
+      container.innerHTML = '<div class="cart-empty"><span>🧺</span><strong>আপনার কার্ট এখনো খালি</strong><p>পছন্দের পণ্য কার্টে যোগ করুন।</p></div>';
+    } else {
+      container.innerHTML = lines.map(product => `
+        <div class="cart-line">
+          <div class="cart-line-art" aria-hidden="true"><img src="${PRODUCT_IMAGES[product.id]}" alt="" loading="lazy" decoding="async" draggable="false" referrerpolicy="no-referrer" onerror="this.hidden=true"></div>
+          <div><strong>${escapeHTML(product.name)}</strong><small>${escapeHTML(product.unit)} · ${formatPrice(product.price)}</small>
+            <div class="cart-line-controls"><button type="button" data-cart-action="decrease" data-id="${product.id}" aria-label="একটি কমান">−</button><span>${cart[product.id]}</span><button type="button" data-cart-action="increase" data-id="${product.id}" aria-label="একটি বাড়ান">+</button></div>
+          </div>
+          <span class="cart-line-total">${formatPrice(product.price * cart[product.id])}</span>
+        </div>`).join('');
+    }
+    const subtotalNode = document.getElementById('cart-subtotal');
+    if (subtotalNode) subtotalNode.textContent = formatPrice(cartSubtotal());
   }
-  const subtotalNode = document.getElementById('cart-subtotal');
-  if (subtotalNode) subtotalNode.textContent = formatPrice(cartSubtotal());
   updateCartBadges();
+  renderCartPage();
 }
 
 function changeCart(productId, delta) {
@@ -390,6 +434,18 @@ function setActiveBottomLink(href) {
 
 // Delegated interactions for product cards and cart rows.
 document.addEventListener('click', event => {
+  const remove = event.target.closest('[data-cart-remove]');
+  if (remove) {
+    const productId = remove.dataset.cartRemove;
+    if (cart[productId]) {
+      delete cart[productId];
+      saveCart();
+      renderProducts();
+      renderCart();
+    }
+    return;
+  }
+
   const action = event.target.closest('[data-cart-action]');
   if (action) {
     const delta = action.dataset.cartAction === 'decrease' ? -1 : 1;
@@ -443,10 +499,8 @@ bindClick('login-close', closeLogin);
 bindClick('login-scrim', event => { if (event.target.id === 'login-scrim') closeLogin(); });
 bindInput('product-search-form', 'submit', event => { event.preventDefault(); runSearch(); });
 bindInput('product-search', 'input', refreshSearch);
-bindClick('checkout-placeholder', () => {
-  if (typeof window.openEcoCheckout === 'function') window.openEcoCheckout();
-  else window.location.href = 'checkout.html';
-});
+bindClick('checkout-placeholder', goToCheckoutPage);
+bindClick('cart-page-checkout', goToCheckoutPage);
 bindClick('market-request-button', () => showToast('Market Request ফিচার পরবর্তী ধাপে যুক্ত হবে'));
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape') { closeDrawer(); closeCart(); closeLogin(); }
