@@ -155,6 +155,13 @@ async function customerOrders(request) {
 
 async function placeOrder(body, request) {
   const user = await getCustomer(request);
+  if (user) {
+    const verifiedPhone = normalizedPhone(user.phone);
+    const orderPhone = normalizedPhone(body && body.customer && body.customer.phone);
+    if (!verifiedPhone || verifiedPhone !== orderPhone) {
+      return json({ error: "আপনার Account-এর Verified মোবাইল নম্বরের সঙ্গে Checkout নম্বর মিলছে না। একই নম্বর ব্যবহার করুন অথবা Logout করে Guest Checkout করুন।" }, 422);
+    }
+  }
   const result = await sb("rpc/place_ecogrocer_order", {
     method: "POST",
     body: { p_order: body, p_customer_user_id: user ? user.id : null }
@@ -175,14 +182,17 @@ const sslBase = () => sslConfig().mode === "live"
 
 async function initSslPayment(orderNumber) {
   const cfg = sslConfig();
-  if (!cfg.storeId || !cfg.storePassword || !cfg.defaultEmail) {
-    return json({ enabled: false, message: "অনলাইন Payment Gateway এখনো Merchant Credentials দিয়ে চালু করা হয়নি। চাইলে আপাতত Manual Payment ব্যবহার করুন।" });
+  if (!cfg.storeId || !cfg.storePassword) {
+    return json({ enabled: false, message: "অনলাইন Payment Gateway এখনো Merchant Credentials দিয়ে চালু করা হয়নি। আপাতত Manual Payment ব্যবহার করুন।" });
   }
   const orders = await sb("orders?select=id,order_number,customer_name,customer_email,customer_phone,full_address,grand_total,payment_status,payment_method&order_number=eq." + encodeURIComponent(orderNumber) + "&limit=1");
   const order = (orders.data || [])[0];
   if (!order) return json({ error: "অর্ডার পাওয়া যায়নি।" }, 404);
   if (order.payment_method === "cod") return json({ error: "Cash on Delivery অর্ডারে Online Payment প্রয়োজন নেই।" }, 422);
   if (order.payment_status === "paid") return json({ error: "এই অর্ডারের পেমেন্ট ইতিমধ্যে সম্পন্ন হয়েছে।" }, 409);
+  if (!order.customer_email && !cfg.defaultEmail) {
+    return json({ enabled: false, message: "Online Payment-এর জন্য একটি ইমেইল ঠিকানা প্রয়োজন। Checkout-এ ইমেইল দিন অথবা Admin-এর মাধ্যমে Default Email সেট করুন।" });
+  }
 
   const tranId = order.order_number + "-" + crypto.randomUUID().replace(/-/g, "").slice(0, 8);
   const apiUrl = siteUrl() + "/.netlify/functions/api";
