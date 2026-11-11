@@ -235,7 +235,7 @@
   }
 
   function createOrderId() {
-    const timePart = new Date().toISOString().replace(/\\D/g, '').slice(0, 12);
+    const timePart = new Date().toISOString().replace(/\D/g, '').slice(0, 12);
     const randomPart = Math.random().toString(36).slice(2, 7).toUpperCase();
     return 'EG' + timePart + randomPart;
   }
