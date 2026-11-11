@@ -108,6 +108,78 @@
     });
   }
 
+  async function loadSupabaseDeliverySettings() {
+    const config = window.ECOGROCER_CONFIG || CONFIG;
+    const key = String(config.supabasePublishableKey || '').trim();
+    const areasUrl = String(config.deliveryAreasUrl || '').trim();
+    const slotsUrl = String(config.deliverySlotsUrl || '').trim();
+    if (!key || !areasUrl || !slotsUrl) return;
+
+    const headers = { apikey: key, Accept: 'application/json' };
+    const fetchRows = async url => {
+      const response = await fetch(url, { headers, cache: 'no-store' });
+      if (!response.ok) throw new Error('Supabase delivery settings request failed (' + response.status + ').');
+      const rows = await response.json();
+      return Array.isArray(rows) ? rows : [];
+    };
+
+    try {
+      const [areas, slots] = await Promise.all([fetchRows(areasUrl), fetchRows(slotsUrl)]);
+      if (areas.length) {
+        Object.keys(DELIVERY_AREAS).forEach(id => delete DELIVERY_AREAS[id]);
+        areas.forEach(area => {
+          if (!area || !area.id) return;
+          DELIVERY_AREAS[area.id] = {
+            name: String(area.name || area.id),
+            fee: Math.max(0, Number(area.fee) || 0)
+          };
+        });
+
+        const areaSelect = byId('checkout-area');
+        const areaPlaceholder = areaSelect.options[0]
+          ? areaSelect.options[0].cloneNode(true)
+          : document.createElement('option');
+        if (!areaPlaceholder.value) areaPlaceholder.textContent = '-- এলাকা বেছে নিন --';
+        areaSelect.replaceChildren(areaPlaceholder);
+        const areaGroup = document.createElement('optgroup');
+        areaGroup.label = 'সার্ভিস এরিয়া';
+        areas.forEach(area => {
+          if (!DELIVERY_AREAS[area.id]) return;
+          const option = document.createElement('option');
+          option.value = area.id;
+          option.textContent = DELIVERY_AREAS[area.id].name + ' — ' + formatMoney(DELIVERY_AREAS[area.id].fee);
+          areaGroup.appendChild(option);
+        });
+        areaSelect.appendChild(areaGroup);
+      }
+
+      if (slots.length) {
+        const slotSelect = byId('checkout-slot');
+        const slotPlaceholder = slotSelect.options[0]
+          ? slotSelect.options[0].cloneNode(true)
+          : document.createElement('option');
+        if (!slotPlaceholder.value) slotPlaceholder.textContent = '-- সময় বেছে নিন --';
+        slotSelect.replaceChildren(slotPlaceholder);
+        const slotGroup = document.createElement('optgroup');
+        slotGroup.label = 'উপলব্ধ ডেলিভারি সময়';
+        slots.forEach(slot => {
+          if (!slot || !slot.id) return;
+          const option = document.createElement('option');
+          option.value = slot.id;
+          option.textContent = String(slot.label || slot.id);
+          slotGroup.appendChild(option);
+        });
+        slotSelect.appendChild(slotGroup);
+      }
+
+      filterAreas();
+      updateTotals();
+    } catch (error) {
+      // Existing HTML options and fee values stay usable if Supabase is temporarily unavailable.
+      console.warn('Supabase delivery settings are unavailable; using the local checkout defaults.', error);
+    }
+  }
+
   function setStatus(message, type) {
     const status = byId('checkout-status');
     status.hidden = false;
@@ -401,6 +473,8 @@
     });
   });
   byId('eco-checkout-form').addEventListener('submit', submitOrder);
+
+  loadSupabaseDeliverySettings();
 
   // Restore cart items passed from the storefront URL before opening the standalone form.
   // This is also a recovery path when browser storage is unavailable or the user crosses pages.
