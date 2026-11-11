@@ -85,6 +85,7 @@
   function renderProduct(product) {
     var category = CATEGORIES.find(function (item) { return item.id === product.category; });
     var qty = Number(cart[product.id] || 0);
+    var outOfStock = Boolean(product.track_inventory) && Number(product.stock_quantity || 0) <= 0;
     var related = PRODUCTS.filter(function (item) {
       return item.category === product.category && item.id !== product.id;
     }).slice(0, 4);
@@ -108,11 +109,11 @@
           '<div class="product-detail-price">' + money(product.price) + ' <span>/ ' + escapeHTML(product.unit) + '</span></div>' +
           '<div class="product-detail-meta"><span><b>প্যাক সাইজ</b>' + escapeHTML(product.unit) + '</span><span><b>পণ্য কোড</b>' + escapeHTML(product.id.toUpperCase()) + '</span></div>' +
           '<p class="product-detail-description">' + escapeHTML(descriptionFor(product)) + '</p>' +
-          '<p class="product-detail-availability"><span class="availability-dot"></span> অর্ডার অনুযায়ী সংগ্রহ ও প্রাপ্যতা নিশ্চিত করা হবে</p>' +
+          '<p class="product-detail-availability"><span class="availability-dot"></span> ' + (outOfStock ? 'এই পণ্যটি বর্তমানে স্টকে নেই' : (product.track_inventory ? 'স্টকে আছে: ' + Number(product.stock_quantity) + ' ইউনিট' : 'অর্ডার অনুযায়ী সংগ্রহ ও প্রাপ্যতা নিশ্চিত করা হবে')) + '</p>' +
           '<div class="product-detail-cart-state" id="detail-cart-state">' + (qty > 0 ? 'আপনার কার্টে এই পণ্যটি ' + qty + ' টি আছে' : 'এই পণ্যটি এখনো কার্টে যোগ করা হয়নি') + '</div>' +
           '<div class="product-detail-actions">' +
-            '<button type="button" class="detail-action-order" data-detail-order="' + product.id + '">অর্ডার নাও <span>→</span></button>' +
-            '<button type="button" class="detail-action-cart" data-detail-add="' + product.id + '"><span>＋</span> Add to Cart</button>' +
+            '<button type="button" class="detail-action-order" data-detail-order="' + product.id + '"' + (outOfStock ? ' disabled' : '') + '>অর্ডার নাও <span>→</span></button>' +
+            '<button type="button" class="detail-action-cart" data-detail-add="' + product.id + '"' + (outOfStock ? ' disabled' : '') + '><span>＋</span> Add to Cart</button>' +
             '<button type="button" class="detail-action-whatsapp" data-detail-whatsapp="' + product.id + '"><span>◉</span> WhatsApp</button>' +
             '<button type="button" class="detail-action-call" data-detail-call><span>☎</span> কল করুন</button>' +
           '</div>' +
