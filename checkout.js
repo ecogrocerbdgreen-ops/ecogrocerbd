@@ -308,13 +308,10 @@
     byId('success-tracking-number').textContent = orderId;
     byId('success-order-total').textContent = formatMoney(total);
     byId('success-payment-note').textContent = paymentMessage.trim();
-    const done = byId('order-success-done');
-    done.textContent = 'ঠিক আছে';
-    if (whatsappUrl) {
-      const note = document.createElement('span');
-      note.textContent = ' অর্ডারের কপি WhatsApp-এ পাঠানোর লিংকটি পরে পাওয়া যাবে।';
-      byId('success-payment-note').appendChild(note);
-    }
+    const whatsappLink = byId('success-whatsapp-link');
+    whatsappLink.hidden = !whatsappUrl;
+    if (whatsappUrl) whatsappLink.href = whatsappUrl;
+    byId('order-success-done').textContent = 'ঠিক আছে';
     byId('order-success-scrim').hidden = false;
     document.body.classList.add('no-scroll');
     byId('order-success-close').focus();
