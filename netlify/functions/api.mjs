@@ -11,7 +11,7 @@ const env = (key) => {
 const baseUrl = () => env("SUPABASE_URL").replace(/\/$/, "");
 const serviceKey = () => env("SUPABASE_SERVICE_ROLE_KEY");
 const anonKey = () => env("SUPABASE_ANON_KEY");
-const siteUrl = () => (env("SITE_URL") || "https://ecogrocerbd.netlify.app").replace(/\\/$/, "");
+const siteUrl = () => (env("SITE_URL") || "https://ecogrocerbd.netlify.app").replace(/\/$/, "");
 
 const b64url = (bytes) => {
   let binary = "";
@@ -114,7 +114,7 @@ async function publicDeliveryAreas() {
 
 async function getCustomer(request) {
   const bearer = request.headers.get("authorization") || "";
-  if (!/^Bearer\\s+.+/i.test(bearer)) return null;
+  if (!/^Bearer\s+.+/i.test(bearer)) return null;
   if (!baseUrl() || !anonKey()) throw new Error("Customer account authentication is not configured yet.");
   const response = await fetch(baseUrl() + "/auth/v1/user", {
     headers: { apikey: anonKey(), authorization: bearer }
@@ -125,7 +125,7 @@ async function getCustomer(request) {
 }
 
 const normalizedPhone = (value) => {
-  const digits = String(value || "").replace(/\\D/g, "");
+  const digits = String(value || "").replace(/\D/g, "");
   if (digits.startsWith("8801") && digits.length === 13) return "0" + digits.slice(3);
   return digits;
 };
