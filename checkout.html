@@ -9,10 +9,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20261111-order-items">
+  <link rel="stylesheet" href="style.css?v=20261111-shared-site-shell">
   <script src="script.js" defer></script>
   <script src="order-config.js" defer></script>
-  <script src="checkout.js?v=20261111-order-items" defer></script>
+  <script src="checkout.js?v=20261111-shared-site-shell" defer></script>
   <script src="product-detail.js?v=20261111-checkout-fix" defer></script>
 </head>
 <body class="checkout-page-mode">
@@ -24,7 +24,7 @@
         <span class="hamburger" aria-hidden="true"><i></i><i></i><i></i></span>
       </button>
 
-      <a class="brand" href="#home" aria-label="EcoGrocer BD হোম">
+      <a class="brand" href="index.html#home" aria-label="EcoGrocer BD হোম">
         <span class="brand-mark" aria-hidden="true"><span>e</span></span>
         <span class="brand-copy">
           <strong>EcoGrocer <em>BD</em></strong>
@@ -34,19 +34,19 @@
 
       <nav class="desktop-nav" aria-label="প্রধান নেভিগেশন">
         <a class="active" href="#home">হোম</a>
-        <a href="#categories">ক্যাটাগরি</a>
-        <a href="#products">সব পণ্য</a>
-        <a href="#how-it-works">কীভাবে অর্ডার করবেন</a>
+        <a href="index.html#categories">ক্যাটাগরি</a>
+        <a href="index.html#products">সব পণ্য</a>
+        <a href="index.html#how-it-works">কীভাবে অর্ডার করবেন</a>
       </nav>
 
       <div class="header-actions">
-        <button class="icon-button desktop-search-trigger" type="button" data-focus-search aria-label="পণ্য খুঁজুন">⌕</button>
+        <a class="icon-button desktop-search-trigger" href="index.html#search-section" aria-label="পণ্য খুঁজুন">⌕</a>
         <button class="cart-button" id="cart-open" type="button" aria-label="কার্ট খুলুন">
           <span class="cart-symbol" aria-hidden="true">🛒</span>
           <span class="cart-label">কার্ট</span>
           <span class="cart-count" id="header-cart-count">0</span>
         </button>
-        <button class="account-button" type="button" data-open-login>লগইন</button>
+        <a class="account-button" href="account.html" style="text-decoration:none">অ্যাকাউন্ট</a>
       </div>
     </div>
   </header>
@@ -76,8 +76,8 @@
         <h2>ঘরের বাজার<br><span>এক জায়গায় গুছিয়ে নিন</span></h2>
         <p>চাল, ডাল, তেল থেকে রান্নার প্রয়োজনীয় মুদি পণ্য—সহজে খুঁজে নিন আপনার পছন্দের জিনিস।</p>
         <div class="hero-actions">
-          <a class="button button-light" href="#category-grocery">Grocery দেখুন <span aria-hidden="true">→</span></a>
-          <a class="hero-text-link" href="#search-section" data-focus-search>পণ্য সার্চ করুন</a>
+          <a class="button button-light" href="category.html?category=grocery">Grocery দেখুন <span aria-hidden="true">→</span></a>
+          <a class="hero-text-link" href="index.html#search-section">পণ্য সার্চ করুন</a>
         </div>
         <div class="hero-trust"><span>✓</span> সহজ সার্চ <span>✓</span> পরিষ্কার প্যাক সাইজ</div>
       </div>
@@ -127,15 +127,15 @@
           <span class="category-art" aria-hidden="true"><img src="https://images.pexels.com/photos/31555432/pexels-photo-31555432/free-photo-of-white-bowl-of-uncooked-rice-close-up.jpeg?auto=compress&dpr=1&h=750&w=1260" alt="" loading="lazy" decoding="async" draggable="false" referrerpolicy="no-referrer" onerror="this.hidden=true"></span>
           <span class="category-info"><strong>Grocery</strong><small>মুদি পণ্য</small></span><span class="category-arrow" aria-hidden="true">↗</span>
         </a>
-        <a class="category-card category-vegetables" href="#category-vegetables" data-category-link="vegetables">
+        <a class="category-card category-vegetables" href="category.html?category=vegetables" data-category-link="vegetables">
           <span class="category-art" aria-hidden="true"><img src="https://images.pexels.com/photos/8496228/pexels-photo-8496228.jpeg?auto=compress&dpr=1&h=750&w=1260" alt="" loading="lazy" decoding="async" draggable="false" referrerpolicy="no-referrer" onerror="this.hidden=true"></span>
           <span class="category-info"><strong>Vegetables</strong><small>শাক-সবজি</small></span><span class="category-arrow" aria-hidden="true">↗</span>
         </a>
-        <a class="category-card category-meat" href="#category-meat" data-category-link="meat">
+        <a class="category-card category-meat" href="category.html?category=meat" data-category-link="meat">
           <span class="category-art" aria-hidden="true"><img src="https://images.pexels.com/photos/6896518/pexels-photo-6896518.jpeg?auto=compress&dpr=1&h=750&w=1260" alt="" loading="lazy" decoding="async" draggable="false" referrerpolicy="no-referrer" onerror="this.hidden=true"></span>
           <span class="category-info"><strong>Meat</strong><small>মাংস</small></span><span class="category-arrow" aria-hidden="true">↗</span>
         </a>
-        <a class="category-card category-fish" href="#category-fish" data-category-link="fish">
+        <a class="category-card category-fish" href="category.html?category=fish" data-category-link="fish">
           <span class="category-art" aria-hidden="true"><img src="https://images.pexels.com/photos/40700642/pexels-photo-40700642/free-photo-of-fresh-hilsa-fish-on-ice-in-dhaka-market.jpeg?auto=compress&dpr=1&h=750&w=1260" alt="" loading="lazy" decoding="async" draggable="false" referrerpolicy="no-referrer" onerror="this.hidden=true"></span>
           <span class="category-info"><strong>Fish</strong><small>মাছ</small></span><span class="category-arrow" aria-hidden="true">↗</span>
         </a>
@@ -410,7 +410,7 @@
     <a class="bottom-link" href="#categories"><span class="bottom-icon">▦</span><small>ক্যাটাগরি</small></a>
     <a class="bottom-link" href="#search-section" data-focus-search><span class="bottom-icon search-bottom-icon">⌕</span><small>সার্চ</small></a>
     <button class="bottom-link" type="button" id="bottom-cart-open"><span class="bottom-icon">🛒<i id="bottom-cart-count">0</i></span><small>কার্ট</small></button>
-    <button class="bottom-link" type="button" data-open-login><span class="bottom-icon">♙</span><small>অ্যাকাউন্ট</small></button>
+    <a class="bottom-link" href="account.html"><span class="bottom-icon">♙</span><small>অ্যাকাউন্ট</small></a>
   </nav>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
