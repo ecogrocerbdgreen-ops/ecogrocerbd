@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="style.css?v=20261111-payment-logo-refine-v2">
   <script src="order-config.js?v=20261111-checkout-products-v3" defer></script>
   <script src="script.js?v=20261111-checkout-products-v3" defer></script>
-  <script src="checkout.js?v=20261111-checkout-render-fix-v1" defer></script>
+  <script src="checkout.js?v=20261111-order-success-popup-v1" defer></script>
   <script src="product-detail.js?v=20261111-checkout-products-v3" defer></script>
 </head>
 <body class="checkout-page-mode">
@@ -363,7 +363,6 @@
               <p class="coupon-feedback" id="checkout-coupon-feedback" aria-live="polite">ডেমো কুপন: ECO10 অথবা FRESH50</p>
             </section>
 
-            <label class="checkout-field checkout-consent"><input type="checkbox" id="checkout-confirm-info" name="customerConsent" value="yes" required><span>আমি নিশ্চিত করছি যে আমার দেওয়া নাম, ফোন নম্বর ও ডেলিভারি ঠিকানা সঠিক। <b>*</b></span></label>
             <div class="checkout-status" id="checkout-status" role="status" aria-live="polite" hidden></div>
           </form>
 
@@ -390,6 +389,23 @@
 
 
 
+
+  <div class="order-success-scrim" id="order-success-scrim" hidden>
+    <section class="order-success-modal" role="dialog" aria-modal="true" aria-labelledby="order-success-title" aria-describedby="order-success-description">
+      <button class="order-success-close" id="order-success-close" type="button" aria-label="পপ-আপ বন্ধ করুন">×</button>
+      <div class="order-success-check" aria-hidden="true"><span>✓</span></div>
+      <span class="order-success-eyebrow">ECOGROCER BD · ORDER CONFIRMED</span>
+      <h2 id="order-success-title">আপনার অর্ডারটি নিশ্চিত হয়েছে!</h2>
+      <p id="order-success-description">ধন্যবাদ। আপনার অর্ডারের তথ্য আমরা সফলভাবে পেয়েছি।</p>
+      <div class="order-success-details">
+        <div><span>অর্ডার নম্বর</span><strong id="success-order-number">—</strong></div>
+        <div><span>ট্র্যাকিং নম্বর</span><div class="success-tracking-line"><strong id="success-tracking-number">—</strong><button id="success-copy-tracking" type="button">কপি</button></div></div>
+        <div class="order-success-total"><span>সর্বমোট</span><strong id="success-order-total">৳০</strong></div>
+      </div>
+      <p class="order-success-payment" id="success-payment-note"></p>
+      <button class="button button-primary button-block" id="order-success-done" type="button">ঠিক আছে</button>
+    </section>
+  </div>
 
   <section class="checkout-empty-page" id="checkout-empty-page" hidden>
     <div class="checkout-empty-page-card">
