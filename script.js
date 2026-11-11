@@ -145,7 +145,6 @@ function productCard(product) {
         <img class="product-image" src="${imageUrl}" alt="${escapeHTML(product.name)}" loading="lazy" decoding="async" draggable="false" referrerpolicy="no-referrer" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
         <span class="product-placeholder" hidden><span aria-hidden="true">▧</span><small>ছবি পাওয়া যায়নি</small></span>
       </button></div>
-      ${product.featured ? '<span class="product-label">জনপ্রিয়</span>' : '<span class="product-label">নমুনা পণ্য</span>'}
       <h3 class="product-name" data-product-open="${product.id}" role="button" tabindex="0">${escapeHTML(product.name)}<span class="product-unit">${escapeHTML(product.unit)}</span></h3>
       <div class="product-buy-row"><strong class="product-price">${formatPrice(product.price)}</strong>${addControl}</div>
     </article>`;
