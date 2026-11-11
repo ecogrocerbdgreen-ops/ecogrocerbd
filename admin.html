@@ -3,29 +3,86 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex,nofollow">
-  <title>Order Admin — EcoGrocer BD</title>
+  <meta name="theme-color" content="#146638">
+  <title>Admin Dashboard — EcoGrocer BD</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root{color-scheme:light;--green:#176b46;--ink:#183329;--muted:#65766e;--line:#dce8e1;--bg:#f3f8f4}
-    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:linear-gradient(145deg,#edf6ef,#f8fbf8);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink)}
-    main{width:min(100%,620px);padding:clamp(26px,6vw,48px);background:#fff;border:1px solid var(--line);border-radius:24px;box-shadow:0 22px 70px rgba(24,51,41,.09)}
-    .mark{width:48px;height:48px;display:grid;place-items:center;background:#e6f4e9;color:var(--green);font-weight:800;font-size:25px;border-radius:15px}
-    .eyebrow{margin:24px 0 8px;color:var(--green);font-size:12px;letter-spacing:.16em;font-weight:800}
-    h1{margin:0;font-size:clamp(27px,5vw,38px)}p{color:var(--muted);line-height:1.75}
-    .button{display:flex;align-items:center;justify-content:center;gap:10px;margin:24px 0 10px;padding:15px 20px;border-radius:13px;background:var(--green);color:white;text-decoration:none;font-weight:750}
-    .note{margin-top:20px;padding:14px 16px;background:var(--bg);border-radius:13px;font-size:14px}
-    .back{display:inline-block;margin-top:14px;color:var(--green);font-weight:650;text-decoration:none}
+    :root{color-scheme:light;--green:#176b46;--ink:#183329;--muted:#65766e;--line:#dce8e1;--bg:#f3f8f4;--white:#fff;--red:#b13a35;--amber:#98651b}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans Bengali","Hind Siliguri",system-ui,sans-serif}
+    button,input,select,textarea{font:inherit}button{cursor:pointer}
+    .top{background:#fff;border-bottom:1px solid var(--line);padding:14px clamp(16px,4vw,48px);display:flex;justify-content:space-between;align-items:center;gap:16px;position:sticky;top:0;z-index:4}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800}.mark{width:42px;height:42px;border-radius:14px;background:#e6f4e9;display:grid;place-items:center;color:var(--green);font-size:24px}
+    .brand small{display:block;color:var(--muted);font-weight:500;font-size:11px}.top-actions{display:flex;gap:10px}
+    .btn{border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:#fff;color:var(--ink);font-weight:700}.btn.primary{background:var(--green);border-color:var(--green);color:white}.btn.danger{color:var(--red)}
+    .wrap{width:min(1240px,calc(100% - 32px));margin:26px auto 64px}
+    .login{max-width:440px;margin:9vh auto;background:#fff;border:1px solid var(--line);border-radius:20px;padding:28px;box-shadow:0 16px 52px rgba(24,51,41,.08)}
+    h1,h2,h3,p{margin-top:0}.muted{color:var(--muted)}.field{display:grid;gap:7px;margin:14px 0}.field input,.field select,.field textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:white;color:var(--ink)}
+    .status{padding:12px 14px;border-radius:12px;background:#f6f8f6;color:var(--muted);margin:14px 0}.status.error{background:#fff0ef;color:var(--red)}.status.success{background:#eaf7ee;color:var(--green)}
+    .hidden{display:none!important}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0}.tab{border:1px solid var(--line);background:white;border-radius:999px;padding:9px 15px;font-weight:700}.tab.active{background:var(--green);border-color:var(--green);color:white}
+    .metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.metric,.panel{background:white;border:1px solid var(--line);border-radius:16px;padding:18px}.metric small{color:var(--muted)}.metric strong{display:block;font-size:26px;margin-top:7px}
+    .panel{margin-top:16px;overflow:hidden}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.panel-head h2{font-size:19px;margin:0}
+    .table-scroll{overflow:auto}table{width:100%;border-collapse:collapse;min-width:720px;font-size:14px}th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:middle}th{font-size:12px;color:var(--muted);font-weight:700;background:#f8fbf8}
+    .pill{display:inline-block;padding:4px 9px;border-radius:99px;background:#edf3ef;font-size:12px;font-weight:700}.pill.pending{background:#fff4dc;color:var(--amber)}.pill.delivered{background:#eaf7ee;color:var(--green)}.pill.cancelled{background:#fff0ef;color:var(--red)}
+    .actions{display:flex;gap:6px;align-items:center}.actions select{padding:7px;border:1px solid var(--line);border-radius:8px}
+    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.check{display:flex;gap:8px;align-items:center;margin:12px 0}
+    @media(max-width:900px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:620px){.top{align-items:flex-start}.top-actions{flex-direction:column}.wrap{width:calc(100% - 24px)}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.form-grid{grid-template-columns:1fr}.metric strong{font-size:21px}}
   </style>
+  <script src="admin.js" defer></script>
 </head>
 <body>
-  <main>
-    <div class="mark">e</div>
-    <div class="eyebrow">ECOGROCER BD · ORDER MANAGEMENT</div>
-    <h1>অর্ডার অ্যাডমিন ইনবক্স</h1>
-    <p>ওয়েবসাইটে কাস্টমাররা Order Confirm করলে অর্ডারটি Netlify সার্ভারে সংরক্ষিত হবে। নিচের লিংকটি আপনার Netlify টিম লগইন চেয়ে সুরক্ষিত অর্ডার ইনবক্স খুলবে।</p>
-    <a class="button" href="https://app.netlify.com/sites/88fa6c61-9b80-4ba4-9ee9-dc3110a47b89/forms" target="_blank" rel="noopener noreferrer">Netlify Order Inbox খুলুন ↗</a>
-    <div class="note"><strong>অর্ডার কোথায় পাবেন?</strong><br>Netlify Dashboard → Forms → <b>ecogrocer-orders</b>। নতুন অর্ডারগুলো Verified submissions-এ দেখুন; না পেলে Spam submissions-ও পরীক্ষা করুন।</div>
-    <a class="back" href="./">← ওয়েবসাইটে ফিরে যান</a>
+  <header class="top">
+    <div class="brand"><span class="mark">e</span><span>EcoGrocer BD <small>Secure Store Administration</small></span></div>
+    <div class="top-actions"><a class="btn" href="./">ওয়েবসাইট দেখুন ↗</a><button class="btn hidden" id="logout">Logout</button></div>
+  </header>
+  <main class="wrap">
+    <section class="login" id="login-panel">
+      <span class="pill">ADMIN ACCESS</span><h1 style="margin:16px 0 8px">অ্যাডমিন লগইন</h1>
+      <p class="muted">আপনার Store Admin credentials দিয়ে প্রবেশ করুন।</p>
+      <form id="login-form">
+        <label class="field">Username<input name="username" autocomplete="username" required value="admin"></label>
+        <label class="field">Password<input name="password" type="password" autocomplete="current-password" required></label>
+        <button class="btn primary" style="width:100%" type="submit">Secure Login</button>
+      </form>
+      <div id="login-status" class="status hidden" role="status"></div>
+      <p class="muted" style="font-size:13px;margin-top:16px">নতুন Database সংযোগ সম্পন্ন না হওয়া পর্যন্ত পুরোনো Order Inbox ব্যবহার করুন: <a href="https://app.netlify.com/sites/88fa6c61-9b80-4ba4-9ee9-dc3110a47b89/forms" target="_blank" rel="noopener noreferrer">Netlify Forms Order Inbox ↗</a></p>
+    </section>
+
+    <section id="dashboard-panel" class="hidden">
+      <div class="panel-head"><div><span class="pill">STORE OVERVIEW</span><h1 style="margin:10px 0 4px">স্টোর ড্যাশবোর্ড</h1><p class="muted">অর্ডার, পণ্য, স্টক ও ডেলিভারি নিয়ন্ত্রণ করুন।</p></div><button class="btn" id="refresh">Refresh</button></div>
+      <div class="metrics" id="metrics"></div>
+      <nav class="tabs" aria-label="Admin sections">
+        <button class="tab active" data-tab="orders">Orders</button><button class="tab" data-tab="products">Products & Stock</button><button class="tab" data-tab="delivery">Delivery Areas</button><button class="tab" data-tab="coupons">Coupons</button>
+      </nav>
+      <section class="panel" data-panel="orders"><div class="panel-head"><h2>অর্ডার ম্যানেজমেন্ট</h2><select id="order-filter" aria-label="Filter orders"><option value="all">সব অর্ডার</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="processing">Processing</option><option value="out_for_delivery">Out for delivery</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select></div><div class="table-scroll"><table><thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Update</th></tr></thead><tbody id="orders-table"></tbody></table></div></section>
+
+      <section class="panel hidden" data-panel="products">
+        <div class="panel-head"><h2>পণ্য ও স্টক</h2><button class="btn primary" id="new-product">নতুন পণ্য</button></div>
+        <form id="product-form" class="hidden">
+          <input type="hidden" name="id">
+          <div class="form-grid">
+            <label class="field">পণ্যের ID<input name="id_display" disabled></label>
+            <label class="field">Category<select name="category_id"><option value="grocery">Grocery</option><option value="vegetables">Vegetables</option><option value="meat">Meat</option><option value="fish">Fish</option></select></label>
+            <label class="field">বাংলা নাম<input name="name" required></label><label class="field">English name<input name="english_name"></label>
+            <label class="field">Price (৳)<input name="price" type="number" min="0" step="1" required></label><label class="field">Unit / Pack size<input name="unit" required></label>
+            <label class="field">Image URL<input name="image_url" type="url"></label><label class="field">Stock quantity<input name="stock_quantity" type="number" min="0" step="1" value="0"></label>
+            <label class="field">Description<input name="description"></label>
+          </div>
+          <label class="check"><input name="featured" type="checkbox"> জনপ্রিয় পণ্য</label>
+          <label class="check"><input name="track_inventory" type="checkbox"> Stock tracking চালু</label>
+          <label class="check"><input name="is_active" type="checkbox" checked> পণ্য Active</label>
+          <div class="actions"><button class="btn primary" type="submit">Save Product</button><button class="btn" type="button" id="cancel-product">Cancel</button></div>
+        </form>
+        <div class="table-scroll"><table><thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Visibility</th><th>Action</th></tr></thead><tbody id="products-table"></tbody></table></div>
+      </section>
+
+      <section class="panel hidden" data-panel="delivery"><div class="panel-head"><h2>ডেলিভারি এরিয়া ও চার্জ</h2></div><form id="delivery-form" class="form-grid"><label class="field">Area ID<input name="id" required></label><label class="field">Area name<input name="name" required></label><label class="field">Delivery fee (৳)<input name="fee" type="number" min="0" required></label><label class="check"><input name="is_active" type="checkbox" checked> Active</label><div><button class="btn primary" type="submit">Save Area</button></div></form><div class="table-scroll"><table><thead><tr><th>Area</th><th>Fee</th><th>Status</th><th></th></tr></thead><tbody id="delivery-table"></tbody></table></div></section>
+
+      <section class="panel hidden" data-panel="coupons"><div class="panel-head"><h2>কুপন ম্যানেজমেন্ট</h2></div><form id="coupon-form" class="form-grid"><label class="field">Coupon code<input name="code" required></label><label class="field">Type<select name="discount_type"><option value="percent">Percent</option><option value="fixed">Fixed amount</option></select></label><label class="field">Discount value<input name="discount_value" type="number" min="1" required></label><label class="field">Max discount (৳)<input name="max_discount" type="number" min="0"></label><label class="field">Minimum order (৳)<input name="minimum_order" type="number" min="0" value="0"></label><label class="field">Usage limit<input name="usage_limit" type="number" min="1"></label><label class="field">Expiry date<input name="expires_at" type="datetime-local"></label><label class="check"><input name="is_active" type="checkbox" checked> Active</label><div><button class="btn primary" type="submit">Save Coupon</button></div></form><div class="table-scroll"><table><thead><tr><th>Coupon</th><th>Discount</th><th>Minimum</th><th>Used</th><th>Status</th></tr></thead><tbody id="coupons-table"></tbody></table></div></section>
+
+      <div id="dashboard-status" class="status hidden" role="status"></div>
+    </section>
   </main>
 </body>
 </html>

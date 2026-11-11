@@ -9,7 +9,7 @@ const CATEGORIES = [
 
 // Price and pack-size references are documented in PRODUCT-PRICE-SOURCES.md.
 // All entries are editable starter catalogue data, not confirmed EcoGrocer stock.
-const PRODUCTS = [
+let PRODUCTS = [
   // Grocery — 8 products
   { id: 'g01', category: 'grocery', name: 'মিনিকেট চাল', en: 'Miniket Rice', price: 389, unit: '৫ কেজি', featured: true, aliases: ['miniket', 'chal', 'chaal', 'rice'] },
   { id: 'g02', category: 'grocery', name: 'সয়াবিন তেল', en: 'Soybean Oil', price: 189, unit: '১ লিটার', featured: true, aliases: ['tel', 'oil', 'soybean'] },
@@ -131,10 +131,13 @@ function normalizeSearch(value) {
 
 function productCard(product) {
   const qty = Number(cart[product.id] || 0);
+  const outOfStock = Boolean(product.track_inventory) && Number(product.stock_quantity || 0) <= 0;
   const imageUrl = PRODUCT_IMAGES[product.id];
-  const addControl = qty > 0
-    ? `<div class="qty-stepper" aria-label="${escapeHTML(product.name)} পরিমাণ"><button type="button" data-cart-action="decrease" data-id="${product.id}" aria-label="একটি কমান">−</button><span>${qty}</span><button type="button" data-cart-action="increase" data-id="${product.id}" aria-label="একটি বাড়ান">+</button></div>`
-    : `<button class="add-button" type="button" data-cart-action="increase" data-id="${product.id}" aria-label="${escapeHTML(product.name)} কার্টে যোগ করুন">Add to Cart</button>`;
+  const addControl = outOfStock
+    ? '<button class="add-button" type="button" disabled aria-label="' + escapeHTML(product.name) + ' বর্তমানে স্টকে নেই">Out of Stock</button>'
+    : qty > 0
+      ? `<div class="qty-stepper" aria-label="${escapeHTML(product.name)} পরিমাণ"><button type="button" data-cart-action="decrease" data-id="${product.id}" aria-label="একটি কমান">−</button><span>${qty}</span><button type="button" data-cart-action="increase" data-id="${product.id}" aria-label="একটি বাড়ান">+</button></div>`
+      : `<button class="add-button" type="button" data-cart-action="increase" data-id="${product.id}" aria-label="${escapeHTML(product.name)} কার্টে যোগ করুন">Add to Cart</button>`;
 
   return `
     <article class="product-card" data-product-id="${product.id}" data-product-detail="${product.id}" data-search="${escapeHTML(`${product.name} ${product.en} ${product.unit} ${(product.aliases || []).join(' ')} ${CATEGORIES.find(c => c.id === product.category)?.bangla || ''}`.toLowerCase())}">
@@ -196,7 +199,21 @@ function renderCart() {
 function changeCart(productId, delta) {
   const product = PRODUCTS.find(item => item.id === productId);
   if (!product) return;
-  const next = Math.min(99, Math.max(0, (Number(cart[productId]) || 0) + delta));
+  const stockCap = product.track_inventory ? Math.max(0, Number(product.stock_quantity) || 0) : 99;
+  if (delta > 0 && stockCap === 0) {
+    showToast('এই পণ্যটি বর্তমানে স্টকে নেই');
+    return;
+  }
+  const currentQuantity = Number(cart[productId] || 0);
+  if (delta > 0 && currentQuantity >= stockCap) {
+    showToast('স্টকে থাকা সর্বোচ্চ পরিমাণ কার্টে আছে');
+    return;
+  }
+  const next = Math.min(stockCap, Math.max(0, currentQuantity + delta));
+  if (delta > 0 && next === currentQuantity) {
+    showToast('স্টকে থাকা সর্বোচ্চ পরিমাণ কার্টে আছে');
+    return;
+  }
   if (next === 0) delete cart[productId];
   else cart[productId] = next;
   saveCart();
@@ -407,8 +424,39 @@ function initHeroSlider() {
 
 document.getElementById('current-year').textContent = new Date().getFullYear();
 initHeroSlider();
+
 renderProducts();
 renderCart();
+
+async function loadLiveCatalogue() {
+  const apiUrl = window.ECOGROCER_CONFIG && window.ECOGROCER_CONFIG.apiUrl;
+  if (!apiUrl) return;
+  try {
+    const response = await fetch(apiUrl + '?action=products', { headers: { Accept: 'application/json' } });
+    if (!response.ok) return; // Static catalogue remains available during database setup.
+    const data = await response.json();
+    if (!Array.isArray(data.products) || !data.products.length) return;
+    const liveProducts = data.products.map(item => ({
+      ...item,
+      category: item.category_id || item.category,
+      en: item.english_name || item.en || '',
+      price: Number(item.price),
+      unit: item.unit || '',
+      aliases: Array.isArray(item.aliases) ? item.aliases : [],
+      track_inventory: Boolean(item.track_inventory),
+      stock_quantity: Number(item.stock_quantity || 0)
+    }));
+    PRODUCTS.splice(0, PRODUCTS.length, ...liveProducts);
+    liveProducts.forEach(item => {
+      if (item.image_url) PRODUCT_IMAGES[item.id] = item.image_url;
+    });
+    renderProducts();
+    renderCart();
+  } catch (error) {
+    console.warn('EcoGrocer live catalogue is unavailable; using the local catalogue.', error);
+  }
+}
+loadLiveCatalogue();
 
 // Keep direct links such as index.html?q=rice useful for product searches.
 try {

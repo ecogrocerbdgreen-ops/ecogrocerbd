@@ -1,2 +1,13 @@
 [build]
   publish = "."
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# Keep server-side PHP source/config templates out of the public static site.
+[[redirects]]
+  from = "/hosting-api/*"
+  to = "/404.html"
+  status = 404
+  force = true
