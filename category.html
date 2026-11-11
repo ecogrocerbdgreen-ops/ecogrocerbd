@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#146638">
+  <meta name="description" content="EcoGrocer BD — আপনার প্রতিদিনের বাজার এখন আরও সহজ। গ্রোসারি, শাক-সবজি, মাছ ও মাংস অর্ডার করুন।">
+  <title>EcoGrocer BD — প্রতিদিনের বাজার, আরও সহজে</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+  <script src="category-page.js" defer></script>
+  <script src="order-config.js" defer></script>
+  <script src="checkout.js?v=20261111-form-visible" defer></script>
+  <script src="product-detail.js?v=20261111-checkout-fix" defer></script>
+</head>
+<body class="category-page">
+  <a class="skip-link" href="#main-content">মূল কনটেন্টে যান</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <button class="icon-button menu-trigger" id="menu-open" type="button" aria-label="মেনু খুলুন" aria-controls="site-drawer" aria-expanded="false">
+        <span class="hamburger" aria-hidden="true"><i></i><i></i><i></i></span>
+      </button>
+
+      <a class="brand" href="index.html#home" aria-label="EcoGrocer BD হোম">
+        <span class="brand-mark" aria-hidden="true"><span>e</span></span>
+        <span class="brand-copy">
+          <strong>EcoGrocer <em>BD</em></strong>
+          <small>Fresh • Daily • Local</small>
+        </span>
+      </a>
+
+      <nav class="desktop-nav" aria-label="প্রধান নেভিগেশন">
+        <a class="active" href="index.html#home">হোম</a>
+        <a href="index.html#categories">ক্যাটাগরি</a>
+        <a href="index.html#products">সব পণ্য</a>
+        <a href="index.html#how-it-works">কীভাবে অর্ডার করবেন</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="icon-button desktop-search-trigger" type="button" data-focus-search aria-label="পণ্য খুঁজুন">⌕</button>
+        <button class="cart-button" id="cart-open" type="button" aria-label="কার্ট খুলুন">
+          <span class="cart-symbol" aria-hidden="true">🛒</span>
+          <span class="cart-label">কার্ট</span>
+          <span class="cart-count" id="header-cart-count">0</span>
+        </button>
+        <a class="account-button" href="account.html" style="text-decoration:none">লগইন</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="delivery-strip">
+    <div class="delivery-inner">
+      <span class="delivery-pin" aria-hidden="true">⌖</span>
+      <span><strong>গুলশান ডেলিভারি</strong> · গুলশান ১, গুলশান ২, নিকেতন ও আশপাশের এলাকা</span>
+      <span class="delivery-note">চেকআউটে এলাকা বেছে নিন</span>
+    </div>
+  </div>
+
+  <main id="main-content">
+    <section class="hero-section" id="home" aria-labelledby="hero-title">
+      <div class="hero-content hero-slide is-active" data-hero-slide="0" aria-hidden="false">
+        <span class="hero-eyebrow"><span class="eyebrow-dot"></span> প্রতিদিনের বাজার, এক জায়গায়</span>
+        <h1 id="hero-title">টাটকা বাজার<br><span>এখন হাতের মুঠোয়</span></h1>
+        <p>গ্রোসারি থেকে তাজা সবজি, মাছ ও মাংস—আপনার প্রতিদিনের প্রয়োজনীয় বাজার হোক আরও সহজ।</p>
+        <div class="hero-actions">
+          <a class="button button-light" href="index.html#products">পণ্য দেখুন <span aria-hidden="true">→</span></a>
+          <a class="hero-text-link" href="index.html#categories">ক্যাটাগরি ঘুরে দেখুন</a>
+        </div>
+        <div class="hero-trust"><span>✓</span> সহজে বাছাই <span>✓</span> স্বচ্ছ দাম <span>✓</span> সহজ অর্ডার</div>
+      </div>
+      <div class="hero-content hero-slide" data-hero-slide="1" aria-hidden="true" hidden>
+        <span class="hero-eyebrow"><span class="eyebrow-dot"></span> আপনার প্রতিদিনের প্রয়োজন</span>
+        <h2>ঘরের বাজার<br><span>এক জায়গায় গুছিয়ে নিন</span></h2>
+        <p>চাল, ডাল, তেল থেকে রান্নার প্রয়োজনীয় মুদি পণ্য—সহজে খুঁজে নিন আপনার পছন্দের জিনিস।</p>
+        <div class="hero-actions">
+          <a class="button button-light" href="category.html?category=grocery">Grocery দেখুন <span aria-hidden="true">→</span></a>
+          <a class="hero-text-link" href="index.html#search-section" data-focus-search>পণ্য সার্চ করুন</a>
+        </div>
+        <div class="hero-trust"><span>✓</span> সহজ সার্চ <span>✓</span> পরিষ্কার প্যাক সাইজ</div>
+      </div>
+      <div class="hero-content hero-slide" data-hero-slide="2" aria-hidden="true" hidden>
+        <span class="hero-eyebrow"><span class="eyebrow-dot"></span> Fresh choices for every day</span>
+        <h2>সবজি, মাছ ও মাংস<br><span>বেছে নিন সহজে</span></h2>
+        <p>চারটি সহজ ক্যাটাগরিতে সাজানো ৩২টি নমুনা পণ্য থেকে আপনার তালিকা তৈরি করুন।</p>
+        <div class="hero-actions">
+          <a class="button button-light" href="index.html#categories">ক্যাটাগরি দেখুন <span aria-hidden="true">→</span></a>
+          <a class="hero-text-link" href="index.html#how-it-works">কীভাবে অর্ডার করবেন</a>
+        </div>
+        <div class="hero-trust"><span>✓</span> চার ক্যাটাগরি <span>✓</span> সহজ কার্ট</div>
+      </div>
+      <div class="hero-pagination" role="group" aria-label="হিরো স্লাইড নির্বাচন">
+        <button class="is-active" type="button" data-hero-target="0" aria-label="প্রথম স্লাইড দেখুন" aria-pressed="true"></button>
+        <button type="button" data-hero-target="1" aria-label="দ্বিতীয় স্লাইড দেখুন" aria-pressed="false"></button>
+        <button type="button" data-hero-target="2" aria-label="তৃতীয় স্লাইড দেখুন" aria-pressed="false"></button>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="hero-orbit orbit-one"></div>
+        <div class="hero-orbit orbit-two"></div>
+        <div class="hero-leaf leaf-one"></div>
+        <div class="hero-leaf leaf-two"></div>
+        <div class="hero-basket"><span class="basket-handle"></span><span class="basket-body"></span><span class="basket-leaf leaf-a"></span><span class="basket-leaf leaf-b"></span><span class="basket-leaf leaf-c"></span></div>
+        <span class="hero-spark spark-one">✳</span><span class="hero-spark spark-two">✦</span>
+      </div>
+      <div class="hero-bottom-shape" aria-hidden="true"></div>
+    </section>
+
+    <section class="search-section section-wrap" id="search-section" aria-label="পণ্য সার্চ">
+      <form class="search-box" id="product-search-form" role="search">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <label class="visually-hidden" for="product-search">পণ্যের নাম লিখুন</label>
+        <input id="product-search" type="search" placeholder="কী খুঁজছেন? যেমন চাল, আলু, মাছ..." autocomplete="off">
+        <button type="submit">খুঁজুন</button>
+      </form>
+      <p class="search-hint">জনপ্রিয়: <button type="button" data-search-term="চাল">চাল</button><button type="button" data-search-term="আলু">আলু</button><button type="button" data-search-term="মাছ">মাছ</button></p>
+    </section>
+
+
+    <section class="section-wrap category-page-intro" aria-label="ক্যাটাগরি নেভিগেশন">
+      <div class="category-page-topline">
+        <a class="category-page-back" href="index.html#categories"><span aria-hidden="true">←</span> সব ক্যাটাগরি</a>
+        <span class="section-kicker">SHOP BY CATEGORY</span>
+      </div>
+      <p class="category-page-description" id="category-page-description">আপনার পছন্দের ক্যাটাগরির সব পণ্য এক জায়গায় দেখুন।</p>
+      <nav class="category-page-switcher" aria-label="অন্য ক্যাটাগরি">
+        <a href="category.html?category=grocery" data-category-tab="grocery">Grocery</a>
+        <a href="category.html?category=vegetables" data-category-tab="vegetables">Vegetables</a>
+        <a href="category.html?category=meat" data-category-tab="meat">Meat</a>
+        <a href="category.html?category=fish" data-category-tab="fish">Fish</a>
+      </nav>
+    </section>
+
+    <section class="section-wrap category-section" id="categories" aria-labelledby="categories-title">
+      <div class="section-heading">
+        <div><span class="section-kicker">SHOP BY CATEGORY</span><h2 id="categories-title">আপনার বাজারের ক্যাটাগরি</h2></div>
+        <span class="section-caption">চারটি সহজ বিভাগ</span>
+      </div>
+      <div class="category-grid" id="category-grid">
+        <a class="category-card category-grocery" href="category.html?category=grocery" data-category-link="grocery">
+          <span class="category-art" aria-hidden="true"><img src="https://images.pexels.com/photos/31555432/pexels-photo-31555432/free-photo-of-white-bowl-of-uncooked-rice-close-up.jpeg?auto=compress&dpr=1&h=750&w=1260" alt="" loading="lazy" decoding="async" draggable="false" referrerpolicy="no-referrer" onerror="this.hidden=true"></span>
+          <span class="category-info"><strong>Grocery</strong><small>মুদি পণ্য</small></span><span class="category-arrow" aria-hidden="true">↗</span>
+        </a>
+        <a class="category-card category-vegetables" href="category.html?category=vegetables" data-category-link="vegetables">
+          <span class="category-art" aria-hidden="true"><img src="https://images.pexels.com/photos/8496228/pexels-photo-8496228.jpeg?auto=compress&dpr=1&h=750&w=1260" alt="" loading="lazy" decoding="async" draggable="false" referrerpolicy="no-referrer" onerror="this.hidden=true"></span>
+          <span class="category-info"><strong>Vegetables</strong><small>শাক-সবজি</small></span><span class="category-arrow" aria-hidden="true">↗</span>
+        </a>
+        <a class="category-card category-meat" href="category.html?category=meat" data-category-link="meat">
+          <span class="category-art" aria-hidden="true"><img src="https://images.pexels.com/photos/6896518/pexels-photo-6896518.jpeg?auto=compress&dpr=1&h=750&w=1260" alt="" loading="lazy" decoding="async" draggable="false" referrerpolicy="no-referrer" onerror="this.hidden=true"></span>
+          <span class="category-info"><strong>Meat</strong><small>মাংস</small></span><span class="category-arrow" aria-hidden="true">↗</span>
+        </a>
+        <a class="category-card category-fish" href="category.html?category=fish" data-category-link="fish">
+          <span class="category-art" aria-hidden="true"><img src="https://images.pexels.com/photos/40700642/pexels-photo-40700642/free-photo-of-fresh-hilsa-fish-on-ice-in-dhaka-market.jpeg?auto=compress&dpr=1&h=750&w=1260" alt="" loading="lazy" decoding="async" draggable="false" referrerpolicy="no-referrer" onerror="this.hidden=true"></span>
+          <span class="category-info"><strong>Fish</strong><small>মাছ</small></span><span class="category-arrow" aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="section-wrap featured-section" id="products" aria-labelledby="featured-title">
+      <div class="section-heading">
+        <div><span class="section-kicker">PICKED FOR YOU</span><h2 id="featured-title">জনপ্রিয় পণ্য</h2></div>
+        <a class="text-link" href="category.html?category=grocery">সব পণ্য দেখুন <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="product-grid featured-grid" id="featured-grid"></div>
+    </section>
+
+    <section class="price-notice section-wrap" aria-label="দামের নোট">
+      <span class="notice-icon" aria-hidden="true">ⓘ</span>
+      <p>দামগুলো ১০ নভেম্বর ২০২৬-এ দেখা অনলাইন/বাজারদরের প্রাথমিক রেফারেন্স। সরবরাহকারী, মান, প্যাকেট ও এলাকার ভিত্তিতে প্রকৃত দাম পরিবর্তিত হতে পারে।</p>
+    </section>
+
+    <div id="category-sections" class="category-sections">
+      <section class="section-wrap product-section" id="category-grocery" data-section-category="grocery">
+        <div class="section-heading"><div><span class="section-kicker">DAILY ESSENTIALS</span><h2>Grocery <small>মুদি পণ্য</small></h2></div><span class="product-count">০৮টি পণ্য</span></div>
+        <div class="product-grid" data-product-grid="grocery"></div>
+      </section>
+      <section class="section-wrap product-section" id="category-vegetables" data-section-category="vegetables">
+        <div class="section-heading"><div><span class="section-kicker">FRESH EVERY DAY</span><h2>Vegetables <small>শাক-সবজি</small></h2></div><span class="product-count">০৮টি পণ্য</span></div>
+        <div class="product-grid" data-product-grid="vegetables"></div>
+      </section>
+      <section class="section-wrap product-section" id="category-meat" data-section-category="meat">
+        <div class="section-heading"><div><span class="section-kicker">FRESH CUTS</span><h2>Meat <small>মাংস</small></h2></div><span class="product-count">০৮টি পণ্য</span></div>
+        <div class="product-grid" data-product-grid="meat"></div>
+      </section>
+      <section class="section-wrap product-section" id="category-fish" data-section-category="fish">
+        <div class="section-heading"><div><span class="section-kicker">FRESH FROM MARKET</span><h2>Fish <small>মাছ</small></h2></div><span class="product-count">০৮টি পণ্য</span></div>
+        <div class="product-grid" data-product-grid="fish"></div>
+      </section>
+    </div>
+
+    <section class="section-wrap market-banner" id="market-request">
+      <div class="market-banner-icon" aria-hidden="true">＋</div>
+      <div class="market-banner-copy"><span class="section-kicker">NEED SOMETHING ELSE?</span><h2>তালিকায় নেই এমন পণ্য খুঁজছেন?</h2><p>আপনার প্রয়োজনীয় পণ্যের তালিকা আমাদের জানান। Market Request সুবিধা পরবর্তী ধাপে যুক্ত হবে।</p></div>
+      <button class="button button-orange" type="button" id="market-request-button">Market Request</button>
+    </section>
+
+    <section class="section-wrap how-section" id="how-it-works" aria-labelledby="how-title">
+      <div class="section-heading centered-heading"><div><span class="section-kicker">SIMPLE & EASY</span><h2 id="how-title">কীভাবে অর্ডার করবেন</h2></div></div>
+      <div class="steps-grid">
+        <article class="step-card"><span class="step-number">01</span><span class="step-icon" aria-hidden="true">⌕</span><h3>পণ্য খুঁজে নিন</h3><p>ক্যাটাগরি বা সার্চ ব্যবহার করে পছন্দের পণ্য বেছে নিন।</p></article>
+        <article class="step-card"><span class="step-number">02</span><span class="step-icon" aria-hidden="true">🛒</span><h3>কার্টে যোগ করুন</h3><p>প্রয়োজনীয় পণ্য ও পরিমাণ কার্টে যোগ করে তালিকা দেখুন।</p></article>
+        <article class="step-card"><span class="step-number">03</span><span class="step-icon" aria-hidden="true">✓</span><h3>অর্ডার নিশ্চিত করুন</h3><p>অর্ডার ফর্মে ঠিকানা, ডেলিভারির সময় ও পেমেন্ট পদ্ধতি বেছে অর্ডার জমা দিন।</p></article>
+      </div>
+    </section>
+
+    <section class="section-wrap about-section" id="about">
+      <div class="about-mark" aria-hidden="true">e</div>
+      <div><span class="section-kicker">ABOUT ECOGROCER BD</span><h2>প্রতিদিনের বাজার, আরও সহজে</h2><p>EcoGrocer BD হলো আপনার দৈনন্দিন বাজারের জন্য একটি সহজ অনলাইন শপিং অভিজ্ঞতা। প্রয়োজনীয় মুদি পণ্য, শাক-সবজি, মাছ ও মাংস—সবকিছু এক জায়গায় সাজিয়ে দেওয়াই আমাদের লক্ষ্য।</p></div>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="contact">
+    <div class="footer-inner">
+      <div class="footer-brand-block"><a class="brand footer-brand" href="index.html#home"><span class="brand-mark" aria-hidden="true"><span>e</span></span><span class="brand-copy"><strong>EcoGrocer <em>BD</em></strong><small>Fresh • Daily • Local</small></span></a><p>আপনার প্রতিদিনের বাজার, আরও সহজে।</p></div>
+      <div class="footer-column"><h3>দ্রুত লিংক</h3><a href="index.html#home">হোম</a><a href="index.html#categories">ক্যাটাগরি</a><a href="index.html#products">পণ্যসমূহ</a><a href="index.html#how-it-works">কীভাবে অর্ডার করবেন</a></div>
+      <div class="footer-column"><h3>ক্যাটাগরি</h3><a href="category.html?category=grocery">Grocery</a><a href="category.html?category=vegetables">Vegetables</a><a href="category.html?category=meat">Meat</a><a href="category.html?category=fish">Fish</a></div>
+      <div class="footer-column footer-contact"><h3>যোগাযোগ</h3><p>যোগাযোগের নম্বর ও ঠিকানা ব্যবসার তথ্য নিশ্চিত হওয়ার পর যুক্ত করা হবে।</p><span class="footer-status"><i></i> ওয়েবসাইট প্রস্তুত হচ্ছে</span></div>
+    </div>
+    <div class="footer-bottom"><span>© <span id="current-year">2026</span> EcoGrocer BD. সর্বস্বত্ব সংরক্ষিত।</span><span>Made for everyday freshness <b>✳</b></span></div>
+  </footer>
+
+  <!-- Mobile / desktop navigation drawer -->
+  <div class="drawer-scrim" id="drawer-scrim" hidden></div>
+  <aside class="site-drawer" id="site-drawer" aria-label="সাইট মেনু" aria-hidden="true">
+    <div class="drawer-head"><a class="brand" href="index.html#home"><span class="brand-mark"><span>e</span></span><span class="brand-copy"><strong>EcoGrocer <em>BD</em></strong><small>Fresh • Daily • Local</small></span></a><button class="icon-button" id="menu-close" type="button" aria-label="মেনু বন্ধ করুন">×</button></div>
+    <div class="drawer-welcome"><span class="section-kicker">WELCOME</span><strong>আপনার বাজার শুরু হোক এখান থেকেই</strong></div>
+    <nav class="drawer-nav">
+      <a href="index.html#home"><span>⌂</span> হোম</a>
+      <a href="index.html#categories"><span>▦</span> ক্যাটাগরি</a>
+      <a href="index.html#search-section" data-focus-search><span>⌕</span> পণ্য সার্চ</a>
+      <a href="index.html#products"><span>🛍</span> সব পণ্য</a>
+      <a href="index.html#how-it-works"><span>ⓘ</span> কীভাবে অর্ডার করবেন</a>
+      <button type="button" data-open-login><span>♙</span> লগইন / অ্যাকাউন্ট</button>
+    </nav>
+    <div class="drawer-footer">EcoGrocer BD <span>Fresh • Daily • Local</span></div>
+  </aside>
+
+  <!-- Cart drawer -->
+  <div class="panel-scrim" id="panel-scrim" hidden></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="আপনার শপিং কার্ট" aria-hidden="true">
+    <div class="drawer-head"><div><span class="section-kicker">YOUR BASKET</span><h2>আপনার কার্ট</h2></div><button class="icon-button" id="cart-close" type="button" aria-label="কার্ট বন্ধ করুন">×</button></div>
+    <div class="cart-items" id="cart-items"><div class="cart-empty"><span>🧺</span><strong>আপনার কার্ট এখনো খালি</strong><p>পছন্দের পণ্য কার্টে যোগ করুন।</p></div></div>
+    <div class="cart-footer"><div class="cart-total-row"><span>সাবটোটাল</span><strong id="cart-subtotal">৳ ০</strong></div><p>ডেলিভারি চার্জ ও কুপন অর্ডার ফর্মে হিসাব হবে।</p><button class="button button-primary button-block" id="checkout-placeholder" type="button">ডেলিভারি ঠিকানা ও অর্ডার ফর্ম</button></div>
+  </aside>
+
+
+
+  <!-- Product detail experience -->
+  <div class="product-detail-scrim" id="product-detail-scrim" hidden>
+    <section class="product-detail-modal" role="dialog" aria-modal="true" aria-labelledby="product-detail-title">
+      <header class="product-detail-header">
+        <div class="product-detail-brand">
+          <span class="product-detail-mark">e</span>
+          <div><strong>EcoGrocer BD</strong><small>পণ্যের বিস্তারিত</small></div>
+        </div>
+        <button class="icon-button" id="product-detail-close" type="button" aria-label="পণ্যের বিস্তারিত বন্ধ করুন">×</button>
+      </header>
+      <div class="product-detail-content" id="product-detail-content"></div>
+    </section>
+  </div>
+
+  <div class="product-lightbox" id="product-lightbox" hidden role="dialog" aria-modal="true" aria-label="পণ্যের ছবি">
+    <button class="product-lightbox-close" id="product-lightbox-close" type="button" aria-label="ছবি বন্ধ করুন">×</button>
+    <img id="product-lightbox-image" src="" alt="">
+    <p id="product-lightbox-caption"></p>
+  </div>
+
+  <!-- Checkout / order form -->
+  <div class="checkout-scrim" id="checkout-scrim" hidden>
+    <section class="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
+      <header class="checkout-header">
+        <div>
+          <span class="section-kicker">ECOGROCER BD · SECURE CHECKOUT</span>
+          <h2 id="checkout-title">আপনার অর্ডার সম্পন্ন করুন</h2>
+          <p>ডেলিভারি তথ্য, সময় ও পেমেন্ট পদ্ধতি বেছে নিন</p>
+        </div>
+        <button class="icon-button" id="checkout-close" type="button" aria-label="অর্ডার ফর্ম বন্ধ করুন">×</button>
+      </header>
+      <div class="checkout-body">
+        <div class="checkout-grid">
+          <form class="checkout-form" id="eco-checkout-form" name="ecogrocer-orders" method="POST" data-netlify="true" netlify-honeypot="bot-field" novalidate>
+            <input type="hidden" name="form-name" value="ecogrocer-orders">
+            <input type="hidden" name="subject" value="New EcoGrocer order">
+            <div hidden><label>Leave this field empty<input type="text" name="bot-field" tabindex="-1" autocomplete="off"></label></div>
+            <input type="hidden" name="orderId" id="checkout-order-id">
+            <input type="hidden" name="orderItems" id="checkout-order-items">
+            <input type="hidden" name="orderSubtotal" id="checkout-order-subtotal">
+            <input type="hidden" name="deliveryCharge" id="checkout-order-delivery">
+            <input type="hidden" name="couponDiscount" id="checkout-order-discount">
+            <input type="hidden" name="grandTotal" id="checkout-order-grand-total">
+            <input type="hidden" name="deliveryAreaName" id="checkout-order-area-name">
+            <input type="hidden" name="couponCode" id="checkout-order-coupon">
+            <input type="hidden" name="orderStatus" id="checkout-order-status" value="pending">
+            <input type="hidden" name="orderDate" id="checkout-order-date">
+            <section class="checkout-section">
+              <div class="checkout-section-title"><span class="checkout-step">01</span><div><h3>আপনার কার্ট</h3><p>অর্ডারে থাকা পণ্যগুলো যাচাই করুন</p></div></div>
+              <div class="checkout-items-preview" id="checkout-items-preview"></div>
+            </section>
+
+            <section class="checkout-section">
+              <div class="checkout-section-title"><span class="checkout-step">02</span><div><h3>ডেলিভারি ঠিকানা</h3><p>সঠিক ঠিকানা দিলে দ্রুত পণ্য পৌঁছে দেওয়া যাবে</p></div></div>
+              <div class="checkout-fields">
+                <label class="checkout-field"><span>আপনার নাম <b>*</b></span><input name="customerName" id="checkout-name" type="text" autocomplete="name" placeholder="সম্পূর্ণ নাম লিখুন" minlength="2" maxlength="80" required></label>
+                <label class="checkout-field"><span>মোবাইল নম্বর <b>*</b></span><input name="phone" id="checkout-phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="01XXXXXXXXX" pattern="01[3-9][0-9]{8}" maxlength="11" required><small>১১ সংখ্যার বাংলাদেশি মোবাইল নম্বর দিন</small></label>
+                <label class="checkout-field checkout-field-wide"><span>ডেলিভারি এলাকা খুঁজুন</span><input id="checkout-area-search" type="search" placeholder="যেমন: Gulshan 2, Niketon, Banani" autocomplete="off"></label>
+                <label class="checkout-field checkout-field-wide"><span>ডেলিভারি এলাকা <b>*</b></span>
+                  <select name="deliveryArea" id="checkout-area" required>
+                    <option value="">-- এলাকা বেছে নিন --</option>
+                    <optgroup label="গুলশান ও মূল সার্ভিস এলাকা">
+                      <option value="gulshan-1">গুলশান ১ — ৳৬০</option>
+                      <option value="gulshan-2">গুলশান ২ — ৳৬০</option>
+                      <option value="niketon">নিকেতন — ৳৬০</option>
+                      <option value="baridhara">বারিধারা ডিপ্লোম্যাটিক জোন — ৳৭০</option>
+                    </optgroup>
+                    <optgroup label="নিকটবর্তী এলাকা">
+                      <option value="banani">বনানী — ৳৭০</option>
+                      <option value="mohakhali">মহাখালী — ৳৮০</option>
+                      <option value="baridhara-dohs">বারিধারা DOHS — ৳৯০</option>
+                      <option value="banani-dohs">বনানী DOHS — ৳৯০</option>
+                      <option value="mohakhali-dohs">মহাখালী DOHS — ৳৯০</option>
+                      <option value="badda">বাড্ডা — ৳১০০</option>
+                      <option value="shahjadpur">শাহজাদপুর — ৳১০০</option>
+                      <option value="notun-bazar">নতুন বাজার — ৳১০০</option>
+                    </optgroup>
+                  </select>
+                  <small>এলাকা নির্বাচন করলে চার্জ আপডেট হবে। দেখানো চার্জগুলো প্রাথমিক নমুনা—লাইভের আগে নিশ্চিত করতে হবে।</small>
+                </label>
+                <label class="checkout-field"><span>Block <b>*</b></span><input name="block" type="text" placeholder="যেমন: Block C" maxlength="40" required></label>
+                <label class="checkout-field"><span>Road <b>*</b></span><input name="road" type="text" placeholder="যেমন: Road 12" maxlength="40" required></label>
+                <label class="checkout-field checkout-field-wide"><span>House / Flat Number <b>*</b></span><input name="house" type="text" placeholder="বাড়ি / ফ্ল্যাট নম্বর" maxlength="60" required></label>
+                <label class="checkout-field checkout-field-wide"><span>সম্পূর্ণ ঠিকানা <b>*</b></span><textarea name="fullAddress" rows="3" placeholder="বাড়ির নাম, ল্যান্ডমার্ক, গেট বা প্রবেশের নির্দেশনা লিখুন" minlength="8" maxlength="500" required></textarea></label>
+              </div>
+            </section>
+
+            <section class="checkout-section">
+              <div class="checkout-section-title"><span class="checkout-step">03</span><div><h3>ডেলিভারি সময়</h3><p>আপনার সুবিধামতো সময় নির্বাচন করুন</p></div></div>
+              <label class="checkout-field"><span>ডেলিভারি সময় বেছে নিন <b>*</b></span>
+                <select name="deliverySlot" id="checkout-slot" required>
+                  <option value="">-- সময় বেছে নিন --</option>
+                  <option value="08:00-11:00">সকাল ৮টা – ১১টা</option>
+                  <option value="11:00-14:00">সকাল ১১টা – দুপুর ২টা</option>
+                  <option value="14:00-17:00">দুপুর ২টা – বিকাল ৫টা</option>
+                  <option value="17:00-20:00">বিকাল ৫টা – রাত ৮টা</option>
+                  <option value="20:00-22:00">রাত ৮টা – রাত ১০টা</option>
+                </select>
+              </label>
+              <label class="checkout-field checkout-field-wide"><span>অতিরিক্ত নোট <small>(ঐচ্ছিক)</small></span><textarea name="notes" rows="2" maxlength="500" placeholder="পণ্য বাছাই, প্যাকিং বা ডেলিভারি সংক্রান্ত নির্দেশনা"></textarea></label>
+            </section>
+
+            <section class="checkout-section">
+              <div class="checkout-section-title"><span class="checkout-step">04</span><div><h3>পেমেন্ট পদ্ধতি</h3><p>আপনার পছন্দের পদ্ধতিটি বেছে নিন</p></div></div>
+              <div class="payment-options">
+                <label class="payment-option"><input type="radio" name="paymentMethod" value="cod" required checked><span class="payment-emoji">💵</span><span><strong>Cash on Delivery</strong><small>পণ্য হাতে পেয়ে পেমেন্ট</small></span></label>
+                <label class="payment-option"><input type="radio" name="paymentMethod" value="bkash"><span class="payment-emoji">💚</span><span><strong>bKash</strong><small>ম্যানুয়াল পেমেন্ট যাচাই</small></span></label>
+                <label class="payment-option"><input type="radio" name="paymentMethod" value="nagad"><span class="payment-emoji">🟠</span><span><strong>Nagad</strong><small>ম্যানুয়াল পেমেন্ট যাচাই</small></span></label>
+                <label class="payment-option"><input type="radio" name="paymentMethod" value="rocket"><span class="payment-emoji">🔵</span><span><strong>Rocket</strong><small>ম্যানুয়াল পেমেন্ট যাচাই</small></span></label>
+              </div>
+              <div class="payment-reference" id="payment-reference-fields" hidden>
+                <p>অনলাইন পেমেন্ট করলে নম্বর ও Transaction ID দিলে পেমেন্টটি ম্যানুয়ালি যাচাই করা যাবে।</p>
+                <label class="checkout-field"><span>যে নম্বর থেকে পেমেন্ট করেছেন</span><input name="payerPhone" type="tel" inputmode="numeric" maxlength="11" placeholder="01XXXXXXXXX"></label>
+                <label class="checkout-field"><span>Transaction ID <small>(পেমেন্ট করে থাকলে)</small></span><input name="transactionId" type="text" maxlength="80" placeholder="TrxID লিখুন"></label>
+              </div>
+            </section>
+
+            <section class="checkout-section">
+              <div class="checkout-section-title"><span class="checkout-step">05</span><div><h3>কুপন কোড</h3><p>প্রযোজ্য কুপন ব্যবহার করে ছাড় নিন</p></div></div>
+              <div class="coupon-row"><input id="checkout-coupon" name="couponInput" type="text" placeholder="কুপন কোড লিখুন" maxlength="30" autocomplete="off"><button id="checkout-coupon-apply" type="button">Apply</button></div>
+              <p class="coupon-feedback" id="checkout-coupon-feedback" aria-live="polite">ডেমো কুপন: ECO10 অথবা FRESH50</p>
+            </section>
+
+            <label class="checkout-field checkout-consent"><input type="checkbox" id="checkout-confirm-info" name="customerConsent" value="yes" required><span>আমি নিশ্চিত করছি যে আমার দেওয়া নাম, ফোন নম্বর ও ডেলিভারি ঠিকানা সঠিক। <b>*</b></span></label>
+            <div class="checkout-status" id="checkout-status" role="status" aria-live="polite" hidden></div>
+          </form>
+
+          <aside class="checkout-summary">
+            <div class="summary-card">
+              <span class="section-kicker">ORDER SUMMARY</span>
+              <h3>অর্ডার সামারি</h3>
+              <div id="checkout-summary-items" class="summary-items"></div>
+              <div class="summary-divider"></div>
+              <div class="summary-row"><span>Subtotal</span><strong id="checkout-subtotal">৳০</strong></div>
+              <div class="summary-row"><span>Delivery Charge</span><strong id="checkout-delivery">এলাকা বাছুন</strong></div>
+              <div class="summary-row summary-discount"><span>Coupon Discount</span><strong id="checkout-discount">−৳০</strong></div>
+              <div class="summary-divider"></div>
+              <div class="summary-total"><span>Grand Total</span><strong id="checkout-grand-total">৳০</strong></div>
+              <p class="summary-disclaimer">এলাকা নির্বাচন ও কুপন প্রয়োগের সঙ্গে সঙ্গে মোট মূল্য আপডেট হবে। Order Confirm চাপলে অর্ডারের তথ্য EcoGrocer BD-এর সুরক্ষিত Netlify Forms ইনবক্সে জমা হবে।</p>
+              <button class="button button-primary button-block checkout-submit" id="checkout-submit" type="submit" form="eco-checkout-form">✅ Order Confirm করুন</button>
+              <p class="checkout-security-note">🔒 আপনার তথ্য শুধু অর্ডার প্রসেস করার জন্য ব্যবহার করা হবে।</p>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Login placeholder -->
+  <div class="modal-scrim" id="login-scrim" hidden>
+    <section class="login-modal" role="dialog" aria-modal="true" aria-labelledby="login-title">
+      <button class="icon-button modal-close" id="login-close" type="button" aria-label="বন্ধ করুন">×</button>
+      <div class="login-mark">e</div><span class="section-kicker">YOUR ECOGROCER ACCOUNT</span><h2 id="login-title">স্বাগতম!</h2><p>লগইন ও কাস্টমার অ্যাকাউন্টের সুবিধা Firebase সংযুক্তির পর চালু হবে।</p>
+      <label for="login-mobile">মোবাইল নম্বর</label><input id="login-mobile" type="tel" inputmode="tel" placeholder="01XXXXXXXXX" disabled>
+      <label for="login-password">পাসওয়ার্ড</label><input id="login-password" type="password" placeholder="আপনার পাসওয়ার্ড" disabled>
+      <button class="button button-primary button-block" type="button" disabled>লগইন</button>
+      <small class="modal-note">এটি আপাতত ডিজাইন প্রিভিউ; কোনো লগইন বা তথ্য সংরক্ষণ হচ্ছে না।</small>
+    </section>
+  </div>
+
+  <!-- Mobile bottom navigation -->
+  <nav class="mobile-bottom-nav" aria-label="মোবাইল নেভিগেশন">
+    <a class="bottom-link active" href="index.html#home"><span class="bottom-icon">⌂</span><small>হোম</small></a>
+    <a class="bottom-link" href="index.html#categories"><span class="bottom-icon">▦</span><small>ক্যাটাগরি</small></a>
+    <a class="bottom-link" href="index.html#search-section" data-focus-search><span class="bottom-icon search-bottom-icon">⌕</span><small>সার্চ</small></a>
+    <button class="bottom-link" type="button" id="bottom-cart-open"><span class="bottom-icon">🛒<i id="bottom-cart-count">0</i></span><small>কার্ট</small></button>
+    <a class="bottom-link" href="account.html"><span class="bottom-icon">♙</span><small>অ্যাকাউন্ট</small></a>
+  </nav>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
